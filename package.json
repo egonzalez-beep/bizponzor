@@ -1,21 +1,18 @@
 {
   "name": "bizponzor",
   "version": "1.0.0",
-  "description": "Plataforma de suscripciones para creadores de contenido",
   "main": "server.js",
-  "license": "MIT",
-  "scripts": {
-    "start": "node server.js"
-  },
+  "scripts": { "start": "node server.js" },
+  "engines": { "node": ">=18.0.0" },
   "dependencies": {
     "express": "^4.18.2",
-    "better-sqlite3": "^9.0.0",
-    "multer": "^1.4.5",
-    "jsonwebtoken": "^9.0.0",
+    "better-sqlite3": "^9.4.3",
+    "multer": "^1.4.4",
+    "jsonwebtoken": "^9.0.2",
     "bcryptjs": "^2.4.3",
-    "mercadopago": "^2.0.0",
+    "mercadopago": "^2.0.6",
     "cors": "^2.8.5",
-    "dotenv": "^16.0.0",
+    "dotenv": "^16.3.1",
     "uuid": "^9.0.0"
   }
 }
