@@ -1,11 +1,24 @@
 const Database = require('better-sqlite3');
 const path = require('path');
+const fs = require('fs');
 
-const db = new Database('/home/user/bizponzor.db');
+// Definir la ruta DENTRO del contenedor (funciona local y en producción)
+const dataDir = path.join(__dirname, 'data');
+const dbPath = path.join(dataDir, 'bizponzor.db');
+
+// Crear el directorio si no existe (por seguridad)
+if (!fs.existsSync(dataDir)) {
+    fs.mkdirSync(dataDir, { recursive: true });
+    console.log('📁 Directorio creado:', dataDir);
+}
+
+// Abrir la base de datos
+const db = new Database(dbPath);
+
+console.log('🗄️ Base de datos conectada:', dbPath);
 
 // Activar foreign keys
 db.pragma('foreign_keys = ON');
-
 
 // ─── SCHEMA ───────────────────────────────────────────────
 db.exec(`
