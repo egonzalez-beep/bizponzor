@@ -1,0 +1,1619 @@
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BizPonzor</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --black: #0A0A0A;
+    --white: #FFFFFF;
+    --gray-100: #F7F7F7;
+    --gray-200: #EFEFEF;
+    --gray-300: #E0E0E0;
+    --gray-400: #BDBDBD;
+    --gray-500: #9E9E9E;
+    --gray-600: #757575;
+    --gray-700: #616161;
+    --gray-800: #424242;
+    --radius: 14px;
+    --radius-sm: 8px;
+    --shadow: 0 2px 12px rgba(0,0,0,0.07);
+    --shadow-md: 0 4px 24px rgba(0,0,0,0.10);
+    --shadow-lg: 0 8px 40px rgba(0,0,0,0.13);
+  }
+
+  body {
+    font-family: 'Inter', sans-serif;
+    background: var(--white);
+    color: var(--black);
+    min-height: 100vh;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .page { display: none; }
+  .page.active { display: block; }
+
+  /* ─── NAVBAR ─── */
+  .navbar {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 0 40px; height: 64px;
+    background: rgba(255,255,255,0.92);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--gray-200);
+  }
+  .navbar-logo {
+    font-size: 1.35rem; font-weight: 800; letter-spacing: -0.5px;
+    cursor: pointer; color: var(--black);
+  }
+  .navbar-logo span { color: var(--gray-500); font-weight: 400; }
+  .navbar-actions { display: flex; gap: 12px; align-items: center; }
+  .btn {
+    display: inline-flex; align-items: center; justify-content: center;
+    gap: 8px; padding: 10px 22px; border-radius: 999px;
+    font-size: 0.875rem; font-weight: 600; cursor: pointer;
+    border: none; transition: all 0.18s ease; text-decoration: none;
+    font-family: 'Inter', sans-serif;
+  }
+  .btn-primary { background: var(--black); color: var(--white); }
+  .btn-primary:hover { background: var(--gray-800); transform: translateY(-1px); box-shadow: var(--shadow-md); }
+  .btn-outline { background: transparent; color: var(--black); border: 1.5px solid var(--gray-300); }
+  .btn-outline:hover { border-color: var(--black); background: var(--gray-100); }
+  .btn-ghost { background: transparent; color: var(--gray-600); border: none; padding: 10px 16px; }
+  .btn-ghost:hover { color: var(--black); background: var(--gray-100); }
+  .btn-sm { padding: 7px 16px; font-size: 0.8rem; }
+  .btn-full { width: 100%; }
+  .btn-danger { background: #FF3B30; color: white; }
+  .btn-danger:hover { background: #E0342A; }
+
+  /* ─── LANDING ─── */
+  #landing { padding-top: 64px; }
+
+  .hero {
+    min-height: 92vh;
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    text-align: center; padding: 80px 24px 60px;
+    background: linear-gradient(180deg, var(--white) 0%, var(--gray-100) 100%);
+  }
+  .hero-badge {
+    display: inline-flex; align-items: center; gap: 6px;
+    background: var(--black); color: var(--white);
+    padding: 6px 16px; border-radius: 999px;
+    font-size: 0.75rem; font-weight: 600; letter-spacing: 0.5px;
+    margin-bottom: 32px; text-transform: uppercase;
+  }
+  .hero h1 {
+    font-size: clamp(2.8rem, 7vw, 5.5rem);
+    font-weight: 900; line-height: 1.05;
+    letter-spacing: -2px; max-width: 800px;
+    margin-bottom: 24px;
+  }
+  .hero h1 em { font-style: normal; color: var(--gray-500); }
+  .hero p {
+    font-size: 1.15rem; color: var(--gray-600);
+    max-width: 520px; line-height: 1.7; margin-bottom: 44px;
+  }
+  .hero-cta { display: flex; gap: 12px; flex-wrap: wrap; justify-content: center; }
+  .hero-cta .btn { font-size: 0.95rem; padding: 14px 30px; }
+
+  .hero-stats {
+    display: flex; gap: 48px; margin-top: 72px;
+    padding-top: 48px; border-top: 1px solid var(--gray-300);
+    flex-wrap: wrap; justify-content: center;
+  }
+  .stat-item { text-align: center; }
+  .stat-number { font-size: 2rem; font-weight: 800; letter-spacing: -1px; }
+  .stat-label { font-size: 0.8rem; color: var(--gray-500); margin-top: 4px; text-transform: uppercase; letter-spacing: 0.5px; }
+
+  /* Features */
+  .features {
+    padding: 100px 40px;
+    max-width: 1100px; margin: 0 auto;
+  }
+  .section-label {
+    font-size: 0.75rem; font-weight: 700; letter-spacing: 1.5px;
+    text-transform: uppercase; color: var(--gray-500); margin-bottom: 16px;
+  }
+  .section-title {
+    font-size: clamp(1.8rem, 4vw, 2.8rem);
+    font-weight: 800; letter-spacing: -1px; margin-bottom: 60px;
+    max-width: 500px; line-height: 1.2;
+  }
+  .features-grid {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 24px;
+  }
+  .feature-card {
+    background: var(--gray-100); border-radius: var(--radius);
+    padding: 32px; border: 1px solid var(--gray-200);
+    transition: all 0.2s;
+  }
+  .feature-card:hover { transform: translateY(-4px); box-shadow: var(--shadow-md); background: var(--white); }
+  .feature-icon {
+    width: 48px; height: 48px; background: var(--black); border-radius: var(--radius-sm);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.3rem; margin-bottom: 20px;
+  }
+  .feature-card h3 { font-size: 1.05rem; font-weight: 700; margin-bottom: 8px; }
+  .feature-card p { font-size: 0.875rem; color: var(--gray-600); line-height: 1.6; }
+
+  /* Creators showcase */
+  .creators-section {
+    padding: 100px 40px;
+    background: var(--black); color: var(--white);
+  }
+  .creators-section .section-label { color: var(--gray-500); }
+  .creators-section .section-title { color: var(--white); }
+  .creators-grid {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 20px; max-width: 1100px; margin: 0 auto;
+  }
+  .creator-card {
+    background: #161616; border-radius: var(--radius);
+    border: 1px solid #2a2a2a; padding: 24px; text-align: center;
+    transition: all 0.2s; cursor: pointer;
+  }
+  .creator-card:hover { border-color: #444; transform: translateY(-4px); }
+  .creator-avatar {
+    width: 72px; height: 72px; border-radius: 50%;
+    margin: 0 auto 16px; overflow: hidden;
+    background: linear-gradient(135deg, #333 0%, #666 100%);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.8rem; font-weight: 700; color: white;
+  }
+  .creator-card h4 { font-size: 0.95rem; font-weight: 700; margin-bottom: 4px; color: white; }
+  .creator-card p { font-size: 0.78rem; color: var(--gray-500); margin-bottom: 16px; }
+  .creator-card .tag {
+    display: inline-block; background: #222; color: var(--gray-400);
+    padding: 4px 12px; border-radius: 999px; font-size: 0.72rem;
+  }
+
+  /* CTA section */
+  .cta-section {
+    padding: 120px 40px; text-align: center;
+    background: var(--gray-100);
+  }
+  .cta-section h2 {
+    font-size: clamp(2rem, 5vw, 3.5rem);
+    font-weight: 900; letter-spacing: -1.5px; margin-bottom: 20px;
+  }
+  .cta-section p { color: var(--gray-600); font-size: 1.05rem; margin-bottom: 40px; }
+
+  /* Footer */
+  footer {
+    padding: 40px; text-align: center;
+    border-top: 1px solid var(--gray-200);
+    color: var(--gray-500); font-size: 0.82rem;
+  }
+  footer strong { color: var(--black); }
+
+  /* ─── AUTH ─── */
+  #auth { padding-top: 64px; min-height: 100vh; display: flex; align-items: center; justify-content: center; }
+  .auth-container {
+    width: 100%; max-width: 420px; padding: 24px;
+    margin: 40px auto;
+  }
+  .auth-card {
+    background: var(--white); border-radius: var(--radius);
+    border: 1px solid var(--gray-200); padding: 40px;
+    box-shadow: var(--shadow-md);
+  }
+  .auth-logo { font-size: 1.5rem; font-weight: 800; margin-bottom: 8px; letter-spacing: -0.5px; }
+  .auth-subtitle { color: var(--gray-600); font-size: 0.875rem; margin-bottom: 32px; }
+  .auth-tabs {
+    display: flex; gap: 0; margin-bottom: 32px;
+    border: 1.5px solid var(--gray-300); border-radius: 999px; padding: 4px;
+  }
+  .auth-tab {
+    flex: 1; padding: 9px; text-align: center; cursor: pointer;
+    border-radius: 999px; font-size: 0.85rem; font-weight: 600;
+    transition: all 0.18s; color: var(--gray-600);
+  }
+  .auth-tab.active { background: var(--black); color: var(--white); }
+  .role-selector { display: flex; gap: 12px; margin-bottom: 24px; }
+  .role-option {
+    flex: 1; border: 1.5px solid var(--gray-300); border-radius: var(--radius);
+    padding: 16px 12px; text-align: center; cursor: pointer; transition: all 0.18s;
+  }
+  .role-option.selected { border-color: var(--black); background: var(--black); color: var(--white); }
+  .role-option .role-icon { font-size: 1.5rem; margin-bottom: 8px; }
+  .role-option .role-name { font-size: 0.82rem; font-weight: 700; }
+  .role-option .role-desc { font-size: 0.72rem; color: var(--gray-500); margin-top: 2px; }
+  .role-option.selected .role-desc { color: var(--gray-300); }
+  .form-group { margin-bottom: 20px; }
+  .form-label { display: block; font-size: 0.82rem; font-weight: 600; margin-bottom: 8px; color: var(--gray-700); }
+  .form-input {
+    width: 100%; padding: 12px 16px; border: 1.5px solid var(--gray-300);
+    border-radius: var(--radius-sm); font-size: 0.9rem; font-family: 'Inter', sans-serif;
+    transition: all 0.18s; background: var(--white); color: var(--black);
+  }
+  .form-input:focus { outline: none; border-color: var(--black); box-shadow: 0 0 0 3px rgba(0,0,0,0.06); }
+  .form-divider {
+    text-align: center; color: var(--gray-400); font-size: 0.78rem;
+    margin: 24px 0; position: relative;
+  }
+  .form-divider::before, .form-divider::after {
+    content: ''; position: absolute; top: 50%; width: 42%; height: 1px; background: var(--gray-300);
+  }
+  .form-divider::before { left: 0; } .form-divider::after { right: 0; }
+  .auth-switch { text-align: center; margin-top: 20px; font-size: 0.83rem; color: var(--gray-600); }
+  .auth-switch a { color: var(--black); font-weight: 600; cursor: pointer; text-decoration: underline; }
+
+  /* ─── DASHBOARD LAYOUT ─── */
+  #creator-dashboard, #fan-dashboard { padding-top: 64px; min-height: 100vh; background: var(--gray-100); }
+  .dashboard-layout { display: flex; min-height: calc(100vh - 64px); }
+
+  /* Sidebar */
+  .sidebar {
+    width: 240px; flex-shrink: 0; background: var(--white);
+    border-right: 1px solid var(--gray-200); padding: 28px 16px;
+    position: sticky; top: 64px; height: calc(100vh - 64px); overflow-y: auto;
+  }
+  .sidebar-section { margin-bottom: 32px; }
+  .sidebar-label { font-size: 0.68rem; font-weight: 700; letter-spacing: 1px; color: var(--gray-400); text-transform: uppercase; padding: 0 12px; margin-bottom: 8px; }
+  .sidebar-item {
+    display: flex; align-items: center; gap: 10px;
+    padding: 10px 12px; border-radius: var(--radius-sm);
+    font-size: 0.875rem; font-weight: 500; cursor: pointer;
+    transition: all 0.15s; color: var(--gray-700); margin-bottom: 2px;
+  }
+  .sidebar-item:hover { background: var(--gray-100); color: var(--black); }
+  .sidebar-item.active { background: var(--black); color: var(--white); font-weight: 600; }
+  .sidebar-item .icon { font-size: 1rem; width: 20px; text-align: center; }
+
+  /* Main content */
+  .main-content { flex: 1; padding: 36px; overflow-y: auto; }
+  .page-header { margin-bottom: 32px; }
+  .page-header h2 { font-size: 1.7rem; font-weight: 800; letter-spacing: -0.5px; }
+  .page-header p { color: var(--gray-600); font-size: 0.9rem; margin-top: 6px; }
+
+  /* Stats cards */
+  .stats-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 16px; margin-bottom: 32px; }
+  .stat-card {
+    background: var(--white); border-radius: var(--radius);
+    border: 1px solid var(--gray-200); padding: 24px;
+  }
+  .stat-card .s-label { font-size: 0.75rem; color: var(--gray-500); font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 8px; }
+  .stat-card .s-value { font-size: 2rem; font-weight: 800; letter-spacing: -1px; }
+  .stat-card .s-change { font-size: 0.75rem; color: #22C55E; margin-top: 4px; font-weight: 600; }
+
+  /* Content grid */
+  .content-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 16px; }
+  .content-item {
+    background: var(--white); border-radius: var(--radius);
+    border: 1px solid var(--gray-200); overflow: hidden;
+    transition: all 0.2s; cursor: pointer;
+  }
+  .content-item:hover { box-shadow: var(--shadow-md); transform: translateY(-2px); }
+  .content-thumb {
+    width: 100%; aspect-ratio: 16/9;
+    background: var(--gray-200); position: relative;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 2.5rem;
+  }
+  .content-type-badge {
+    position: absolute; top: 10px; left: 10px;
+    background: rgba(0,0,0,0.75); color: white;
+    padding: 3px 10px; border-radius: 999px; font-size: 0.68rem; font-weight: 700;
+    text-transform: uppercase; letter-spacing: 0.5px;
+  }
+  .lock-overlay {
+    position: absolute; inset: 0;
+    background: rgba(10,10,10,0.65); backdrop-filter: blur(4px);
+    display: flex; align-items: center; justify-content: center;
+    color: white; font-size: 2rem;
+  }
+  .content-info { padding: 14px; }
+  .content-info h4 { font-size: 0.875rem; font-weight: 700; margin-bottom: 4px; }
+  .content-info p { font-size: 0.75rem; color: var(--gray-500); }
+  .content-info .exclusive-badge {
+    display: inline-block; background: var(--black); color: white;
+    font-size: 0.65rem; font-weight: 700; padding: 2px 8px; border-radius: 999px;
+    margin-top: 6px; text-transform: uppercase; letter-spacing: 0.5px;
+  }
+
+  /* Upload area */
+  .upload-area {
+    border: 2px dashed var(--gray-300); border-radius: var(--radius);
+    padding: 48px 24px; text-align: center; cursor: pointer;
+    transition: all 0.2s; background: var(--white); margin-bottom: 24px;
+  }
+  .upload-area:hover { border-color: var(--black); background: var(--gray-100); }
+  .upload-area .upload-icon { font-size: 2.5rem; margin-bottom: 16px; }
+  .upload-area h3 { font-size: 1rem; font-weight: 700; margin-bottom: 8px; }
+  .upload-area p { font-size: 0.82rem; color: var(--gray-500); }
+
+  /* Plans */
+  .plans-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 20px; }
+  .plan-card {
+    background: var(--white); border-radius: var(--radius);
+    border: 1.5px solid var(--gray-200); padding: 28px;
+    transition: all 0.2s;
+  }
+  .plan-card.featured { border-color: var(--black); background: var(--black); color: var(--white); }
+  .plan-card.featured .plan-price-sub { color: var(--gray-400); }
+  .plan-card.featured .plan-feature { color: var(--gray-300); }
+  .plan-card.featured .plan-feature::before { color: white; }
+  .plan-badge {
+    display: inline-block; background: white; color: black;
+    font-size: 0.65rem; font-weight: 800; padding: 3px 10px; border-radius: 999px;
+    text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 20px;
+  }
+  .plan-name { font-size: 1rem; font-weight: 700; margin-bottom: 16px; }
+  .plan-price { font-size: 2.2rem; font-weight: 900; letter-spacing: -1px; }
+  .plan-price-sub { font-size: 0.78rem; color: var(--gray-500); margin-bottom: 24px; }
+  .plan-features { list-style: none; margin-bottom: 24px; }
+  .plan-feature {
+    font-size: 0.82rem; padding: 6px 0; color: var(--gray-700);
+    display: flex; align-items: center; gap: 8px;
+  }
+  .plan-feature::before { content: '✓'; font-weight: 800; color: var(--black); }
+
+  /* Notifications */
+  .notification {
+    position: fixed; bottom: 28px; right: 28px; z-index: 9999;
+    background: var(--black); color: var(--white);
+    padding: 14px 24px; border-radius: var(--radius);
+    font-size: 0.875rem; font-weight: 600;
+    box-shadow: var(--shadow-lg); display: none;
+    animation: slideUp 0.3s ease;
+  }
+  @keyframes slideUp { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+
+  /* Creator Profile (public) */
+  #creator-profile { padding-top: 64px; }
+  .profile-banner {
+    height: 260px;
+    background: linear-gradient(135deg, #1a1a1a 0%, #444 100%);
+    position: relative;
+  }
+  .profile-info {
+    max-width: 900px; margin: 0 auto; padding: 0 32px;
+  }
+  .profile-avatar-wrap {
+    margin-top: -50px; margin-bottom: 20px; position: relative; display: inline-block;
+  }
+  .profile-avatar {
+    width: 100px; height: 100px; border-radius: 50%;
+    background: linear-gradient(135deg, #333 0%, #888 100%);
+    border: 4px solid var(--white);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 2.5rem; font-weight: 800; color: white;
+  }
+  .profile-name { font-size: 1.6rem; font-weight: 800; letter-spacing: -0.5px; }
+  .profile-handle { color: var(--gray-500); font-size: 0.9rem; margin-bottom: 12px; }
+  .profile-bio { font-size: 0.9rem; color: var(--gray-700); max-width: 500px; line-height: 1.6; margin-bottom: 24px; }
+  .profile-body { max-width: 900px; margin: 0 auto; padding: 32px; display: grid; grid-template-columns: 1fr 300px; gap: 32px; }
+  .profile-feed h3 { font-size: 1.1rem; font-weight: 800; margin-bottom: 20px; }
+  .profile-sidebar-card {
+    background: var(--white); border: 1px solid var(--gray-200);
+    border-radius: var(--radius); padding: 24px; margin-bottom: 20px;
+    position: sticky; top: 80px;
+  }
+  .profile-sidebar-card h4 { font-size: 0.95rem; font-weight: 800; margin-bottom: 16px; }
+
+  /* Subscription modal */
+  .modal-overlay {
+    display: none; position: fixed; inset: 0; z-index: 500;
+    background: rgba(0,0,0,0.5); backdrop-filter: blur(6px);
+    align-items: center; justify-content: center;
+  }
+  .modal-overlay.open { display: flex; }
+  .modal {
+    background: var(--white); border-radius: var(--radius);
+    padding: 40px; max-width: 460px; width: 90%;
+    box-shadow: var(--shadow-lg); animation: fadeIn 0.2s ease;
+  }
+  @keyframes fadeIn { from { transform: scale(0.95); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+  .modal h3 { font-size: 1.3rem; font-weight: 800; margin-bottom: 8px; }
+  .modal p { color: var(--gray-600); font-size: 0.875rem; margin-bottom: 24px; }
+  .modal-actions { display: flex; gap: 12px; margin-top: 24px; }
+
+  /* MP */
+  .mp-logo {
+    display: flex; align-items: center; gap: 10px;
+    background: var(--gray-100); border-radius: var(--radius-sm);
+    padding: 12px 16px; margin-bottom: 20px;
+    border: 1px solid var(--gray-300);
+  }
+  .mp-logo-icon {
+    width: 32px; height: 32px; background: #009EE3;
+    border-radius: 6px; display: flex; align-items: center; justify-content: center;
+    color: white; font-weight: 800; font-size: 0.9rem;
+  }
+  .mp-logo-text { font-size: 0.82rem; }
+  .mp-logo-text strong { display: block; font-weight: 700; }
+  .mp-logo-text span { color: var(--gray-500); font-size: 0.75rem; }
+
+  /* Pill tags */
+  .tag-pill {
+    display: inline-flex; align-items: center; gap: 6px;
+    background: var(--gray-100); border: 1px solid var(--gray-200);
+    padding: 4px 12px; border-radius: 999px;
+    font-size: 0.75rem; font-weight: 600; color: var(--gray-700);
+  }
+  .tag-pill.green { background: #F0FDF4; border-color: #86EFAC; color: #166534; }
+  .tag-pill.yellow { background: #FFFBEB; border-color: #FCD34D; color: #92400E; }
+
+  /* ─── RESPONSIVE ─── */
+  @media (max-width: 768px) {
+    .navbar { padding: 0 20px; }
+    .hero { padding: 60px 20px 40px; }
+    .hero h1 { letter-spacing: -1px; }
+    .hero-stats { gap: 28px; }
+    .features, .creators-section, .cta-section { padding: 60px 20px; }
+    .sidebar { display: none; }
+    .main-content { padding: 20px; }
+    .profile-body { grid-template-columns: 1fr; }
+    .profile-info { padding: 0 20px; }
+  }
+
+  /* Scrollbar */
+  ::-webkit-scrollbar { width: 6px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: var(--gray-300); border-radius: 999px; }
+  ::-webkit-scrollbar-thumb:hover { background: var(--gray-400); }
+</style>
+</head>
+<body>
+
+<!-- NAVBAR -->
+<nav class="navbar" id="navbar">
+  <div class="navbar-logo" onclick="showPage('landing')">Biz<span>Ponzor</span></div>
+  <div class="navbar-actions" id="navbar-actions">
+    <button class="btn btn-ghost" onclick="showAuth('login')">Iniciar sesión</button>
+    <button class="btn btn-primary" onclick="showAuth('register')">Comenzar gratis</button>
+  </div>
+</nav>
+
+<!-- ╔══════════════════════════════╗ -->
+<!-- ║         LANDING PAGE         ║ -->
+<!-- ╚══════════════════════════════╝ -->
+<div id="landing" class="page active">
+
+  <section class="hero">
+    <div class="hero-badge">✦ La plataforma para creadores</div>
+    <h1>Sé el patrocinador<br>de los creadores <em>que amas</em></h1>
+    <p>BizPonzor conecta a creadores de contenido con su comunidad más fiel. Apoya, accede a contenido exclusivo y forma parte de algo especial.</p>
+    <div class="hero-cta">
+      <button class="btn btn-primary" onclick="showAuth('register')">Empezar como creador</button>
+      <button class="btn btn-outline" onclick="showAuth('register')">Explorar creadores</button>
+    </div>
+    <div class="hero-stats">
+      <div class="stat-item">
+        <div class="stat-number">2.4K+</div>
+        <div class="stat-label">Creadores activos</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-number">18K+</div>
+        <div class="stat-label">Patrocinadores</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-number">$1.2M</div>
+        <div class="stat-label">Pagados a creadores</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-number">4.9★</div>
+        <div class="stat-label">Valoración promedio</div>
+      </div>
+    </div>
+  </section>
+
+  <section class="features">
+    <div class="section-label">¿Por qué BizPonzor?</div>
+    <div class="section-title">Todo lo que necesitan creadores y fans</div>
+    <div class="features-grid">
+      <div class="feature-card">
+        <div class="feature-icon">🎬</div>
+        <h3>Sube fotos y videos</h3>
+        <p>Los creadores pueden subir contenido directamente desde su ordenador. Fotos, videos, detrás de cámaras — sin límites.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">🔒</div>
+        <h3>Contenido exclusivo</h3>
+        <p>Decide qué es público y qué es solo para suscriptores. El acceso se desbloquea automáticamente al suscribirse.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">💳</div>
+        <h3>Pagos con MercadoPago</h3>
+        <p>Tus fans pagan con su método favorito. El pago se procesa automáticamente y el acceso se activa al instante.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">📊</div>
+        <h3>Dashboard de ganancias</h3>
+        <p>Ve cuántos suscriptores tienes, tus ingresos del mes y el historial completo de pagos en tiempo real.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">🎯</div>
+        <h3>Planes personalizados</h3>
+        <p>Crea múltiples niveles de suscripción. Básico, Premium, VIP — tú decides qué incluye cada uno.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">🚀</div>
+        <h3>Perfil profesional</h3>
+        <p>Tu propio perfil con banner, bio y feed de contenido. Comparte tu link y empieza a recibir suscriptores.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="creators-section">
+    <div style="max-width:1100px;margin:0 auto">
+      <div class="section-label">Creadores destacados</div>
+      <div class="section-title">Algunos de nuestros talentos</div>
+      <div class="creators-grid">
+        <div class="creator-card" onclick="showCreatorProfile()">
+          <div class="creator-avatar">A</div>
+          <h4>Ana Molina</h4>
+          <p>Fotografía & Lifestyle</p>
+          <span class="tag">1.2K patrocinadores</span>
+        </div>
+        <div class="creator-card" onclick="showCreatorProfile()">
+          <div class="creator-avatar" style="background:linear-gradient(135deg,#2a2a2a,#888)">J</div>
+          <h4>Jorge Restrepo</h4>
+          <p>Tech & Tutoriales</p>
+          <span class="tag">3.4K patrocinadores</span>
+        </div>
+        <div class="creator-card" onclick="showCreatorProfile()">
+          <div class="creator-avatar" style="background:linear-gradient(135deg,#1a1a1a,#555)">M</div>
+          <h4>María Valentina</h4>
+          <p>Arte & Ilustración</p>
+          <span class="tag">890 patrocinadores</span>
+        </div>
+        <div class="creator-card" onclick="showCreatorProfile()">
+          <div class="creator-avatar" style="background:linear-gradient(135deg,#333,#777)">C</div>
+          <h4>Carlos Vega</h4>
+          <p>Música & Producción</p>
+          <span class="tag">2.1K patrocinadores</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="cta-section">
+    <h2>Empieza hoy mismo.<br>Es gratis.</h2>
+    <p>Crea tu perfil en minutos y comienza a monetizar tu contenido con tu comunidad.</p>
+    <button class="btn btn-primary" style="font-size:1rem;padding:16px 36px;" onclick="showAuth('register')">Crear mi cuenta gratis →</button>
+  </section>
+
+  <footer>
+    <strong>BizPonzor</strong> — La plataforma de creadores · © 2025 · Todos los derechos reservados
+  </footer>
+</div>
+
+
+<!-- ╔══════════════════════════════╗ -->
+<!-- ║         AUTH PAGE            ║ -->
+<!-- ╚══════════════════════════════╝ -->
+<div id="auth" class="page">
+  <div class="auth-container">
+    <div class="auth-card">
+      <div class="auth-logo">BizPonzor</div>
+      <div class="auth-subtitle" id="auth-subtitle">Bienvenido de nuevo</div>
+
+      <div class="auth-tabs">
+        <div class="auth-tab active" id="tab-login" onclick="switchAuthTab('login')">Iniciar sesión</div>
+        <div class="auth-tab" id="tab-register" onclick="switchAuthTab('register')">Registrarse</div>
+      </div>
+
+      <!-- LOGIN FORM -->
+      <div id="login-form">
+        <div class="form-group">
+          <label class="form-label">Correo electrónico</label>
+          <input type="email" class="form-input" placeholder="tu@email.com">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Contraseña</label>
+          <input type="password" class="form-input" placeholder="••••••••">
+        </div>
+        <button class="btn btn-primary btn-full" onclick="simulateLogin()" style="margin-top:8px;">Entrar a BizPonzor</button>
+        <div style="text-align:center;margin-top:14px;">
+          <a style="font-size:0.8rem;color:var(--gray-500);cursor:pointer;">¿Olvidaste tu contraseña?</a>
+        </div>
+      </div>
+
+      <!-- REGISTER FORM -->
+      <div id="register-form" style="display:none;">
+        <div class="role-selector" id="role-selector">
+          <div class="role-option selected" id="role-creator" onclick="selectRole('creator')">
+            <div class="role-icon">🎬</div>
+            <div class="role-name">Creador</div>
+            <div class="role-desc">Sube contenido y recibe suscripciones</div>
+          </div>
+          <div class="role-option" id="role-fan" onclick="selectRole('fan')">
+            <div class="role-icon">⭐</div>
+            <div class="role-name">Fan</div>
+            <div class="role-desc">Apoya y accede a contenido exclusivo</div>
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Nombre completo</label>
+          <input type="text" class="form-input" placeholder="Tu nombre" id="reg-name">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Correo electrónico</label>
+          <input type="email" class="form-input" placeholder="tu@email.com">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Contraseña</label>
+          <input type="password" class="form-input" placeholder="Mínimo 8 caracteres">
+        </div>
+        <button class="btn btn-primary btn-full" onclick="simulateRegister()" style="margin-top:8px;">Crear mi cuenta</button>
+      </div>
+
+      <div class="auth-switch">
+        <span id="auth-switch-text">¿No tienes cuenta? <a onclick="switchAuthTab('register')">Regístrate gratis</a></span>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- ╔══════════════════════════════╗ -->
+<!-- ║     CREATOR DASHBOARD        ║ -->
+<!-- ╚══════════════════════════════╝ -->
+<div id="creator-dashboard" class="page">
+  <div class="dashboard-layout">
+    <!-- Sidebar -->
+    <div class="sidebar">
+      <div style="display:flex;align-items:center;gap:10px;padding:8px 12px;margin-bottom:24px;">
+        <div style="width:38px;height:38px;background:var(--black);border-radius:50%;display:flex;align-items:center;justify-content:center;color:white;font-weight:800;font-size:0.9rem;">A</div>
+        <div>
+          <div style="font-size:0.85rem;font-weight:700;">Ana Molina</div>
+          <div style="font-size:0.72rem;color:var(--gray-500);">@anamolina</div>
+        </div>
+      </div>
+      <div class="sidebar-section">
+        <div class="sidebar-label">Principal</div>
+        <div class="sidebar-item active" onclick="setDashTab('overview', this)"><span class="icon">📊</span> Resumen</div>
+        <div class="sidebar-item" onclick="setDashTab('content', this)"><span class="icon">🎬</span> Mi Contenido</div>
+        <div class="sidebar-item" onclick="setDashTab('upload', this)"><span class="icon">⬆️</span> Subir</div>
+        <div class="sidebar-item" onclick="setDashTab('plans', this)"><span class="icon">💳</span> Mis Planes</div>
+      </div>
+      <div class="sidebar-section">
+        <div class="sidebar-label">Cuenta</div>
+        <div class="sidebar-item" onclick="setDashTab('profile', this)"><span class="icon">👤</span> Mi Perfil</div>
+        <div class="sidebar-item" onclick="setDashTab('earnings', this)"><span class="icon">💰</span> Ganancias</div>
+        <div class="sidebar-item" onclick="showPage('landing')"><span class="icon">🚪</span> Salir</div>
+      </div>
+    </div>
+
+    <!-- Main -->
+    <div class="main-content" id="creator-main">
+
+      <!-- OVERVIEW TAB -->
+      <div id="dash-overview">
+        <div class="page-header">
+          <h2>Bienvenida, Ana 👋</h2>
+          <p>Aquí tienes un resumen de tu actividad reciente</p>
+        </div>
+        <div class="stats-row">
+          <div class="stat-card">
+            <div class="s-label">Suscriptores</div>
+            <div class="s-value">1,248</div>
+            <div class="s-change">↑ +34 este mes</div>
+          </div>
+          <div class="stat-card">
+            <div class="s-label">Ingresos del mes</div>
+            <div class="s-value">$4,920</div>
+            <div class="s-change">↑ +12% vs. mes anterior</div>
+          </div>
+          <div class="stat-card">
+            <div class="s-label">Contenidos</div>
+            <div class="s-value">38</div>
+            <div class="s-change">↑ +5 esta semana</div>
+          </div>
+          <div class="stat-card">
+            <div class="s-label">Tasa retención</div>
+            <div class="s-value">94%</div>
+            <div class="s-change">↑ Excelente</div>
+          </div>
+        </div>
+        <div style="background:var(--white);border:1px solid var(--gray-200);border-radius:var(--radius);padding:28px;margin-bottom:24px;">
+          <h3 style="font-size:1rem;font-weight:800;margin-bottom:20px;">Últimos contenidos publicados</h3>
+          <div class="content-grid">
+            <div class="content-item">
+              <div class="content-thumb" style="background:#f0f0f0">📸<span class="content-type-badge">FOTO</span></div>
+              <div class="content-info"><h4>Sesión de fotos Abril</h4><p>Hace 2 días</p><span class="exclusive-badge">Exclusivo</span></div>
+            </div>
+            <div class="content-item">
+              <div class="content-thumb" style="background:#e8e8e8">🎬<span class="content-type-badge">VIDEO</span></div>
+              <div class="content-info"><h4>BTS: Shooting en la ciudad</h4><p>Hace 5 días</p><span class="exclusive-badge">Exclusivo</span></div>
+            </div>
+            <div class="content-item">
+              <div class="content-thumb" style="background:#f5f5f5">📸<span class="content-type-badge">FOTO</span></div>
+              <div class="content-info"><h4>Portfolio Marzo 2025</h4><p>Hace 1 semana</p></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- CONTENT TAB -->
+      <div id="dash-content" style="display:none;">
+        <div class="page-header">
+          <h2>Mi Contenido</h2>
+          <p>Gestiona tus fotos y videos publicados</p>
+        </div>
+        <div style="display:flex;gap:12px;margin-bottom:24px;flex-wrap:wrap;">
+          <span class="tag-pill">🖼 Todos (38)</span>
+          <span class="tag-pill">📸 Fotos (24)</span>
+          <span class="tag-pill">🎬 Videos (14)</span>
+          <span class="tag-pill green">🔓 Públicos (12)</span>
+          <span class="tag-pill yellow">🔒 Exclusivos (26)</span>
+        </div>
+        <div class="content-grid">
+          <div class="content-item"><div class="content-thumb" style="background:#f0f0f0">📸<span class="content-type-badge">FOTO</span></div><div class="content-info"><h4>Sesión Abril 2025</h4><p>hace 2 días · 248 vistas</p><span class="exclusive-badge">Exclusivo</span></div></div>
+          <div class="content-item"><div class="content-thumb" style="background:#e8e8e8">🎬<span class="content-type-badge">VIDEO</span></div><div class="content-info"><h4>BTS Shooting ciudad</h4><p>hace 5 días · 410 vistas</p><span class="exclusive-badge">Exclusivo</span></div></div>
+          <div class="content-item"><div class="content-thumb" style="background:#f5f5f5">📸<span class="content-type-badge">FOTO</span></div><div class="content-info"><h4>Portfolio Marzo</h4><p>hace 1 sem · 1.2K vistas</p></div></div>
+          <div class="content-item"><div class="content-thumb" style="background:#ebebeb">🎬<span class="content-type-badge">VIDEO</span></div><div class="content-info"><h4>Tutorial de edición</h4><p>hace 2 sem · 890 vistas</p><span class="exclusive-badge">Exclusivo</span></div></div>
+          <div class="content-item"><div class="content-thumb" style="background:#f2f2f2">📸<span class="content-type-badge">FOTO</span></div><div class="content-info"><h4>Street Photography</h4><p>hace 3 sem · 2.1K vistas</p></div></div>
+          <div class="content-item"><div class="content-thumb" style="background:#ededed">🎬<span class="content-type-badge">VIDEO</span></div><div class="content-info"><h4>Vlog: Un día conmigo</h4><p>hace 1 mes · 3.4K vistas</p><span class="exclusive-badge">Exclusivo</span></div></div>
+        </div>
+      </div>
+
+      <!-- UPLOAD TAB -->
+      <div id="dash-upload" style="display:none;">
+        <div class="page-header">
+          <h2>Subir Contenido</h2>
+          <p>Sube fotos o videos directamente desde tu ordenador</p>
+        </div>
+        <div class="upload-area" onclick="simulateUpload()">
+          <div class="upload-icon">☁️</div>
+          <h3>Arrastra archivos aquí o haz clic para seleccionar</h3>
+          <p>Soporta JPG, PNG, GIF, MP4, MOV, AVI · Máximo 4GB por archivo</p>
+          <input type="file" id="file-upload" multiple accept="image/*,video/*" style="display:none;" onchange="handleFileUpload(this)">
+        </div>
+        <div id="upload-preview" style="display:none;background:var(--white);border:1px solid var(--gray-200);border-radius:var(--radius);padding:24px;margin-bottom:24px;">
+          <div style="display:flex;align-items:center;gap:12px;margin-bottom:16px;">
+            <span style="font-size:1.5rem;">📁</span>
+            <div>
+              <div style="font-size:0.9rem;font-weight:700;" id="upload-filename">archivo.jpg</div>
+              <div style="font-size:0.75rem;color:var(--gray-500);">Listo para publicar</div>
+            </div>
+            <span class="tag-pill green" style="margin-left:auto;">✓ Cargado</span>
+          </div>
+        </div>
+        <div style="background:var(--white);border:1px solid var(--gray-200);border-radius:var(--radius);padding:28px;">
+          <h3 style="font-size:1rem;font-weight:700;margin-bottom:20px;">Detalles de publicación</h3>
+          <div class="form-group">
+            <label class="form-label">Título del contenido</label>
+            <input type="text" class="form-input" placeholder="Dale un nombre a tu contenido">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Descripción (opcional)</label>
+            <textarea class="form-input" rows="3" placeholder="Describe este contenido..."></textarea>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Acceso</label>
+            <select class="form-input">
+              <option value="exclusive">🔒 Exclusivo — solo para suscriptores</option>
+              <option value="public">🔓 Público — visible para todos</option>
+            </select>
+          </div>
+          <button class="btn btn-primary" onclick="showNotif('¡Contenido publicado exitosamente! 🎉')">Publicar ahora</button>
+        </div>
+      </div>
+
+      <!-- PLANS TAB -->
+      <div id="dash-plans" style="display:none;">
+        <div class="page-header">
+          <h2>Mis Planes de Suscripción</h2>
+          <p>Configura cuánto pagan tus patrocinadores y qué reciben</p>
+        </div>
+        <div class="mp-logo">
+          <div class="mp-logo-icon">MP</div>
+          <div class="mp-logo-text">
+            <strong>MercadoPago conectado</strong>
+            <span>Los pagos se procesan automáticamente · Cuenta: ana@email.com</span>
+          </div>
+          <span class="tag-pill green" style="margin-left:auto;">✓ Activo</span>
+        </div>
+        <div class="plans-grid">
+          <div class="plan-card">
+            <div class="plan-name">⭐ Básico</div>
+            <div class="plan-price">$5</div>
+            <div class="plan-price-sub">USD / mes</div>
+            <ul class="plan-features">
+              <li class="plan-feature">Acceso al feed de fotos</li>
+              <li class="plan-feature">Contenido exclusivo básico</li>
+              <li class="plan-feature">Newsletter mensual</li>
+            </ul>
+            <button class="btn btn-outline btn-sm btn-full">Editar plan</button>
+          </div>
+          <div class="plan-card featured">
+            <div class="plan-badge">✦ Popular</div>
+            <div class="plan-name">💎 Premium</div>
+            <div class="plan-price">$12</div>
+            <div class="plan-price-sub">USD / mes</div>
+            <ul class="plan-features">
+              <li class="plan-feature">Todo lo del plan Básico</li>
+              <li class="plan-feature">Acceso a todos los videos</li>
+              <li class="plan-feature">Contenido BTS exclusivo</li>
+              <li class="plan-feature">Descarga de archivos</li>
+            </ul>
+            <button class="btn btn-outline btn-sm btn-full" style="border-color:rgba(255,255,255,0.3);color:white;">Editar plan</button>
+          </div>
+          <div class="plan-card">
+            <div class="plan-name">👑 VIP</div>
+            <div class="plan-price">$25</div>
+            <div class="plan-price-sub">USD / mes</div>
+            <ul class="plan-features">
+              <li class="plan-feature">Todo lo del plan Premium</li>
+              <li class="plan-feature">Menciones en stories</li>
+              <li class="plan-feature">Acceso anticipado</li>
+              <li class="plan-feature">Contenido personalizado</li>
+            </ul>
+            <button class="btn btn-outline btn-sm btn-full">Editar plan</button>
+          </div>
+        </div>
+        <button class="btn btn-outline" style="margin-top:20px;" onclick="showNotif('✨ Funcionalidad disponible en la versión completa')">+ Crear nuevo plan</button>
+      </div>
+
+      <!-- PROFILE TAB -->
+      <div id="dash-profile" style="display:none;">
+        <div class="page-header"><h2>Mi Perfil</h2><p>Así te ven tus patrocinadores</p></div>
+        <div style="background:var(--white);border:1px solid var(--gray-200);border-radius:var(--radius);padding:28px;max-width:600px;">
+          <div class="form-group">
+            <label class="form-label">Nombre de usuario</label>
+            <input type="text" class="form-input" value="Ana Molina">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Handle (URL de tu perfil)</label>
+            <input type="text" class="form-input" value="@anamolina">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Categoría</label>
+            <select class="form-input"><option>Fotografía & Lifestyle</option><option>Música</option><option>Arte & Diseño</option><option>Tech & Tutoriales</option><option>Gaming</option></select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Biografía</label>
+            <textarea class="form-input" rows="4">Fotógrafa apasionada por capturar momentos únicos. Comparto mi proceso creativo y contenido exclusivo con mi comunidad.</textarea>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Foto de perfil</label>
+            <input type="file" class="form-input" accept="image/*">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Banner (imagen de portada)</label>
+            <input type="file" class="form-input" accept="image/*">
+          </div>
+          <div style="display:flex;gap:12px;margin-top:8px;">
+            <button class="btn btn-primary" onclick="showNotif('✅ Perfil guardado correctamente')">Guardar cambios</button>
+            <button class="btn btn-outline" onclick="showCreatorProfile()">Ver mi perfil público</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- EARNINGS TAB -->
+      <div id="dash-earnings" style="display:none;">
+        <div class="page-header"><h2>Mis Ganancias</h2><p>Historial de pagos y transacciones</p></div>
+        <div class="stats-row">
+          <div class="stat-card"><div class="s-label">Total acumulado</div><div class="s-value">$24,600</div><div class="s-change">↑ Histórico</div></div>
+          <div class="stat-card"><div class="s-label">Este mes</div><div class="s-value">$4,920</div><div class="s-change">↑ +12% vs. anterior</div></div>
+          <div class="stat-card"><div class="s-label">Próximo pago</div><div class="s-value">$4,920</div><div class="s-change">15 de Mayo 2025</div></div>
+        </div>
+        <div style="background:var(--white);border:1px solid var(--gray-200);border-radius:var(--radius);overflow:hidden;">
+          <div style="padding:20px 24px;border-bottom:1px solid var(--gray-200);">
+            <h3 style="font-size:1rem;font-weight:800;">Últimas transacciones</h3>
+          </div>
+          <table style="width:100%;border-collapse:collapse;">
+            <thead><tr style="background:var(--gray-100);">
+              <th style="padding:12px 24px;text-align:left;font-size:0.75rem;color:var(--gray-500);font-weight:700;">FAN</th>
+              <th style="padding:12px 24px;text-align:left;font-size:0.75rem;color:var(--gray-500);font-weight:700;">PLAN</th>
+              <th style="padding:12px 24px;text-align:left;font-size:0.75rem;color:var(--gray-500);font-weight:700;">FECHA</th>
+              <th style="padding:12px 24px;text-align:right;font-size:0.75rem;color:var(--gray-500);font-weight:700;">MONTO</th>
+            </tr></thead>
+            <tbody>
+              <tr style="border-top:1px solid var(--gray-200);">
+                <td style="padding:14px 24px;font-size:0.875rem;font-weight:600;">Luis García</td>
+                <td style="padding:14px 24px;"><span class="tag-pill">Premium</span></td>
+                <td style="padding:14px 24px;font-size:0.82rem;color:var(--gray-500);">4 Mayo 2025</td>
+                <td style="padding:14px 24px;text-align:right;font-weight:700;">$12.00</td>
+              </tr>
+              <tr style="border-top:1px solid var(--gray-200);">
+                <td style="padding:14px 24px;font-size:0.875rem;font-weight:600;">Sara López</td>
+                <td style="padding:14px 24px;"><span class="tag-pill">VIP</span></td>
+                <td style="padding:14px 24px;font-size:0.82rem;color:var(--gray-500);">3 Mayo 2025</td>
+                <td style="padding:14px 24px;text-align:right;font-weight:700;">$25.00</td>
+              </tr>
+              <tr style="border-top:1px solid var(--gray-200);">
+                <td style="padding:14px 24px;font-size:0.875rem;font-weight:600;">Pedro M.</td>
+                <td style="padding:14px 24px;"><span class="tag-pill">Básico</span></td>
+                <td style="padding:14px 24px;font-size:0.82rem;color:var(--gray-500);">2 Mayo 2025</td>
+                <td style="padding:14px 24px;text-align:right;font-weight:700;">$5.00</td>
+              </tr>
+              <tr style="border-top:1px solid var(--gray-200);">
+                <td style="padding:14px 24px;font-size:0.875rem;font-weight:600;">Daniela R.</td>
+                <td style="padding:14px 24px;"><span class="tag-pill">Premium</span></td>
+                <td style="padding:14px 24px;font-size:0.82rem;color:var(--gray-500);">1 Mayo 2025</td>
+                <td style="padding:14px 24px;text-align:right;font-weight:700;">$12.00</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+
+<!-- ╔══════════════════════════════╗ -->
+<!-- ║        FAN DASHBOARD         ║ -->
+<!-- ╚══════════════════════════════╝ -->
+<div id="fan-dashboard" class="page">
+  <div class="dashboard-layout">
+    <div class="sidebar">
+      <div style="display:flex;align-items:center;gap:10px;padding:8px 12px;margin-bottom:24px;">
+        <div style="width:38px;height:38px;background:var(--gray-800);border-radius:50%;display:flex;align-items:center;justify-content:center;color:white;font-weight:800;font-size:0.9rem;">L</div>
+        <div>
+          <div style="font-size:0.85rem;font-weight:700;">Luis García</div>
+          <div style="font-size:0.72rem;color:var(--gray-500);">Fan</div>
+        </div>
+      </div>
+      <div class="sidebar-section">
+        <div class="sidebar-label">Explorar</div>
+        <div class="sidebar-item active" onclick="setFanTab('feed', this)"><span class="icon">🏠</span> Feed</div>
+        <div class="sidebar-item" onclick="setFanTab('subscriptions', this)"><span class="icon">💳</span> Mis suscripciones</div>
+        <div class="sidebar-item" onclick="setFanTab('discover', this)"><span class="icon">🔍</span> Descubrir creadores</div>
+      </div>
+      <div class="sidebar-section">
+        <div class="sidebar-label">Cuenta</div>
+        <div class="sidebar-item" onclick="showPage('landing')"><span class="icon">🚪</span> Salir</div>
+      </div>
+    </div>
+    <div class="main-content" id="fan-main">
+
+      <!-- FEED TAB -->
+      <div id="fan-feed">
+        <div class="page-header"><h2>Tu Feed</h2><p>Contenido de los creadores que apoyas</p></div>
+        <div class="content-grid">
+          <div class="content-item"><div class="content-thumb" style="background:#f0f0f0">📸<span class="content-type-badge">FOTO</span></div><div class="content-info"><h4>Sesión Abril 2025</h4><p>Ana Molina · hace 2 días</p><span class="exclusive-badge">Exclusivo</span></div></div>
+          <div class="content-item"><div class="content-thumb" style="background:#e8e8e8">🎬<span class="content-type-badge">VIDEO</span></div><div class="content-info"><h4>BTS Shooting ciudad</h4><p>Ana Molina · hace 5 días</p><span class="exclusive-badge">Exclusivo</span></div></div>
+          <div class="content-item">
+            <div class="content-thumb" style="background:#f5f5f5">
+              🎬<span class="content-type-badge">VIDEO</span>
+              <div class="lock-overlay">🔒</div>
+            </div>
+            <div class="content-info"><h4>Contenido VIP — Suscríbete</h4><p>Ana Molina · hace 3 días</p></div>
+          </div>
+          <div class="content-item"><div class="content-thumb" style="background:#ebebeb">📸<span class="content-type-badge">FOTO</span></div><div class="content-info"><h4>Tutorial de edición</h4><p>Carlos Vega · hace 2 sem</p><span class="exclusive-badge">Exclusivo</span></div></div>
+          <div class="content-item">
+            <div class="content-thumb" style="background:#f2f2f2">
+              📸<span class="content-type-badge">FOTO</span>
+              <div class="lock-overlay">🔒</div>
+            </div>
+            <div class="content-info"><h4>Solo para premium</h4><p>Carlos Vega · hace 1 mes</p></div>
+          </div>
+          <div class="content-item"><div class="content-thumb" style="background:#ededed">🎬<span class="content-type-badge">VIDEO</span></div><div class="content-info"><h4>Street Photography</h4><p>Ana Molina · hace 3 sem</p></div></div>
+        </div>
+      </div>
+
+      <!-- SUBSCRIPTIONS TAB -->
+      <div id="fan-subscriptions" style="display:none;">
+        <div class="page-header"><h2>Mis Suscripciones</h2><p>Creadores que actualmente apoyas</p></div>
+        <div style="display:flex;flex-direction:column;gap:16px;max-width:600px;">
+          <div style="background:var(--white);border:1px solid var(--gray-200);border-radius:var(--radius);padding:20px;display:flex;align-items:center;gap:16px;">
+            <div style="width:52px;height:52px;background:linear-gradient(135deg,#1a1a1a,#666);border-radius:50%;display:flex;align-items:center;justify-content:center;color:white;font-weight:800;font-size:1.1rem;flex-shrink:0;">A</div>
+            <div style="flex:1;">
+              <div style="font-weight:700;margin-bottom:4px;">Ana Molina</div>
+              <div style="font-size:0.8rem;color:var(--gray-500);">Plan Premium · $12/mes</div>
+              <div style="font-size:0.75rem;color:var(--gray-400);margin-top:2px;">Renovación: 15 Mayo 2025</div>
+            </div>
+            <span class="tag-pill green">✓ Activa</span>
+          </div>
+          <div style="background:var(--white);border:1px solid var(--gray-200);border-radius:var(--radius);padding:20px;display:flex;align-items:center;gap:16px;">
+            <div style="width:52px;height:52px;background:linear-gradient(135deg,#333,#777);border-radius:50%;display:flex;align-items:center;justify-content:center;color:white;font-weight:800;font-size:1.1rem;flex-shrink:0;">C</div>
+            <div style="flex:1;">
+              <div style="font-weight:700;margin-bottom:4px;">Carlos Vega</div>
+              <div style="font-size:0.8rem;color:var(--gray-500);">Plan Básico · $5/mes</div>
+              <div style="font-size:0.75rem;color:var(--gray-400);margin-top:2px;">Renovación: 20 Mayo 2025</div>
+            </div>
+            <span class="tag-pill green">✓ Activa</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- DISCOVER TAB -->
+      <div id="fan-discover" style="display:none;">
+        <div class="page-header"><h2>Descubrir Creadores</h2><p>Encuentra nuevos creadores para apoyar</p></div>
+        <div class="creators-grid" style="max-width:100%;">
+          <div class="creator-card" style="background:var(--white);border-color:var(--gray-200);" onclick="showCreatorProfile()">
+            <div class="creator-avatar" style="background:linear-gradient(135deg,#1a1a1a,#555);color:white;">J</div>
+            <h4 style="color:var(--black);">Jorge Restrepo</h4>
+            <p style="color:var(--gray-500);">Tech & Tutoriales</p>
+            <span class="tag-pill" style="margin-bottom:12px;">3.4K patrocinadores</span>
+            <button class="btn btn-primary btn-sm btn-full" onclick="event.stopPropagation();openModal()">Suscribirme</button>
+          </div>
+          <div class="creator-card" style="background:var(--white);border-color:var(--gray-200);" onclick="showCreatorProfile()">
+            <div class="creator-avatar" style="background:linear-gradient(135deg,#2a2a2a,#888);color:white;">M</div>
+            <h4 style="color:var(--black);">María Valentina</h4>
+            <p style="color:var(--gray-500);">Arte & Ilustración</p>
+            <span class="tag-pill" style="margin-bottom:12px;">890 patrocinadores</span>
+            <button class="btn btn-primary btn-sm btn-full" onclick="event.stopPropagation();openModal()">Suscribirme</button>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+
+<!-- ╔══════════════════════════════╗ -->
+<!-- ║      CREATOR PROFILE         ║ -->
+<!-- ╚══════════════════════════════╝ -->
+<div id="creator-profile" class="page">
+  <div class="profile-banner"></div>
+  <div class="profile-info">
+    <div class="profile-avatar-wrap">
+      <div class="profile-avatar">A</div>
+    </div>
+    <div class="profile-name">Ana Molina</div>
+    <div class="profile-handle">@anamolina · Fotografía & Lifestyle</div>
+    <div class="profile-bio">Fotógrafa apasionada por capturar momentos únicos. Comparto mi proceso creativo y contenido exclusivo con mi comunidad especial. ✨</div>
+    <div style="display:flex;gap:24px;margin-bottom:32px;flex-wrap:wrap;">
+      <div><strong>1,248</strong> <span style="color:var(--gray-500);font-size:0.875rem;">patrocinadores</span></div>
+      <div><strong>38</strong> <span style="color:var(--gray-500);font-size:0.875rem;">publicaciones</span></div>
+    </div>
+  </div>
+  <div class="profile-body">
+    <div class="profile-feed">
+      <h3>Publicaciones recientes</h3>
+      <div class="content-grid">
+        <div class="content-item"><div class="content-thumb" style="background:#f0f0f0">📸<span class="content-type-badge">FOTO</span></div><div class="content-info"><h4>Sesión Abril 2025</h4><p>hace 2 días</p><span class="exclusive-badge">Exclusivo</span></div></div>
+        <div class="content-item">
+          <div class="content-thumb" style="background:#e8e8e8">
+            🎬<span class="content-type-badge">VIDEO</span>
+            <div class="lock-overlay">🔒</div>
+          </div>
+          <div class="content-info"><h4>BTS Shooting ciudad</h4><p>Solo para suscriptores</p></div>
+        </div>
+        <div class="content-item"><div class="content-thumb" style="background:#f5f5f5">📸<span class="content-type-badge">FOTO</span></div><div class="content-info"><h4>Portfolio Marzo</h4><p>hace 1 semana</p></div></div>
+        <div class="content-item">
+          <div class="content-thumb" style="background:#ebebeb">
+            🎬<span class="content-type-badge">VIDEO</span>
+            <div class="lock-overlay">🔒</div>
+          </div>
+          <div class="content-info"><h4>Tutorial de edición</h4><p>Solo para suscriptores</p></div>
+        </div>
+      </div>
+    </div>
+    <div>
+      <div class="profile-sidebar-card">
+        <h4>Hazte patrocinador 💎</h4>
+        <p style="font-size:0.82rem;color:var(--gray-600);margin-bottom:20px;">Accede a contenido exclusivo y apoya directamente a Ana</p>
+        <div style="display:flex;flex-direction:column;gap:10px;">
+          <div style="border:1.5px solid var(--gray-200);border-radius:var(--radius-sm);padding:14px;cursor:pointer;transition:all 0.15s;" onmouseenter="this.style.borderColor='#000'" onmouseleave="this.style.borderColor='var(--gray-200)'">
+            <div style="font-weight:700;font-size:0.9rem;">⭐ Básico — $5/mes</div>
+            <div style="font-size:0.75rem;color:var(--gray-500);margin-top:4px;">Fotos exclusivas</div>
+          </div>
+          <div style="border:2px solid var(--black);border-radius:var(--radius-sm);padding:14px;cursor:pointer;background:var(--black);color:white;">
+            <div style="font-weight:700;font-size:0.9rem;">💎 Premium — $12/mes</div>
+            <div style="font-size:0.75rem;color:var(--gray-400);margin-top:4px;">Fotos + Videos exclusivos</div>
+          </div>
+          <div style="border:1.5px solid var(--gray-200);border-radius:var(--radius-sm);padding:14px;cursor:pointer;transition:all 0.15s;" onmouseenter="this.style.borderColor='#000'" onmouseleave="this.style.borderColor='var(--gray-200)'">
+            <div style="font-weight:700;font-size:0.9rem;">👑 VIP — $25/mes</div>
+            <div style="font-size:0.75rem;color:var(--gray-500);margin-top:4px;">Todo + Contenido personalizado</div>
+          </div>
+        </div>
+        <button class="btn btn-primary btn-full" style="margin-top:16px;" onclick="openModal()">Suscribirme con MercadoPago</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- SUBSCRIPTION MODAL -->
+<div class="modal-overlay" id="sub-modal">
+  <div class="modal">
+    <h3>Confirmar suscripción 💎</h3>
+    <p>Estás a punto de suscribirte al plan <strong>Premium</strong> de Ana Molina por <strong>$12 USD/mes</strong>. Puedes cancelar en cualquier momento.</p>
+    <div class="mp-logo">
+      <div class="mp-logo-icon">MP</div>
+      <div class="mp-logo-text">
+        <strong>Pagar con MercadoPago</strong>
+        <span>Seguro · Rápido · Acceso inmediato al activar</span>
+      </div>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Número de tarjeta</label>
+      <input type="text" class="form-input" placeholder="1234 5678 9012 3456" maxlength="19">
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+      <div class="form-group">
+        <label class="form-label">Vencimiento</label>
+        <input type="text" class="form-input" placeholder="MM/AA">
+      </div>
+      <div class="form-group">
+        <label class="form-label">CVV</label>
+        <input type="text" class="form-input" placeholder="123" maxlength="4">
+      </div>
+    </div>
+    <div class="modal-actions">
+      <button class="btn btn-outline" onclick="closeModal()">Cancelar</button>
+      <button class="btn btn-primary" style="flex:1;" onclick="simulatePayment()">Pagar $12/mes →</button>
+    </div>
+  </div>
+</div>
+
+<!-- NOTIFICATION -->
+<div class="notification" id="notif"></div>
+
+<script>
+  let currentRole = 'creator';
+
+  function showPage(page) {
+    document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+    document.getElementById(page).classList.add('active');
+    window.scrollTo(0, 0);
+    updateNavbar(page);
+  }
+
+  function updateNavbar(page) {
+    const actions = document.getElementById('navbar-actions');
+    if (page === 'creator-dashboard') {
+      actions.innerHTML = `<span style="font-size:0.82rem;color:var(--gray-500);">Panel del Creador</span><button class="btn btn-outline btn-sm" onclick="showCreatorProfile()">Ver mi perfil</button>`;
+    } else if (page === 'fan-dashboard') {
+      actions.innerHTML = `<span style="font-size:0.82rem;color:var(--gray-500);">Hola, Luis 👋</span><button class="btn btn-outline btn-sm" onclick="showPage('landing')">Salir</button>`;
+    } else if (page === 'creator-profile') {
+      actions.innerHTML = `<button class="btn btn-ghost" onclick="showPage('landing')">← Volver</button><button class="btn btn-primary btn-sm" onclick="openModal()">Suscribirme</button>`;
+    } else {
+      actions.innerHTML = `<button class="btn btn-ghost" onclick="showAuth('login')">Iniciar sesión</button><button class="btn btn-primary" onclick="showAuth('register')">Comenzar gratis</button>`;
+    }
+  }
+
+  function showAuth(tab) {
+    showPage('auth');
+    switchAuthTab(tab);
+  }
+
+  function switchAuthTab(tab) {
+    document.getElementById('tab-login').classList.toggle('active', tab === 'login');
+    document.getElementById('tab-register').classList.toggle('active', tab === 'register');
+    document.getElementById('login-form').style.display = tab === 'login' ? 'block' : 'none';
+    document.getElementById('register-form').style.display = tab === 'register' ? 'block' : 'none';
+    document.getElementById('auth-subtitle').textContent = tab === 'login' ? 'Bienvenido de nuevo' : 'Crea tu cuenta gratis';
+    document.getElementById('auth-switch-text').innerHTML = tab === 'login'
+      ? '¿No tienes cuenta? <a onclick="switchAuthTab(\'register\')">Regístrate gratis</a>'
+      : '¿Ya tienes cuenta? <a onclick="switchAuthTab(\'login\')">Inicia sesión</a>';
+  }
+
+  function selectRole(role) {
+    currentRole = role;
+    document.getElementById('role-creator').classList.toggle('selected', role === 'creator');
+    document.getElementById('role-fan').classList.toggle('selected', role === 'fan');
+  }
+
+  function simulateLogin() {
+    showNotif('✅ Sesión iniciada correctamente');
+    setTimeout(() => showPage('creator-dashboard'), 800);
+  }
+
+  function simulateRegister() {
+    showNotif('🎉 Cuenta creada exitosamente');
+    setTimeout(() => {
+      if (currentRole === 'creator') showPage('creator-dashboard');
+      else showPage('fan-dashboard');
+    }, 800);
+  }
+
+  function showCreatorProfile() {
+    showPage('creator-profile');
+  }
+
+  function setDashTab(tab, el) {
+    const tabs = ['overview','content','upload','plans','profile','earnings'];
+    tabs.forEach(t => {
+      const el = document.getElementById('dash-' + t);
+      if (el) el.style.display = 'none';
+    });
+    document.getElementById('dash-' + tab).style.display = 'block';
+    document.querySelectorAll('#creator-dashboard .sidebar-item').forEach(i => i.classList.remove('active'));
+    if (el) el.classList.add('active');
+  }
+
+  function setFanTab(tab, el) {
+    ['feed','subscriptions','discover'].forEach(t => {
+      const e = document.getElementById('fan-' + t);
+      if (e) e.style.display = 'none';
+    });
+    document.getElementById('fan-' + tab).style.display = 'block';
+    document.querySelectorAll('#fan-dashboard .sidebar-item').forEach(i => i.classList.remove('active'));
+    if (el) el.classList.add('active');
+  }
+
+  function simulateUpload() {
+    document.getElementById('file-upload').click();
+  }
+
+  function handleFileUpload(input) {
+    if (input.files && input.files.length > 0) {
+      const f = input.files[0];
+      document.getElementById('upload-filename').textContent = f.name;
+      document.getElementById('upload-preview').style.display = 'block';
+      showNotif('📁 Archivo "' + f.name + '" listo para publicar');
+    }
+  }
+
+  function openModal() { document.getElementById('sub-modal').classList.add('open'); }
+  function closeModal() { document.getElementById('sub-modal').classList.remove('open'); }
+
+  function simulatePayment() {
+    closeModal();
+    showNotif('🎉 ¡Suscripción activada! Bienvenido al plan Premium');
+    setTimeout(() => showPage('fan-dashboard'), 1200);
+  }
+
+  function showNotif(msg) {
+    const n = document.getElementById('notif');
+    n.textContent = msg;
+    n.style.display = 'block';
+    setTimeout(() => n.style.display = 'none', 3500);
+  }
+
+  // Close modal on overlay click
+  document.getElementById('sub-modal').addEventListener('click', function(e) {
+    if (e.target === this) closeModal();
+  });
+</script>
+
+<script>
+// ═══════════════════════════════════════════════════════
+//  BIZPONZOR — API CLIENT (conectado al backend real)
+// ═══════════════════════════════════════════════════════
+const API = 'http://localhost:3000/api';
+let TOKEN = localStorage.getItem('bp_token') || null;
+let CURRENT_USER = JSON.parse(localStorage.getItem('bp_user') || 'null');
+let CURRENT_CREATOR_ID = null;
+
+const api = {
+  headers: () => ({ 'Content-Type': 'application/json', ...(TOKEN ? { 'Authorization': 'Bearer ' + TOKEN } : {}) }),
+  get: (url) => fetch(API + url, { headers: api.headers() }).then(r => r.json()),
+  post: (url, body) => fetch(API + url, { method: 'POST', headers: api.headers(), body: JSON.stringify(body) }).then(r => r.json()),
+  put: (url, body) => fetch(API + url, { method: 'PUT', headers: api.headers(), body: JSON.stringify(body) }).then(r => r.json()),
+  del: (url) => fetch(API + url, { method: 'DELETE', headers: api.headers() }).then(r => r.json()),
+  upload: (url, formData) => fetch(API + url, { method: 'POST', headers: { ...(TOKEN ? { 'Authorization': 'Bearer ' + TOKEN } : {}) }, body: formData }).then(r => r.json())
+};
+
+// ─── AUTH ───────────────────────────────────────────────
+async function simulateLogin() {
+  const email = document.querySelector('#login-form input[type=email]').value;
+  const password = document.querySelector('#login-form input[type=password]').value;
+  if (!email || !password) { showNotif('⚠️ Ingresa email y contraseña'); return; }
+  const btn = event.target; btn.textContent = 'Entrando...'; btn.disabled = true;
+  const res = await api.post('/auth/login', { email, password });
+  btn.textContent = 'Entrar a BizPonzor'; btn.disabled = false;
+  if (res.error) { showNotif('❌ ' + res.error); return; }
+  setSession(res);
+}
+
+async function simulateRegister() {
+  const name = document.getElementById('reg-name').value;
+  const email = document.querySelector('#register-form input[type=email]').value;
+  const password = document.querySelector('#register-form input[type=password]').value;
+  if (!name || !email || !password) { showNotif('⚠️ Completa todos los campos'); return; }
+  const btn = event.target; btn.textContent = 'Creando cuenta...'; btn.disabled = true;
+  const res = await api.post('/auth/register', { name, email, password, role: currentRole });
+  btn.textContent = 'Crear mi cuenta'; btn.disabled = false;
+  if (res.error) { showNotif('❌ ' + res.error); return; }
+  setSession(res);
+}
+
+function setSession(res) {
+  TOKEN = res.token;
+  CURRENT_USER = res.user;
+  localStorage.setItem('bp_token', TOKEN);
+  localStorage.setItem('bp_user', JSON.stringify(CURRENT_USER));
+  showNotif('✅ Bienvenido/a, ' + CURRENT_USER.name + '!');
+  setTimeout(() => {
+    if (CURRENT_USER.role === 'creator') loadCreatorDashboard();
+    else loadFanDashboard();
+  }, 600);
+}
+
+function logout() {
+  TOKEN = null; CURRENT_USER = null;
+  localStorage.removeItem('bp_token');
+  localStorage.removeItem('bp_user');
+  showPage('landing');
+  document.getElementById('navbar-actions').innerHTML = `<button class="btn btn-ghost" onclick="showAuth('login')">Iniciar sesión</button><button class="btn btn-primary" onclick="showAuth('register')">Comenzar gratis</button>`;
+}
+
+// ─── CREATOR DASHBOARD ──────────────────────────────────
+async function loadCreatorDashboard() {
+  showPage('creator-dashboard');
+  // Update sidebar name
+  document.querySelector('#creator-dashboard .sidebar > div:first-child div:nth-child(2) div:first-child').textContent = CURRENT_USER.name;
+  document.querySelector('#creator-dashboard .sidebar > div:first-child div:nth-child(2) div:nth-child(2)').textContent = CURRENT_USER.handle || '@' + CURRENT_USER.name.toLowerCase();
+  document.querySelector('#creator-dashboard .sidebar > div:first-child div:first-child').textContent = CURRENT_USER.name[0].toUpperCase();
+  await loadStats();
+  await loadMyContent();
+}
+
+async function loadStats() {
+  const stats = await api.get('/subscriptions/stats');
+  if (stats.error) return;
+  const vals = document.querySelectorAll('#dash-overview .s-value');
+  if (vals[0]) vals[0].textContent = stats.subscribers.toLocaleString();
+  if (vals[1]) vals[1].textContent = '$' + stats.monthly_revenue.toFixed(2);
+  if (vals[2]) vals[2].textContent = stats.content_count;
+}
+
+async function loadMyContent(tab = 'overview') {
+  const content = await api.get('/content/my');
+  if (!content || content.error) return;
+  // Update overview
+  const overviewGrid = document.querySelector('#dash-overview .content-grid');
+  if (overviewGrid) renderContentGrid(overviewGrid, content.slice(0, 6));
+  // Update content tab
+  const contentGrid = document.querySelector('#dash-content .content-grid');
+  if (contentGrid) renderContentGrid(contentGrid, content);
+}
+
+function renderContentGrid(container, items) {
+  if (!items.length) { container.innerHTML = '<div style="padding:40px;color:var(--gray-500);text-align:center;grid-column:1/-1;">No hay contenido aún. ¡Sube tu primer archivo!</div>'; return; }
+  container.innerHTML = items.map(c => `
+    <div class="content-item">
+      <div class="content-thumb" style="background:#f0f0f0">
+        ${c.type === 'video' ? '🎬' : '📸'}
+        <span class="content-type-badge">${c.type === 'video' ? 'VIDEO' : 'FOTO'}</span>
+        ${c.file_url ? `<a href="${c.file_url}" target="_blank" style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;text-decoration:none;">
+          ${c.type === 'video' ? '<span style="background:rgba(0,0,0,0.6);padding:8px 16px;border-radius:999px;color:white;font-size:0.8rem;">▶ Ver</span>' : ''}
+        </a>` : ''}
+      </div>
+      <div class="content-info">
+        <h4>${c.title}</h4>
+        <p>${new Date(c.created_at).toLocaleDateString('es')}</p>
+        ${c.is_exclusive ? '<span class="exclusive-badge">Exclusivo</span>' : ''}
+        <button onclick="deleteContent('${c.id}')" style="background:none;border:none;color:var(--gray-400);cursor:pointer;font-size:0.75rem;margin-top:4px;">🗑 Eliminar</button>
+      </div>
+    </div>`).join('');
+}
+
+async function deleteContent(id) {
+  if (!confirm('¿Eliminar este contenido?')) return;
+  const res = await api.del('/content/' + id);
+  if (res.success) { showNotif('🗑 Contenido eliminado'); await loadMyContent(); }
+}
+
+// UPLOAD REAL
+async function handleFileUpload(input) {
+  if (!input.files || !input.files.length) return;
+  const f = input.files[0];
+  document.getElementById('upload-filename').textContent = f.name;
+  document.getElementById('upload-preview').style.display = 'block';
+  showNotif('📁 Archivo "' + f.name + '" listo. Completa el formulario y presiona Publicar');
+  window._pendingFile = f;
+}
+
+async function publishContent() {
+  if (!window._pendingFile) { showNotif('⚠️ Primero selecciona un archivo'); return; }
+  const title = document.querySelector('#dash-upload input[type=text]').value;
+  const description = document.querySelector('#dash-upload textarea').value;
+  const is_exclusive = document.querySelector('#dash-upload select').value === 'exclusive' ? 'true' : 'false';
+  const formData = new FormData();
+  formData.append('file', window._pendingFile);
+  formData.append('title', title || window._pendingFile.name);
+  formData.append('description', description);
+  formData.append('is_exclusive', is_exclusive);
+  const btn = event.target; btn.textContent = 'Subiendo...'; btn.disabled = true;
+  const res = await api.upload('/content/upload', formData);
+  btn.textContent = 'Publicar ahora'; btn.disabled = false;
+  if (res.error) { showNotif('❌ ' + res.error); return; }
+  showNotif('🎉 ¡Contenido publicado exitosamente!');
+  window._pendingFile = null;
+  document.getElementById('upload-preview').style.display = 'none';
+  await loadMyContent();
+}
+
+// PLANS
+async function loadPlans() {
+  if (!CURRENT_USER) return;
+  const plans = await api.get('/plans/' + CURRENT_USER.id);
+  if (!plans || plans.error) return;
+  const grid = document.querySelector('#dash-plans .plans-grid');
+  if (!grid) return;
+  grid.innerHTML = plans.map((p, i) => `
+    <div class="plan-card ${p.is_featured ? 'featured' : ''}">
+      ${p.is_featured ? '<div class="plan-badge">✦ Popular</div>' : ''}
+      <div class="plan-name">${['⭐','💎','👑'][i] || '✦'} ${p.name}</div>
+      <div class="plan-price">$${p.price}</div>
+      <div class="plan-price-sub">USD / mes</div>
+      <ul class="plan-features">${p.features.map(f => '<li class="plan-feature">' + f + '</li>').join('')}</ul>
+      <button class="btn btn-outline btn-sm btn-full ${p.is_featured ? '' : ''}" style="${p.is_featured ? 'border-color:rgba(255,255,255,0.3);color:white;' : ''}">Editar plan</button>
+    </div>`).join('');
+}
+
+// ─── FAN DASHBOARD ──────────────────────────────────────
+async function loadFanDashboard() {
+  showPage('fan-dashboard');
+  document.querySelector('#fan-dashboard .sidebar > div:first-child div:nth-child(2) div:first-child').textContent = CURRENT_USER.name;
+  document.querySelector('#fan-dashboard .sidebar > div:first-child div:first-child').textContent = CURRENT_USER.name[0].toUpperCase();
+  await loadFanFeed();
+  await loadFanSubscriptions();
+}
+
+async function loadFanFeed() {
+  const subs = await api.get('/subscriptions/my');
+  if (!subs || subs.error || !subs.length) {
+    document.querySelector('#fan-feed .content-grid').innerHTML = '<div style="padding:40px;text-align:center;color:var(--gray-500);grid-column:1/-1;">No tienes suscripciones activas. ¡Descubre creadores!</div>';
+    return;
+  }
+  const allContent = [];
+  for (const sub of subs) {
+    const content = await api.get('/content/feed/' + sub.creator_id);
+    if (Array.isArray(content)) content.forEach(c => allContent.push({ ...c, creator_name: sub.creator_name }));
+  }
+  allContent.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+  renderFanContent(document.querySelector('#fan-feed .content-grid'), allContent);
+}
+
+function renderFanContent(container, items) {
+  if (!items.length) { container.innerHTML = '<div style="padding:40px;text-align:center;color:var(--gray-500);grid-column:1/-1;">No hay contenido aún</div>'; return; }
+  container.innerHTML = items.map(c => `
+    <div class="content-item">
+      <div class="content-thumb" style="background:#f0f0f0">
+        ${c.type === 'video' ? '🎬' : '📸'}
+        <span class="content-type-badge">${c.type === 'video' ? 'VIDEO' : 'FOTO'}</span>
+        ${c.locked ? '<div class="lock-overlay">🔒</div>' : (c.file_url ? `<a href="${c.file_url}" target="_blank" style="position:absolute;inset:0;"></a>` : '')}
+      </div>
+      <div class="content-info">
+        <h4>${c.title}</h4>
+        <p>${c.creator_name ? c.creator_name + ' · ' : ''}${new Date(c.created_at).toLocaleDateString('es')}</p>
+        ${c.is_exclusive ? '<span class="exclusive-badge">Exclusivo</span>' : ''}
+      </div>
+    </div>`).join('');
+}
+
+async function loadFanSubscriptions() {
+  const subs = await api.get('/subscriptions/my');
+  if (!subs || subs.error) return;
+  const container = document.querySelector('#fan-subscriptions > div:last-child');
+  if (!container) return;
+  container.innerHTML = subs.length ? subs.map(s => `
+    <div style="background:var(--white);border:1px solid var(--gray-200);border-radius:var(--radius);padding:20px;display:flex;align-items:center;gap:16px;">
+      <div style="width:52px;height:52px;background:linear-gradient(135deg,#1a1a1a,#666);border-radius:50%;display:flex;align-items:center;justify-content:center;color:white;font-weight:800;font-size:1.1rem;flex-shrink:0;">${s.creator_name[0]}</div>
+      <div style="flex:1;">
+        <div style="font-weight:700;margin-bottom:4px;">${s.creator_name}</div>
+        <div style="font-size:0.8rem;color:var(--gray-500);">Plan ${s.plan_name} · $${s.price}/mes</div>
+        ${s.next_billing ? '<div style="font-size:0.75rem;color:var(--gray-400);margin-top:2px;">Renovación: ' + new Date(s.next_billing).toLocaleDateString('es') + '</div>' : ''}
+      </div>
+      <span class="tag-pill green">✓ Activa</span>
+    </div>`).join('') : '<div style="padding:40px;text-align:center;color:var(--gray-500);">No tienes suscripciones activas</div>';
+}
+
+async function loadDiscoverCreators() {
+  const creators = await api.get('/creators');
+  const container = document.querySelector('#fan-discover .creators-grid');
+  if (!container || !creators) return;
+  container.innerHTML = creators.length ? creators.map(c => `
+    <div class="creator-card" style="background:var(--white);border-color:var(--gray-200);cursor:pointer;" onclick="openCreatorProfile('${c.handle}')">
+      <div class="creator-avatar" style="background:linear-gradient(135deg,#1a1a1a,#666);color:white;">${c.name[0]}</div>
+      <h4 style="color:var(--black);">${c.name}</h4>
+      <p style="color:var(--gray-500);">${c.category || 'Creador de contenido'}</p>
+      <span class="tag-pill" style="margin-bottom:12px;">${c.subscribers} patrocinadores</span>
+      <button class="btn btn-primary btn-sm btn-full" onclick="event.stopPropagation();openCreatorProfile('${c.handle}')">Ver perfil</button>
+    </div>`).join('') : '<div style="grid-column:1/-1;padding:40px;text-align:center;color:var(--gray-500);">No hay creadores registrados aún</div>';
+}
+
+// CREATOR PROFILE (public)
+async function openCreatorProfile(handle) {
+  const creator = await api.get('/creators/' + handle);
+  if (creator.error) { showNotif('❌ Creador no encontrado'); return; }
+  CURRENT_CREATOR_ID = creator.id;
+  // Update profile UI
+  document.querySelector('.profile-name').textContent = creator.name;
+  document.querySelector('.profile-handle').textContent = (creator.handle || '') + ' · ' + (creator.category || 'Creador');
+  document.querySelector('.profile-bio').textContent = creator.bio || 'Bienvenido a mi perfil en BizPonzor';
+  document.querySelectorAll('.profile-info strong')[0].textContent = creator.subscribers;
+  document.querySelectorAll('.profile-info strong')[1].textContent = creator.content_count;
+  document.querySelector('.profile-avatar').textContent = creator.name[0];
+  // Load content
+  const content = await api.get('/content/feed/' + creator.id);
+  const grid = document.querySelector('.profile-feed .content-grid');
+  if (grid && Array.isArray(content)) renderFanContent(grid, content);
+  // Load plans
+  const plans = await api.get('/plans/' + creator.id);
+  const plansContainer = document.querySelector('.profile-sidebar-card > div');
+  if (plansContainer && Array.isArray(plans)) {
+    plansContainer.innerHTML = plans.map((p, i) => `
+      <div style="border:${p.is_featured ? '2px solid var(--black);background:var(--black);color:white' : '1.5px solid var(--gray-200)'};border-radius:var(--radius-sm);padding:14px;cursor:pointer;margin-bottom:10px;" onclick="selectPlan('${p.id}','${creator.id}','${p.name}',${p.price})">
+        <div style="font-weight:700;font-size:0.9rem;">${['⭐','💎','👑'][i] || '✦'} ${p.name} — $${p.price}/mes</div>
+        <div style="font-size:0.75rem;color:${p.is_featured ? 'var(--gray-300)' : 'var(--gray-500)'};margin-top:4px;">${p.features[0] || ''}</div>
+      </div>`).join('');
+  }
+  showCreatorProfile();
+}
+
+let selectedPlan = null;
+function selectPlan(planId, creatorId, planName, price) {
+  selectedPlan = { planId, creatorId, planName, price };
+  document.querySelector('#sub-modal h3').textContent = 'Confirmar suscripción 💎';
+  document.querySelector('#sub-modal > div > p').textContent = 'Plan ' + planName + ' · $' + price + ' USD/mes';
+  openModal();
+}
+
+async function simulatePayment() {
+  if (!CURRENT_USER) { closeModal(); showAuth('login'); return; }
+  if (!selectedPlan) { closeModal(); return; }
+  const btn = event.target; btn.textContent = 'Procesando...'; btn.disabled = true;
+  const res = await api.post('/subscriptions/checkout', { plan_id: selectedPlan.planId, creator_id: selectedPlan.creatorId });
+  if (res.error) { showNotif('❌ ' + res.error); btn.textContent = 'Pagar →'; btn.disabled = false; return; }
+  if (res.checkout_url && !res.demo_mode) {
+    // Redirigir a MercadoPago real
+    window.location.href = res.checkout_url;
+    return;
+  }
+  // Modo demo: activar directamente
+  if (res.sub_id) {
+    const activate = await api.post('/subscriptions/activate/' + res.sub_id, {});
+    if (activate.success) {
+      closeModal();
+      showNotif('🎉 ¡Suscripción activada! Bienvenido/a al plan ' + selectedPlan.planName);
+      btn.textContent = 'Pagar →'; btn.disabled = false;
+      setTimeout(() => loadFanDashboard(), 1000);
+    }
+  }
+}
+
+// Override setDashTab to load data
+const _origSetDashTab = setDashTab;
+function setDashTab(tab, el) {
+  _origSetDashTab(tab, el);
+  if (tab === 'plans') loadPlans();
+  if (tab === 'content') loadMyContent();
+  if (tab === 'earnings') loadEarnings();
+}
+
+const _origSetFanTab = setFanTab;
+function setFanTab(tab, el) {
+  _origSetFanTab(tab, el);
+  if (tab === 'discover') loadDiscoverCreators();
+  if (tab === 'subscriptions') loadFanSubscriptions();
+  if (tab === 'feed') loadFanFeed();
+}
+
+async function loadEarnings() {
+  const stats = await api.get('/subscriptions/stats');
+  const subs = await api.get('/subscriptions/my');
+  if (stats && !stats.error) {
+    const vals = document.querySelectorAll('#dash-earnings .s-value');
+    if (vals[1]) vals[1].textContent = '$' + stats.monthly_revenue.toFixed(2);
+  }
+  if (subs && !subs.error) {
+    const tbody = document.querySelector('#dash-earnings tbody');
+    if (tbody) tbody.innerHTML = subs.map(s => `
+      <tr style="border-top:1px solid var(--gray-200);">
+        <td style="padding:14px 24px;font-size:0.875rem;font-weight:600;">${s.fan_name || s.fan_email}</td>
+        <td style="padding:14px 24px;"><span class="tag-pill">${s.plan_name}</span></td>
+        <td style="padding:14px 24px;font-size:0.82rem;color:var(--gray-500);">${new Date(s.created_at).toLocaleDateString('es')}</td>
+        <td style="padding:14px 24px;text-align:right;font-weight:700;">$${s.price.toFixed(2)}</td>
+      </tr>`).join('') || '<tr><td colspan="4" style="padding:24px;text-align:center;color:var(--gray-500);">No hay suscriptores aún</td></tr>';
+  }
+}
+
+// Override publish button
+document.addEventListener('DOMContentLoaded', () => {
+  // Wire up publish button properly
+  const publishBtn = document.querySelector('#dash-upload .btn-primary');
+  if (publishBtn) publishBtn.setAttribute('onclick', 'publishContent()');
+  // Check if already logged in
+  if (TOKEN && CURRENT_USER) {
+    if (CURRENT_USER.role === 'creator') loadCreatorDashboard();
+    else loadFanDashboard();
+  }
+  // Profile logout
+  const logoutItems = document.querySelectorAll('.sidebar-item');
+  logoutItems.forEach(el => { if (el.textContent.includes('Salir')) el.setAttribute('onclick', 'logout()'); });
+});
+
+// Fix showCreatorProfile to use handler
+const _origShowCreatorProfile = showCreatorProfile;
+function showCreatorProfile() { showPage('creator-profile'); }
+</script>
+</body>
+</html>
