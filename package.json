@@ -3,9 +3,12 @@
   "version": "1.0.0",
   "description": "Plataforma de suscripciones para creadores de contenido",
   "main": "server.js",
-   "license": "MIT",
+  "license": "MIT",
   "scripts": {
     "start": "node server.js",
     "dev": "node server.js"
+  },
+  "dependencies": {
+    "dotenv": "^17.4.1"
   }
 }
