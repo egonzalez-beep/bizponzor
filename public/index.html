@@ -1188,19 +1188,6 @@
     document.getElementById('role-fan').classList.toggle('selected', role === 'fan');
   }
 
-  function simulateLogin() {
-    showNotif('✅ Sesión iniciada correctamente');
-    setTimeout(() => showPage('creator-dashboard'), 800);
-  }
-
-  function simulateRegister() {
-    showNotif('🎉 Cuenta creada exitosamente');
-    setTimeout(() => {
-      if (currentRole === 'creator') showPage('creator-dashboard');
-      else showPage('fan-dashboard');
-    }, 800);
-  }
-
   function showCreatorProfile() {
     showPage('creator-profile');
   }
@@ -1265,7 +1252,7 @@
 // ═══════════════════════════════════════════════════════
 //  BIZPONZOR — API CLIENT (conectado al backend real)
 // ═══════════════════════════════════════════════════════
-const API = 'http://localhost:3000/api';
+const API = '/api';
 let TOKEN = localStorage.getItem('bp_token') || null;
 let CURRENT_USER = JSON.parse(localStorage.getItem('bp_user') || 'null');
 let CURRENT_CREATOR_ID = null;
