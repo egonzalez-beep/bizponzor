@@ -1198,9 +1198,24 @@
       const el = document.getElementById('dash-' + t);
       if (el) el.style.display = 'none';
     });
-    document.getElementById('dash-' + tab).style.display = 'block';
+    const target = document.getElementById('dash-' + tab);
+    if (!target) {
+      console.error('[BizPonzor] dash tab not found:', tab);
+      showNotif('⚠️ No se encontró la pestaña: ' + tab);
+      return;
+    }
+    target.style.display = 'block';
     document.querySelectorAll('#creator-dashboard .sidebar-item').forEach(i => i.classList.remove('active'));
     if (el) el.classList.add('active');
+
+    // Cargar datos cuando aplique (sin romper la UI si falla)
+    try {
+      if (tab === 'plans' && typeof loadPlans === 'function') loadPlans();
+      if (tab === 'content' && typeof loadMyContent === 'function') loadMyContent();
+      if (tab === 'earnings' && typeof loadEarnings === 'function') loadEarnings();
+    } catch (e) {
+      console.error('[BizPonzor] Error loading creator dashboard tab:', tab, e);
+    }
   }
 
   function setFanTab(tab, el) {
@@ -1208,9 +1223,23 @@
       const e = document.getElementById('fan-' + t);
       if (e) e.style.display = 'none';
     });
-    document.getElementById('fan-' + tab).style.display = 'block';
+    const target = document.getElementById('fan-' + tab);
+    if (!target) {
+      console.error('[BizPonzor] fan tab not found:', tab);
+      showNotif('⚠️ No se encontró la pestaña: ' + tab);
+      return;
+    }
+    target.style.display = 'block';
     document.querySelectorAll('#fan-dashboard .sidebar-item').forEach(i => i.classList.remove('active'));
     if (el) el.classList.add('active');
+
+    try {
+      if (tab === 'discover' && typeof loadDiscoverCreators === 'function') loadDiscoverCreators();
+      if (tab === 'subscriptions' && typeof loadFanSubscriptions === 'function') loadFanSubscriptions();
+      if (tab === 'feed' && typeof loadFanFeed === 'function') loadFanFeed();
+    } catch (e) {
+      console.error('[BizPonzor] Error loading fan dashboard tab:', tab, e);
+    }
   }
 
   function simulateUpload() {
@@ -1545,23 +1574,6 @@ async function simulatePayment() {
       setTimeout(() => loadFanDashboard(), 1000);
     }
   }
-}
-
-// Override setDashTab to load data
-const _origSetDashTab = setDashTab;
-function setDashTab(tab, el) {
-  _origSetDashTab(tab, el);
-  if (tab === 'plans') loadPlans();
-  if (tab === 'content') loadMyContent();
-  if (tab === 'earnings') loadEarnings();
-}
-
-const _origSetFanTab = setFanTab;
-function setFanTab(tab, el) {
-  _origSetFanTab(tab, el);
-  if (tab === 'discover') loadDiscoverCreators();
-  if (tab === 'subscriptions') loadFanSubscriptions();
-  if (tab === 'feed') loadFanFeed();
 }
 
 async function loadEarnings() {
