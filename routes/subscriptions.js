@@ -33,33 +33,41 @@ router.post('/checkout', auth, async (req, res) => {
     
     // MercadoPago real
     const client = new MercadoPagoConfig({ accessToken: process.env.MP_ACCESS_TOKEN });
-    const preference = new Preference(client);
+    const preferenceClient = new Preference(client);
 
-    const preferenceData = {
+    const preference = {
       body: {
-        items: [{
-          id: plan_id,
-          title: `BizPonzor - ${plan.name} - ${creator.name}`,
-          quantity: 1,
-          unit_price: 10,
-          currency_id: 'MXN'
-        }],
-        marketplace_fee: Math.round(plan.price * 0.15 * 100) / 100,  // 15% de comisión para la plataforma
-        payer: { email: req.user.email },
+        items: [
+          {
+            id: plan_id,
+            title: `BizPonzor - ${plan.name}`,
+            quantity: 1,
+            unit_price: plan.price,
+            currency_id: 'MXN'
+          }
+        ],
+        payer: {
+          email: req.user.email
+        },
         back_urls: {
-          success: process.env.APP_URL + '/success?sub=' + sub_id,
-          failure: process.env.APP_URL + '/failure',
-          pending: process.env.APP_URL + '/pending'
+          success: `${process.env.APP_URL}/success?sub=${sub_id}`,
+          failure: `${process.env.APP_URL}/failure`,
+          pending: `${process.env.APP_URL}/pending`
         },
         auto_return: 'approved',
-        notification_url: process.env.APP_URL + '/api/webhook/mp',
+        notification_url: `${process.env.APP_URL}/api/webhook/mp`,
         external_reference: sub_id,
-        metadata: { sub_id, fan_id: req.user.id, creator_id, plan_id }
+        metadata: {
+          sub_id: sub_id,
+          fan_id: req.user.id,
+          creator_id: creator_id,
+          plan_id: plan_id
+        }
       }
     };
 
     try {
-      const response = await preference.create(preferenceData);
+      const response = await preferenceClient.create(preference);
       console.log('[MP] Preferencia creada:', response.id);
       res.json({ checkout_url: response.init_point, preference_id: response.id, sub_id });
     } catch (mpError) {
