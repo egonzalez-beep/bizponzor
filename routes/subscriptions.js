@@ -11,10 +11,7 @@ const {
 } = require('../lib/mpSubscription');
 
 const MP_CURRENCY = process.env.MP_CURRENCY_ID || 'MXN';
-const APP_URL =
-  process.env.NODE_ENV === 'production'
-    ? 'https://bizponzor-production.up.railway.app'
-    : 'http://localhost:3000';
+const APP_URL = 'https://bizponzor-production.up.railway.app';
 
 const isValidEmail = (email) => {
   return typeof email === 'string' && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
@@ -74,9 +71,6 @@ router.post('/checkout', auth, async (req, res) => {
       return res.status(500).json({ error: 'Mercado Pago no configurado' });
     }
 
-    console.log('[MP] NODE_ENV:', process.env.NODE_ENV);
-    console.log('[MP] APP_URL final:', APP_URL);
-
     const startDate = new Date();
     const endDate = new Date();
     endDate.setFullYear(endDate.getFullYear() + 2);
@@ -105,7 +99,9 @@ router.post('/checkout', auth, async (req, res) => {
     });
 
     try {
-      console.log('[MP] back_url usada:', `${APP_URL}/success?sub=${sub_id}`);
+      console.log('[MP] APP_URL final:', APP_URL);
+      console.log('[MP] back_url FINAL:', `${APP_URL}/success?sub=${sub_id}`);
+      console.log('[MP] notification_url:', `${APP_URL}/api/webhook/mp`);
       console.log('[MP] Enviando email a MP:', req.user.email);
       const rawMp = await preApprovalClient.create({ body });
       const mpResponse = normalizePreapprovalPayload(rawMp) || rawMp;
