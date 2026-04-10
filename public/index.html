@@ -956,56 +956,59 @@
       <!-- PLANS TAB -->
       <div id="dash-plans" style="display:none;">
         <div class="page-header">
-          <h2>Mis Planes de Suscripción</h2>
-          <p>Configura cuánto pagan tus patrocinadores y qué reciben</p>
+          <h2>Planes de Suscripción</h2>
+          <p>Elige el plan de suscripción para tu comunidad</p>
         </div>
-        <div class="mp-logo">
-          <div class="mp-logo-icon">MP</div>
-          <div class="mp-logo-text">
-            <strong>MercadoPago conectado</strong>
-            <span>Los pagos se procesan automáticamente · Cuenta: ana@email.com</span>
+
+        <div class="plan-card" style="margin-bottom: 24px; border: 2px solid var(--black);">
+          <div class="plan-badge" style="background: var(--black); color: white;">✦ RECOMENDADO</div>
+          <div class="plan-name">🎯 BizPonzor Premium</div>
+          <div class="plan-price" id="plan-price-display">$100</div>
+          <div class="plan-price-sub">MXN / mes</div>
+          <div style="margin: 16px 0;">
+            <label class="form-label">Elige el precio (MXN)</label>
+            <select class="form-input" id="plan-price-select" onchange="var d=document.getElementById('plan-price-display'); if(d) d.textContent='$'+this.value;">
+              <option value="100">$100 MXN/mes</option>
+              <option value="400">$400 MXN/mes</option>
+              <option value="600">$600 MXN/mes</option>
+              <option value="1000">$1000 MXN/mes</option>
+            </select>
           </div>
-          <span class="tag-pill green" style="margin-left:auto;">✓ Activo</span>
+          <ul class="plan-features">
+            <li class="plan-feature">✅ Acceso a contenido exclusivo del creador</li>
+            <li class="plan-feature">✅ Mensajería directa con el creador</li>
+            <li class="plan-feature">✅ Sin comisiones ocultas</li>
+          </ul>
+          <button type="button" class="btn btn-primary btn-full" onclick="updatePlanPrice(event)">Guardar precio</button>
+          <div id="plan-price-message" style="margin-top: 12px; font-size: 0.75rem; color: #22C55E; display: none;">✅ Precio actualizado</div>
         </div>
-        <div class="plans-grid">
-          <div class="plan-card">
-            <div class="plan-name">⭐ Básico</div>
-            <div class="plan-price">$5</div>
-            <div class="plan-price-sub">USD / mes</div>
-            <ul class="plan-features">
-              <li class="plan-feature">Acceso al feed de fotos</li>
-              <li class="plan-feature">Contenido exclusivo básico</li>
-              <li class="plan-feature">Newsletter mensual</li>
-            </ul>
-            <button class="btn btn-outline btn-sm btn-full">Editar plan</button>
-          </div>
-          <div class="plan-card featured">
-            <div class="plan-badge">✦ Popular</div>
-            <div class="plan-name">💎 Premium</div>
-            <div class="plan-price">$12</div>
-            <div class="plan-price-sub">USD / mes</div>
-            <ul class="plan-features">
-              <li class="plan-feature">Todo lo del plan Básico</li>
-              <li class="plan-feature">Acceso a todos los videos</li>
-              <li class="plan-feature">Contenido BTS exclusivo</li>
-              <li class="plan-feature">Descarga de archivos</li>
-            </ul>
-            <button class="btn btn-outline btn-sm btn-full" style="border-color:rgba(255,255,255,0.3);color:white;">Editar plan</button>
-          </div>
-          <div class="plan-card">
-            <div class="plan-name">👑 VIP</div>
-            <div class="plan-price">$25</div>
-            <div class="plan-price-sub">USD / mes</div>
-            <ul class="plan-features">
-              <li class="plan-feature">Todo lo del plan Premium</li>
-              <li class="plan-feature">Menciones en stories</li>
-              <li class="plan-feature">Acceso anticipado</li>
-              <li class="plan-feature">Contenido personalizado</li>
-            </ul>
-            <button class="btn btn-outline btn-sm btn-full">Editar plan</button>
+
+        <div class="plan-card" style="margin-bottom: 24px;">
+          <div class="plan-name">💚 Comunidad Gratuita</div>
+          <div class="plan-price">$0</div>
+          <div class="plan-price-sub">MXN / mes</div>
+          <ul class="plan-features">
+            <li class="plan-feature">✅ Acceso a contenido público</li>
+            <li class="plan-feature">⏳ Puedes cambiar a pago cuando quieras</li>
+            <li class="plan-feature">✅ Ideal para construir audiencia</li>
+          </ul>
+          <button type="button" class="btn btn-outline btn-full" onclick="activateFreePlan()">Activar plan gratuito</button>
+          <div style="font-size: 0.7rem; color: var(--gray-500); margin-top: 12px; text-align: center;">
+            Puedes cambiar a un plan de pago cuando tu comunidad crezca
           </div>
         </div>
-        <button class="btn btn-outline" style="margin-top:20px;" onclick="showNotif('✨ Funcionalidad disponible en la versión completa')">+ Crear nuevo plan</button>
+
+        <div class="plan-card" style="opacity: 0.6; filter: grayscale(0.2);">
+          <div class="plan-name">👑 Black VIP</div>
+          <div class="plan-price">Próximamente</div>
+          <div class="plan-price-sub"></div>
+          <ul class="plan-features">
+            <li class="plan-feature">✨ Videos personalizados</li>
+            <li class="plan-feature">✨ Mensajería prioritaria</li>
+            <li class="plan-feature">✨ Contenido exclusivo semanal</li>
+          </ul>
+          <button type="button" class="btn btn-outline btn-full" disabled style="opacity: 0.5;">Pronto disponible</button>
+        </div>
       </div>
 
       <!-- PROFILE TAB -->
@@ -1448,7 +1451,7 @@
 
     // Cargar datos cuando aplique (sin romper la UI si falla)
     try {
-      if (tab === 'plans' && typeof loadPlans === 'function') loadPlans();
+      if (tab === 'plans' && typeof loadPlanPrice === 'function') loadPlanPrice();
       if (tab === 'content' && typeof loadMyContent === 'function') loadMyContent();
       if (tab === 'earnings' && typeof loadEarnings === 'function') loadEarnings();
       if (tab === 'settings' && typeof loadProfileSettings === 'function') {
@@ -2030,22 +2033,65 @@ async function publishContent(evt) {
   await loadMyContent();
 }
 
-// PLANS
-async function loadPlans() {
+// PLANS (dashboard creador)
+async function loadPlanPrice() {
   if (!CURRENT_USER) return;
-  const plans = await api.get('/plans/' + CURRENT_USER.id);
-  if (!plans || plans.error) return;
-  const grid = document.querySelector('#dash-plans .plans-grid');
-  if (!grid) return;
-  grid.innerHTML = plans.map((p, i) => `
-    <div class="plan-card ${p.is_featured ? 'featured' : ''}">
-      ${p.is_featured ? '<div class="plan-badge">✦ Popular</div>' : ''}
-      <div class="plan-name">${['⭐','💎','👑'][i] || '✦'} ${p.name}</div>
-      <div class="plan-price">$${p.price}</div>
-      <div class="plan-price-sub">USD / mes</div>
-      <ul class="plan-features">${p.features.map(f => '<li class="plan-feature">' + f + '</li>').join('')}</ul>
-      <button class="btn btn-outline btn-sm btn-full ${p.is_featured ? '' : ''}" style="${p.is_featured ? 'border-color:rgba(255,255,255,0.3);color:white;' : ''}">Editar plan</button>
-    </div>`).join('');
+  try {
+    const res = await api.get('/plans/my');
+    if (res && res.error) return;
+    const sel = document.getElementById('plan-price-select');
+    const disp = document.getElementById('plan-price-display');
+    if (!sel || !disp) return;
+    const raw = Number(res.price);
+    if (raw === 0) {
+      disp.innerText = '$0';
+      sel.value = '100';
+    } else if ([100, 400, 600, 1000].indexOf(raw) !== -1) {
+      sel.value = String(raw);
+      disp.innerText = '$' + raw;
+    } else {
+      disp.innerText = '$' + raw;
+      sel.value = '100';
+    }
+  } catch (e) {
+    console.log('No hay plan configurado aún');
+  }
+}
+
+async function updatePlanPrice(evt) {
+  const newPrice = document.getElementById('plan-price-select').value;
+  const btn = evt && evt.target ? evt.target : document.querySelector('#dash-plans .btn-primary');
+  const msgDiv = document.getElementById('plan-price-message');
+  if (btn) {
+    btn.textContent = 'Guardando...';
+    btn.disabled = true;
+  }
+  const res = await api.post('/plans/update-price', { price: parseInt(newPrice, 10) });
+  if (res.success) {
+    const disp = document.getElementById('plan-price-display');
+    if (disp) disp.innerText = '$' + newPrice;
+    if (msgDiv) {
+      msgDiv.style.display = 'block';
+      setTimeout(() => { msgDiv.style.display = 'none'; }, 3000);
+    }
+    showNotif('✅ Precio guardado');
+  } else {
+    showNotif('❌ ' + (res.error || 'Error al guardar'));
+  }
+  if (btn) {
+    btn.textContent = 'Guardar precio';
+    btn.disabled = false;
+  }
+}
+
+async function activateFreePlan() {
+  const res = await api.post('/plans/set-free', {});
+  if (res.success) {
+    showNotif('✅ Plan gratuito activado. Puedes cobrar más tarde cuando quieras.');
+    await loadPlanPrice();
+  } else {
+    showNotif('❌ ' + (res.error || 'Error'));
+  }
 }
 
 // ─── FAN DASHBOARD ──────────────────────────────────────
