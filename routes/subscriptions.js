@@ -11,7 +11,8 @@ const {
 } = require('../lib/mpSubscription');
 
 const MP_CURRENCY = process.env.MP_CURRENCY_ID || 'MXN';
-const APP_URL = process.env.APP_URL;
+const APP_URL =
+  process.env.APP_URL || 'https://bizponzor-production.up.railway.app';
 
 const isValidEmail = (email) => {
   return typeof email === 'string' && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
@@ -71,8 +72,10 @@ router.post('/checkout', auth, async (req, res) => {
       return res.status(500).json({ error: 'Mercado Pago no configurado' });
     }
 
-    if (!APP_URL || APP_URL.includes('localhost')) {
-      throw new Error('APP_URL inválida. Debe ser una URL pública');
+    console.log('[MP] APP_URL detectada:', APP_URL);
+
+    if (!APP_URL.startsWith('https://')) {
+      throw new Error('APP_URL inválida. Debe ser HTTPS pública');
     }
 
     const startDate = new Date();
