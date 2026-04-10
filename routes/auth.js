@@ -13,6 +13,7 @@ router.post('/register', async (req, res) => {
     const hash = await bcrypt.hash(password, 10);
     const id = uuidv4();
     const userHandle = handle || '@' + email.split('@')[0].toLowerCase().replace(/[^a-z0-9]/g,'');
+    console.log('[auth/register] creating user', { id, email, role, handle: userHandle });
     db.prepare('INSERT INTO users (id, name, email, password, role, handle) VALUES (?, ?, ?, ?, ?, ?)').run(id, name, email, hash, role, userHandle);
     // Crear planes demo para creadores
     if (role === 'creator') {
@@ -25,6 +26,7 @@ router.post('/register', async (req, res) => {
       plans.forEach(p => stmt.run(p.id, id, p.name, p.price, p.features, p.is_featured));
     }
     const token = jwt.sign({ id, name, email, role }, process.env.JWT_SECRET, { expiresIn: '30d' });
+    console.log('[auth/register] token issued', { id, email, role });
     res.json({ token, user: { id, name, email, role, handle: userHandle } });
   } catch (e) { res.status(500).json({ error: e.message }); }
 });
@@ -34,6 +36,7 @@ router.post('/login', async (req, res) => {
     const { email, password } = req.body;
     const user = db.prepare('SELECT * FROM users WHERE email = ?').get(email);
     if (!user || !(await bcrypt.compare(password, user.password))) return res.status(401).json({ error: 'Credenciales incorrectas' });
+    console.log('[auth/login] success', { id: user.id, email: user.email, role: user.role });
     const token = jwt.sign({ id: user.id, name: user.name, email: user.email, role: user.role }, process.env.JWT_SECRET, { expiresIn: '30d' });
     res.json({ token, user: { id: user.id, name: user.name, email: user.email, role: user.role, handle: user.handle, avatar_url: user.avatar_url } });
   } catch (e) { res.status(500).json({ error: e.message }); }

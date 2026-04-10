@@ -10,6 +10,56 @@ const authMiddleware = require('../middleware/auth');
 const uploadsDir = path.join(__dirname, '../uploads');
 fs.mkdirSync(uploadsDir, { recursive: true });
 
+function requireCreator(req, res, next) {
+  if (!req.user || req.user.role !== 'creator') {
+    return res.status(403).json({ error: 'Solo creadores' });
+  }
+  next();
+}
+
+function ensureAuthedUserInDb(req, res, next) {
+  const userId = req.user?.id;
+  const email = req.user?.email;
+  const name = req.user?.name || 'Usuario';
+  const role = req.user?.role;
+
+  const userExists = db.prepare('SELECT id, email, role FROM users WHERE id = ?').get(userId);
+  if (userExists) return next();
+
+  console.warn('[content/upload] FK guard: user id not found in DB, attempting repair', { userId, email, role });
+
+  // If there's already a user with this email but different id, we cannot safely repair.
+  if (email) {
+    const byEmail = db.prepare('SELECT id, email, role FROM users WHERE email = ?').get(email);
+    if (byEmail && byEmail.id !== userId) {
+      console.error('[content/upload] repair blocked: email belongs to another user id', { tokenUserId: userId, dbUserId: byEmail.id, email });
+      return res.status(400).json({ error: 'Usuario creador no encontrado en la base de datos (token desincronizado). Cierra sesión e inicia sesión nuevamente.' });
+    }
+  }
+
+  // Minimal "repair" insert to satisfy FK constraints.
+  // NOTE: password is required by schema; this record is not meant for password login.
+  const safeHandle = email ? ('@' + email.split('@')[0].toLowerCase().replace(/[^a-z0-9]/g, '')) : ('@user' + String(userId || '').slice(0, 6));
+  const passwordPlaceholder = 'TOKEN_ONLY_' + uuidv4();
+
+  try {
+    db.prepare('INSERT INTO users (id, name, email, password, role, handle) VALUES (?, ?, ?, ?, ?, ?)')
+      .run(
+        userId,
+        name,
+        email || (userId + '@token.local'),
+        passwordPlaceholder,
+        role || 'creator',
+        safeHandle
+      );
+    console.warn('[content/upload] repair insert ok', { userId });
+    next();
+  } catch (e) {
+    console.error('[content/upload] repair insert failed', { userId, email, role, err: e.message });
+    return res.status(400).json({ error: 'Usuario creador no encontrado en la base de datos' });
+  }
+}
+
 const storage = multer.diskStorage({
   destination: (req, file, cb) => cb(null, uploadsDir),
   filename: (req, file, cb) => cb(null, uuidv4() + path.extname(file.originalname))
@@ -28,7 +78,7 @@ function uploadSingleFile(req, res, next) {
   });
 }
 
-router.post('/upload', authMiddleware, (req, res, next) => {
+router.post('/upload', authMiddleware, requireCreator, ensureAuthedUserInDb, (req, res, next) => {
   console.log('[content/upload] Incoming request', {
     contentType: req.headers['content-type'],
     authHeader: !!req.headers.authorization
@@ -36,7 +86,6 @@ router.post('/upload', authMiddleware, (req, res, next) => {
   next();
 }, uploadSingleFile, (req, res) => {
   try {
-    if (req.user.role !== 'creator') return res.status(403).json({ error: 'Solo creadores' });
     console.log('[content/upload] Parsed payload', {
       bodyKeys: Object.keys(req.body || {}),
       hasFile: !!req.file,
@@ -44,6 +93,8 @@ router.post('/upload', authMiddleware, (req, res, next) => {
       originalName: req.file?.originalname,
       savedAs: req.file?.filename
     });
+    const userExists = db.prepare('SELECT id FROM users WHERE id = ?').get(req.user.id);
+    if (!userExists) return res.status(400).json({ error: 'Usuario creador no encontrado en la base de datos' });
     if (!req.file) return res.status(400).json({ error: 'Archivo requerido' });
     const { title, description, is_exclusive } = req.body;
     const ext = path.extname(req.file.filename).toLowerCase();
