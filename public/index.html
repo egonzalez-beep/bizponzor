@@ -364,6 +364,105 @@
   }
   @keyframes slideUp { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
 
+  /* ─── MEDIA MODAL (Lightbox) ─── */
+  .media-modal {
+    position: fixed;
+    inset: 0;
+    z-index: 10000;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    padding: 18px;
+    background: rgba(0,0,0,0.72);
+    backdrop-filter: blur(6px);
+    opacity: 0;
+    transition: opacity 0.18s ease;
+  }
+  .media-modal.open {
+    display: flex;
+    opacity: 1;
+  }
+  .media-modal-card {
+    width: min(980px, 96vw);
+    max-height: 86vh;
+    background: rgba(20,20,20,0.98);
+    border: 1px solid rgba(255,255,255,0.10);
+    border-radius: 18px;
+    box-shadow: 0 18px 80px rgba(0,0,0,0.55);
+    overflow: hidden;
+    transform: translateY(10px) scale(0.985);
+    transition: transform 0.18s ease;
+    position: relative;
+  }
+  .media-modal.open .media-modal-card {
+    transform: translateY(0) scale(1);
+  }
+  .media-modal-close {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    width: 40px;
+    height: 40px;
+    border-radius: 999px;
+    border: 1px solid rgba(255,255,255,0.14);
+    background: rgba(0,0,0,0.55);
+    color: white;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.05rem;
+    font-weight: 800;
+  }
+  .media-modal-close:hover {
+    background: rgba(0,0,0,0.75);
+    border-color: rgba(255,255,255,0.22);
+  }
+  .media-modal-body {
+    padding: 18px;
+    display: grid;
+    gap: 14px;
+  }
+  .media-modal-media {
+    width: 100%;
+    max-height: calc(86vh - 84px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .media-modal-media img,
+  .media-modal-media video {
+    width: 100%;
+    height: auto;
+    max-height: calc(86vh - 84px);
+    object-fit: contain;
+    border-radius: 12px;
+    background: rgba(0,0,0,0.35);
+  }
+  .media-modal-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    flex-wrap: wrap;
+  }
+  .media-link {
+    color: rgba(255,255,255,0.82);
+    border: 1px solid rgba(255,255,255,0.16);
+    background: rgba(0,0,0,0.35);
+    padding: 9px 14px;
+    border-radius: 999px;
+    font-size: 0.82rem;
+    font-weight: 650;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .media-link:hover {
+    background: rgba(0,0,0,0.55);
+    border-color: rgba(255,255,255,0.22);
+  }
+
   /* Creator Profile (public) */
   #creator-profile { padding-top: 64px; }
   .profile-banner {
@@ -1143,6 +1242,20 @@
 <!-- NOTIFICATION -->
 <div class="notification" id="notif"></div>
 
+<!-- MEDIA MODAL -->
+<div class="media-modal" id="media-modal" onclick="if (event.target === this) closeMediaModal()">
+  <div class="media-modal-card" role="dialog" aria-modal="true" aria-label="Vista previa de contenido" onclick="event.stopPropagation()">
+    <button class="media-modal-close" aria-label="Cerrar" onclick="closeMediaModal()">✕</button>
+    <div class="media-modal-body">
+      <div class="media-modal-media" id="media-modal-media"></div>
+      <div class="media-modal-actions">
+        <a class="media-link" id="media-modal-open" href="#" target="_blank" rel="noopener noreferrer">↗ Abrir en nueva pestaña</a>
+        <a class="media-link" id="media-modal-download" href="#" download>⬇ Descargar</a>
+      </div>
+    </div>
+  </div>
+</div>
+
 <script>
   let currentRole = 'creator';
 
@@ -1286,6 +1399,56 @@ let TOKEN = localStorage.getItem('bp_token') || null;
 let CURRENT_USER = JSON.parse(localStorage.getItem('bp_user') || 'null');
 let CURRENT_CREATOR_ID = null;
 
+// ─── MEDIA MODAL ────────────────────────────────────────
+function openMediaModal(url, type) {
+  if (!url) return;
+  const modal = document.getElementById('media-modal');
+  const slot = document.getElementById('media-modal-media');
+  const openLink = document.getElementById('media-modal-open');
+  const downloadLink = document.getElementById('media-modal-download');
+
+  // Clear previous
+  slot.innerHTML = '';
+
+  // Set links
+  openLink.href = url;
+  downloadLink.href = url;
+
+  const mediaType = (type === 'video') ? 'video' : 'image';
+  if (mediaType === 'video') {
+    const v = document.createElement('video');
+    v.src = url;
+    v.controls = true;
+    v.playsInline = true;
+    v.autoplay = true;
+    v.preload = 'metadata';
+    slot.appendChild(v);
+  } else {
+    const img = document.createElement('img');
+    img.src = url;
+    img.alt = 'Contenido';
+    img.loading = 'eager';
+    slot.appendChild(img);
+  }
+
+  modal.classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeMediaModal() {
+  const modal = document.getElementById('media-modal');
+  const slot = document.getElementById('media-modal-media');
+  if (!modal) return;
+  modal.classList.remove('open');
+  document.body.style.overflow = '';
+  // Stop any playing video/audio
+  if (slot) slot.innerHTML = '';
+}
+
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape') closeMediaModal();
+});
+
 const api = {
   headers: () => ({ 'Content-Type': 'application/json', ...(TOKEN ? { 'Authorization': 'Bearer ' + TOKEN } : {}) }),
   get: (url) => fetch(API + url, { headers: api.headers() }).then(r => r.json()),
@@ -1374,17 +1537,19 @@ function renderContentGrid(container, items) {
   if (!items.length) { container.innerHTML = '<div style="padding:40px;color:var(--gray-500);text-align:center;grid-column:1/-1;">No hay contenido aún. ¡Sube tu primer archivo!</div>'; return; }
   container.innerHTML = items.map(c => `
     <div class="content-item">
-      <div class="content-thumb" style="background:#f0f0f0">
+      <div class="content-thumb" style="background:#f0f0f0" ${c.file_url ? `onclick="openMediaModal('${c.file_url}','${c.type}')" title="Ver"` : ''}>
         ${c.type === 'video' ? '🎬' : '📸'}
         <span class="content-type-badge">${c.type === 'video' ? 'VIDEO' : 'FOTO'}</span>
-        ${c.file_url ? `<a href="${c.file_url}" target="_blank" style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;text-decoration:none;">
-          ${c.type === 'video' ? '<span style="background:rgba(0,0,0,0.6);padding:8px 16px;border-radius:999px;color:white;font-size:0.8rem;">▶ Ver</span>' : ''}
-        </a>` : ''}
+        ${c.file_url && c.type === 'video' ? '<span style="position:absolute;bottom:10px;right:10px;background:rgba(0,0,0,0.60);padding:6px 10px;border-radius:999px;color:white;font-size:0.75rem;font-weight:700;">▶ Ver</span>' : ''}
       </div>
       <div class="content-info">
         <h4>${c.title}</h4>
         <p>${new Date(c.created_at).toLocaleDateString('es')}</p>
         ${c.is_exclusive ? '<span class="exclusive-badge">Exclusivo</span>' : ''}
+        ${c.file_url ? `<div style="display:flex;gap:10px;align-items:center;margin-top:6px;">
+          <a href="${c.file_url}" target="_blank" rel="noopener noreferrer" style="font-size:0.75rem;color:var(--gray-500);text-decoration:underline;">Abrir</a>
+          <a href="${c.file_url}" download style="font-size:0.75rem;color:var(--gray-500);text-decoration:underline;">Descargar</a>
+        </div>` : ''}
         <button onclick="deleteContent('${c.id}')" style="background:none;border:none;color:var(--gray-400);cursor:pointer;font-size:0.75rem;margin-top:4px;">🗑 Eliminar</button>
       </div>
     </div>`).join('');
@@ -1488,15 +1653,19 @@ function renderFanContent(container, items) {
   if (!items.length) { container.innerHTML = '<div style="padding:40px;text-align:center;color:var(--gray-500);grid-column:1/-1;">No hay contenido aún</div>'; return; }
   container.innerHTML = items.map(c => `
     <div class="content-item">
-      <div class="content-thumb" style="background:#f0f0f0">
+      <div class="content-thumb" style="background:#f0f0f0" ${(!c.locked && c.file_url) ? `onclick="openMediaModal('${c.file_url}','${c.type}')" title="Ver"` : ''}>
         ${c.type === 'video' ? '🎬' : '📸'}
         <span class="content-type-badge">${c.type === 'video' ? 'VIDEO' : 'FOTO'}</span>
-        ${c.locked ? '<div class="lock-overlay">🔒</div>' : (c.file_url ? `<a href="${c.file_url}" target="_blank" style="position:absolute;inset:0;"></a>` : '')}
+        ${c.locked ? '<div class="lock-overlay">🔒</div>' : (c.file_url && c.type === 'video' ? '<span style="position:absolute;bottom:10px;right:10px;background:rgba(0,0,0,0.60);padding:6px 10px;border-radius:999px;color:white;font-size:0.75rem;font-weight:700;">▶ Ver</span>' : '')}
       </div>
       <div class="content-info">
         <h4>${c.title}</h4>
         <p>${c.creator_name ? c.creator_name + ' · ' : ''}${new Date(c.created_at).toLocaleDateString('es')}</p>
         ${c.is_exclusive ? '<span class="exclusive-badge">Exclusivo</span>' : ''}
+        ${(!c.locked && c.file_url) ? `<div style="display:flex;gap:10px;align-items:center;margin-top:6px;">
+          <a href="${c.file_url}" target="_blank" rel="noopener noreferrer" style="font-size:0.75rem;color:var(--gray-500);text-decoration:underline;">Abrir</a>
+          <a href="${c.file_url}" download style="font-size:0.75rem;color:var(--gray-500);text-decoration:underline;">Descargar</a>
+        </div>` : ''}
       </div>
     </div>`).join('');
 }
