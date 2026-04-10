@@ -1261,19 +1261,20 @@
 
   function showPage(page) {
     document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-    document.getElementById(page).classList.add('active');
+    const targetPage = document.getElementById(page);
+    if (targetPage) {
+      targetPage.classList.add('active');
+    }
     window.scrollTo(0, 0);
     updateNavbar(page);
   }
 
   function updateNavbar(page) {
     const actions = document.getElementById('navbar-actions');
-    if (page === 'creator-dashboard') {
-      actions.innerHTML = `<span style="font-size:0.82rem;color:var(--gray-500);">Panel del Creador</span><button class="btn btn-outline btn-sm" onclick="showCreatorProfile()">Ver mi perfil</button>`;
-    } else if (page === 'fan-dashboard') {
-      actions.innerHTML = `<span style="font-size:0.82rem;color:var(--gray-500);">Hola, Luis 👋</span><button class="btn btn-outline btn-sm" onclick="showPage('landing')">Salir</button>`;
-    } else if (page === 'creator-profile') {
-      actions.innerHTML = `<button class="btn btn-ghost" onclick="showPage('landing')">← Volver</button><button class="btn btn-primary btn-sm" onclick="openModal()">Suscribirme</button>`;
+    if (CURRENT_USER && CURRENT_USER.role === 'creator') {
+      actions.innerHTML = `<span style="font-size:0.82rem;color:var(--gray-500);">${CURRENT_USER.name}</span><button class="btn btn-outline btn-sm" onclick="logout()">Salir</button>`;
+    } else if (CURRENT_USER && CURRENT_USER.role === 'fan') {
+      actions.innerHTML = `<span style="font-size:0.82rem;color:var(--gray-500);">${CURRENT_USER.name} 👋</span><button class="btn btn-outline btn-sm" onclick="logout()">Salir</button>`;
     } else {
       actions.innerHTML = `<button class="btn btn-ghost" onclick="showAuth('login')">Iniciar sesión</button><button class="btn btn-primary" onclick="showAuth('register')">Comenzar gratis</button>`;
     }
@@ -1488,10 +1489,20 @@ function setSession(res) {
   localStorage.setItem('bp_token', TOKEN);
   localStorage.setItem('bp_user', JSON.stringify(CURRENT_USER));
   showNotif('✅ Bienvenido/a, ' + CURRENT_USER.name + '!');
-  setTimeout(() => {
-    if (CURRENT_USER.role === 'creator') loadCreatorDashboard();
-    else loadFanDashboard();
-  }, 600);
+  
+  closeModal();
+  
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  
+  if (CURRENT_USER.role === 'creator') {
+    document.getElementById('creator-dashboard').classList.add('active');
+    loadCreatorDashboard();
+  } else {
+    document.getElementById('fan-dashboard').classList.add('active');
+    loadFanDashboard();
+  }
+  
+  updateNavbar(CURRENT_USER.role === 'creator' ? 'creator-dashboard' : 'fan-dashboard');
 }
 
 function logout() {
@@ -1504,7 +1515,6 @@ function logout() {
 
 // ─── CREATOR DASHBOARD ──────────────────────────────────
 async function loadCreatorDashboard() {
-  showPage('creator-dashboard');
   // Update sidebar name
   document.querySelector('#creator-dashboard .sidebar > div:first-child div:nth-child(2) div:first-child').textContent = CURRENT_USER.name;
   document.querySelector('#creator-dashboard .sidebar > div:first-child div:nth-child(2) div:nth-child(2)').textContent = CURRENT_USER.handle || '@' + CURRENT_USER.name.toLowerCase();
@@ -1627,7 +1637,6 @@ async function loadPlans() {
 
 // ─── FAN DASHBOARD ──────────────────────────────────────
 async function loadFanDashboard() {
-  showPage('fan-dashboard');
   document.querySelector('#fan-dashboard .sidebar > div:first-child div:nth-child(2) div:first-child').textContent = CURRENT_USER.name;
   document.querySelector('#fan-dashboard .sidebar > div:first-child div:first-child').textContent = CURRENT_USER.name[0].toUpperCase();
   await loadFanFeed();
@@ -1782,6 +1791,18 @@ async function loadEarnings() {
 
 // Override publish button
 document.addEventListener('DOMContentLoaded', () => {
+if (TOKEN && CURRENT_USER) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  if (CURRENT_USER.role === 'creator') {
+    document.getElementById('creator-dashboard').classList.add('active');
+    loadCreatorDashboard();
+  } else if (CURRENT_USER.role === 'fan') {
+    document.getElementById('fan-dashboard').classList.add('active');
+    loadFanDashboard();
+  }
+  updateNavbar(CURRENT_USER.role === 'creator' ? 'creator-dashboard' : 'fan-dashboard');
+}
+
   // Wire up publish button properly
   const publishBtn = document.querySelector('#dash-upload .btn-primary');
   if (publishBtn) publishBtn.setAttribute('onclick', 'publishContent(event)');
