@@ -961,14 +961,14 @@
         </div>
         <div style="background:var(--white);border:1px solid var(--gray-200);border-radius:var(--radius);padding:28px;max-width:600px;">
           <div class="form-group">
-            <label class="form-label">Nombre completo</label>
-            <input type="text" class="form-input" id="settings-name" placeholder="Tu nombre">
-            <div style="font-size:0.7rem;color:var(--gray-400);margin-top:4px;">Tu nombre visible para todos</div>
+            <label class="form-label">Nombre de usuario</label>
+            <input type="text" class="form-input" id="settings-name" placeholder="Tu nombre" disabled style="background:var(--gray-100);color:var(--gray-500);">
+            <div style="font-size:0.7rem;color:var(--gray-400);margin-top:4px;">Este nombre no se puede editar</div>
           </div>
           <div class="form-group">
-            <label class="form-label">Apodo (handle)</label>
-            <input type="text" class="form-input" id="settings-handle" placeholder="@usuario" disabled style="background:var(--gray-100);color:var(--gray-500);">
-            <div style="font-size:0.7rem;color:var(--gray-400);margin-top:4px;">⚠️ El handle se crea al registrarse y no se puede cambiar</div>
+            <label class="form-label">Alias creativo</label>
+            <input type="text" class="form-input" id="settings-handle" placeholder="@tualias">
+            <div style="font-size:0.7rem;color:var(--gray-400);margin-top:4px;">Este alias aparece en tu perfil público</div>
           </div>
           <div class="form-group">
             <label class="form-label">Categoría</label>
@@ -993,9 +993,9 @@
             <div style="font-size:0.7rem;color:var(--gray-400);margin-top:4px;">Máximo 200 caracteres</div>
           </div>
           <div class="form-group">
-            <label class="form-label">Foto de perfil</label>
-            <input type="file" class="form-input" id="settings-avatar" accept="image/*">
-            <div style="font-size:0.7rem;color:var(--gray-400);margin-top:4px;">Recomendado: 400x400px, máximo 5MB</div>
+            <label class="form-label">Color del avatar</label>
+            <input type="color" class="form-input" id="settings-avatar-color" value="#333333" style="height:44px;padding:6px 10px;">
+            <div style="font-size:0.7rem;color:var(--gray-400);margin-top:4px;">Se mostrará con la inicial de tu alias en el perfil público</div>
           </div>
           <div class="form-group">
             <label class="form-label">Banner (imagen de portada)</label>
@@ -1328,7 +1328,11 @@
     document.getElementById('role-fan').classList.toggle('selected', role === 'fan');
   }
 
-  function showCreatorProfile() {
+  async function showCreatorProfile() {
+    if (CURRENT_USER && CURRENT_USER.role === 'creator' && CURRENT_USER.handle) {
+      await openCreatorProfile(CURRENT_USER.handle);
+      return;
+    }
     showPage('creator-profile');
   }
 
@@ -1582,12 +1586,14 @@ async function loadProfileSettings() {
   document.getElementById('settings-handle').value = res.handle || '@' + res.name.toLowerCase();
   document.getElementById('settings-category').value = res.category || '📸 Fotografía & Lifestyle';
   document.getElementById('settings-bio').value = res.bio || '';
+  document.getElementById('settings-avatar-color').value = res.avatar_color || '#333333';
 }
 
 async function saveProfileSettings() {
-  const name = document.getElementById('settings-name').value;
+  const handle = document.getElementById('settings-handle').value;
   const category = document.getElementById('settings-category').value;
   const bio = document.getElementById('settings-bio').value;
+  const avatar_color = document.getElementById('settings-avatar-color').value;
   
   const btn = document.getElementById('save-profile-btn');
   const msgDiv = document.getElementById('profile-save-message');
@@ -1595,7 +1601,7 @@ async function saveProfileSettings() {
   btn.textContent = 'Guardando...';
   btn.disabled = true;
   
-  const res = await api.put('/auth/profile', { name, bio, category });
+  const res = await api.put('/auth/profile', { handle, bio, category, avatar_color });
   
   if (res.error) {
     msgDiv.style.display = 'block';
@@ -1608,31 +1614,24 @@ async function saveProfileSettings() {
     setTimeout(() => msgDiv.style.display = 'none', 3000);
     
     // Actualizar datos locales
-    CURRENT_USER.name = name;
+    CURRENT_USER.handle = res.handle || handle;
     localStorage.setItem('bp_user', JSON.stringify(CURRENT_USER));
     
     // Actualizar sidebar
     const sidebarName = document.getElementById('sidebar-name');
-    if (sidebarName) sidebarName.textContent = name;
+    if (sidebarName) sidebarName.textContent = CURRENT_USER.name;
+    const sidebarHandle = document.getElementById('sidebar-handle');
+    if (sidebarHandle) sidebarHandle.textContent = CURRENT_USER.handle;
     
-    // Si hay foto de perfil o banner, subirlos
-    const avatarFile = document.getElementById('settings-avatar').files[0];
+    // Si hay banner, subirlo
     const bannerFile = document.getElementById('settings-banner').files[0];
-    
-    if (avatarFile) {
-      const formData = new FormData();
-      formData.append('avatar', avatarFile);
-      const avatarRes = await api.upload('/auth/avatar', formData);
-      if (avatarRes.avatar_url) {
-        document.querySelector('.profile-avatar').style.backgroundImage = `url(${avatarRes.avatar_url})`;
-      }
-    }
-    
+
     if (bannerFile) {
       const formData = new FormData();
       formData.append('banner', bannerFile);
       await api.upload('/auth/banner', formData);
     }
+    await openCreatorProfile(CURRENT_USER.handle);
   }
   
   btn.textContent = '💾 Guardar cambios';
@@ -1837,15 +1836,12 @@ async function openCreatorProfile(handle) {
   document.querySelector('.profile-bio').textContent = creator.bio || 'Bienvenido a mi perfil en BizPonzor';
   document.querySelectorAll('.profile-info strong')[0].textContent = creator.subscribers;
   document.querySelectorAll('.profile-info strong')[1].textContent = creator.content_count;
-  document.querySelector('.profile-avatar').textContent = creator.name[0];
-  if (creator.avatar_url) {
-    const avatarDiv = document.querySelector('.profile-avatar');
-    if (avatarDiv) {
-      avatarDiv.style.backgroundImage = `url(${creator.avatar_url})`;
-      avatarDiv.style.backgroundSize = 'cover';
-      avatarDiv.style.backgroundPosition = 'center';
-      avatarDiv.textContent = '';
-    }
+  const avatarDiv = document.querySelector('.profile-avatar');
+  if (avatarDiv) {
+    avatarDiv.style.backgroundImage = '';
+    avatarDiv.style.background = creator.avatar_color || '#333333';
+    const aliasInitial = (creator.handle || creator.name || 'C').replace('@', '').charAt(0).toUpperCase();
+    avatarDiv.textContent = aliasInitial;
   }
   if (creator.banner_url) {
     const bannerDiv = document.querySelector('.profile-banner');
@@ -1853,6 +1849,12 @@ async function openCreatorProfile(handle) {
       bannerDiv.style.backgroundImage = `url(${creator.banner_url})`;
       bannerDiv.style.backgroundSize = 'cover';
       bannerDiv.style.backgroundPosition = 'center';
+    }
+  } else {
+    const bannerDiv = document.querySelector('.profile-banner');
+    if (bannerDiv) {
+      bannerDiv.style.backgroundImage = '';
+      bannerDiv.style.background = 'linear-gradient(135deg, #1a1a1a 0%, #444 100%)';
     }
   }
   // Load content
@@ -1869,7 +1871,7 @@ async function openCreatorProfile(handle) {
         <div style="font-size:0.75rem;color:${p.is_featured ? 'var(--gray-300)' : 'var(--gray-500)'};margin-top:4px;">${p.features[0] || ''}</div>
       </div>`).join('');
   }
-  showCreatorProfile();
+  showPage('creator-profile');
 }
 
 let selectedPlan = null;
@@ -1951,9 +1953,6 @@ if (TOKEN && CURRENT_USER) {
   logoutItems.forEach(el => { if (el.textContent.includes('Salir')) el.setAttribute('onclick', 'logout()'); });
 });
 
-// Fix showCreatorProfile to use handler
-const _origShowCreatorProfile = showCreatorProfile;
-function showCreatorProfile() { showPage('creator-profile'); }
 </script>
 </body>
 </html>

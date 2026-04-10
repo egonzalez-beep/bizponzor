@@ -82,4 +82,10 @@ db.exec(`
   );
 `);
 
+try {
+  db.exec("ALTER TABLE users ADD COLUMN avatar_color TEXT DEFAULT '#333333';");
+} catch (e) {
+  // Column may already exist on existing databases.
+}
+
 module.exports = db;

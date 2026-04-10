@@ -45,14 +45,22 @@ router.post('/login', async (req, res) => {
 });
 
 router.get('/me', require('../middleware/auth'), (req, res) => {
-  const user = db.prepare('SELECT id, name, email, role, handle, bio, category, avatar_url, banner_url FROM users WHERE id = ?').get(req.user.id);
+  const user = db.prepare('SELECT id, name, email, role, handle, bio, category, avatar_url, banner_url, avatar_color FROM users WHERE id = ?').get(req.user.id);
   res.json(user);
 });
 
 router.put('/profile', require('../middleware/auth'), (req, res) => {
-  const { name, bio, category } = req.body;
-  db.prepare('UPDATE users SET name=?, bio=?, category=? WHERE id=?').run(name, bio, category, req.user.id);
-  res.json({ success: true });
+  const { handle, bio, category, avatar_color } = req.body;
+  const cleanedHandle = (handle || '').trim();
+  if (!cleanedHandle || cleanedHandle.length < 3) {
+    return res.status(400).json({ error: 'Tu alias debe tener al menos 3 caracteres' });
+  }
+  const normalizedHandle = cleanedHandle.startsWith('@') ? cleanedHandle : ('@' + cleanedHandle);
+  const handleTaken = db.prepare('SELECT id FROM users WHERE handle = ? AND id != ?').get(normalizedHandle, req.user.id);
+  if (handleTaken) return res.status(409).json({ error: 'Ese alias ya está en uso' });
+  db.prepare('UPDATE users SET handle=?, bio=?, category=?, avatar_color=? WHERE id=?')
+    .run(normalizedHandle, bio || '', category || '', avatar_color || '#333333', req.user.id);
+  res.json({ success: true, handle: normalizedHandle });
 });
 
 // Subir foto de perfil
