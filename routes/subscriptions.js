@@ -11,7 +11,9 @@ router.post('/checkout', auth, async (req, res) => {
     if (req.user.role !== 'fan') return res.status(403).json({ error: 'Solo fans' });
     const { plan_id, creator_id } = req.body;
     const plan = db.prepare('SELECT * FROM plans WHERE id=? AND creator_id=? AND active=1').get(plan_id, creator_id);
+    const creator = db.prepare('SELECT id, name, mp_access_token FROM users WHERE id=? AND role=?').get(creator_id, 'creator');
     if (!plan) return res.status(404).json({ error: 'Plan no encontrado' });
+    if (!creator) return res.status(404).json({ error: 'Creador no encontrado' });
     
     const sub_id = uuidv4();
     db.prepare('INSERT INTO subscriptions (id, fan_id, creator_id, plan_id, status, amount) VALUES (?,?,?,?,?,?)')
@@ -24,12 +26,20 @@ router.post('/checkout', auth, async (req, res) => {
     }
     
     // MercadoPago real
-    const client = new MercadoPagoConfig({ accessToken: process.env.MP_ACCESS_TOKEN });
+    const creatorToken = creator.mp_access_token || process.env.MP_ACCESS_TOKEN;
+    const client = new MercadoPagoConfig({ accessToken: creatorToken });
     const preference = new Preference(client);
 
     const response = await preference.create({
       body: {
-        items: [{ id: plan_id, title: 'BizPonzor - Plan ' + plan.name, quantity: 1, unit_price: plan.price, currency_id: 'ARS' }],
+        items: [{
+          id: plan_id,
+          title: `BizPonzor - ${plan.name} - ${creator.name}`,
+          quantity: 1,
+          unit_price: plan.price,
+          currency_id: 'ARS'
+        }],
+        marketplace_fee: Math.round(plan.price * 0.15 * 100) / 100,  // 15% de comisión para la plataforma
         payer: { email: req.user.email },
         back_urls: { success: process.env.APP_URL + '/success?sub=' + sub_id, failure: process.env.APP_URL + '/failure', pending: process.env.APP_URL + '/pending' },
         auto_return: 'approved',

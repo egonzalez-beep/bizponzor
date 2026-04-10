@@ -88,4 +88,10 @@ try {
   // Column may already exist on existing databases.
 }
 
+try {
+  db.exec("ALTER TABLE subscriptions ADD COLUMN mp_subscription_id TEXT;");
+} catch (e) {
+  // Column may already exist on existing databases.
+}
+
 module.exports = db;
