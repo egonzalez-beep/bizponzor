@@ -1,90 +1,140 @@
 
 const router = require('express').Router();
 const db = require('../db');
+const {
+  getPreApprovalClient,
+  mapPreapprovalStatusToDb,
+  normalizePreapprovalPayload
+} = require('../lib/mpSubscription');
 
-router.post('/mp', async (req, res) => {
-  try {
-    console.log('[WEBHOOK] Recibido:', JSON.stringify(req.body, null, 2));
-    
-    const { type, data, action } = req.body;
-    
-    // Manejar pago aprobado
-    if (type === 'payment' && data?.id) {
-      const paymentId = data.id;
-      console.log('[WEBHOOK] Procesando pago:', paymentId);
-      
-      // Buscar la suscripción pendiente
-      const subscription = db.prepare(`
-        SELECT * FROM subscriptions WHERE mp_payment_id = ? OR id = (
-          SELECT subscription_id FROM payments WHERE mp_payment_id = ?
-        )
-      `).get(paymentId, paymentId);
-      
-      if (!subscription) {
-        console.log('[WEBHOOK] No se encontró suscripción para pago:', paymentId);
-        return res.sendStatus(200);
-      }
-      
-      // Calcular próxima fecha de facturación (1 mes)
-      const nextBilling = new Date();
-      nextBilling.setMonth(nextBilling.getMonth() + 1);
-      
-      // Activar la suscripción
-      db.prepare(`
-        UPDATE subscriptions 
-        SET status = 'active', 
-            mp_payment_id = ?, 
-            next_billing = ?, 
-            updated_at = datetime('now')
-        WHERE id = ?
-      `).run(paymentId, nextBilling.toISOString(), subscription.id);
-      
-      // Registrar el pago
-      db.prepare(`
-        INSERT OR REPLACE INTO payments (id, subscription_id, fan_id, creator_id, amount, status, mp_payment_id, created_at)
-        VALUES (?, ?, ?, ?, ?, 'approved', ?, datetime('now'))
-      `).run(
-        paymentId,
-        subscription.id,
-        subscription.fan_id,
-        subscription.creator_id,
-        subscription.amount,
-        paymentId
-      );
-      
-      console.log('[WEBHOOK] Suscripción activada:', subscription.id);
-    }
-    
-    // Manejar suscripción pre-aprobada (Mercado Pago recurring)
-    if (type === 'subscription_preapproval') {
-      const mpSubscriptionId = data.id;
-      console.log('[WEBHOOK] Procesando preaprobación:', mpSubscriptionId);
-      
-      if (action === 'created' || action === 'updated') {
-        db.prepare(`
-          UPDATE subscriptions 
-          SET status = 'active', 
-              mp_subscription_id = ?, 
-              updated_at = datetime('now')
-          WHERE mp_subscription_id = ? OR id = (SELECT subscription_id FROM payments WHERE mp_payment_id = ?)
-        `).run(mpSubscriptionId, mpSubscriptionId, mpSubscriptionId);
-      }
-      
-      if (action === 'cancelled') {
-        db.prepare(`
-          UPDATE subscriptions 
-          SET status = 'cancelled', 
-              updated_at = datetime('now')
-          WHERE mp_subscription_id = ?
-        `).run(mpSubscriptionId);
-      }
-    }
-    
-    res.sendStatus(200);
-  } catch (e) {
-    console.error('[WEBHOOK] Error:', e.message);
-    res.sendStatus(200); // Siempre responder 200 a MP
+/**
+ * Extrae topic e id de notificaciones MP (GET query o POST body).
+ */
+function extractNotificationPayload(req) {
+  const q = req.query || {};
+  const b = req.body || {};
+
+  const topic =
+    q.topic ||
+    b.topic ||
+    b.type ||
+    (typeof b.type === 'string' ? b.type : null);
+
+  const id =
+    q.id ||
+    q['data.id'] ||
+    b.id ||
+    (b.data && (b.data.id ?? b.data['id'])) ||
+    null;
+
+  const action = b.action || q.action;
+
+  return { topic, id, action, raw: b };
+}
+
+async function syncSubscriptionFromPreapproval(mpPreapprovalId) {
+  const preApprovalClient = getPreApprovalClient();
+  if (!preApprovalClient) {
+    console.warn('[WEBHOOK] MP_ACCESS_TOKEN no configurado; no se consulta PreApproval');
+    return;
   }
-});
+
+  const raw = await preApprovalClient.get({ id: String(mpPreapprovalId) });
+  const data = normalizePreapprovalPayload(raw) || raw;
+  const mpStatus = data.status || data.response?.status;
+  const externalRef =
+    data.external_reference || data.external_reference_id || data.external_id;
+  const mpId = String(data.id || mpPreapprovalId);
+
+  console.log('[WEBHOOK] PreApproval GET', {
+    id: mpId,
+    status: mpStatus,
+    external_reference: externalRef
+  });
+
+  const dbStatus = mapPreapprovalStatusToDb(mpStatus);
+
+  let nextBilling = null;
+  if (dbStatus === 'active') {
+    const nb = new Date();
+    nb.setMonth(nb.getMonth() + 1);
+    nextBilling = nb.toISOString();
+  }
+
+  const sub = db
+    .prepare(
+      `SELECT * FROM subscriptions WHERE id = ? OR mp_subscription_id = ? LIMIT 1`
+    )
+    .get(externalRef, mpId);
+
+  if (!sub) {
+    console.warn('[WEBHOOK] No hay fila local para PreApproval', { externalRef, mpId });
+    return;
+  }
+
+  if (dbStatus === 'active' && nextBilling) {
+    db.prepare(
+      `UPDATE subscriptions
+       SET status = ?,
+           mp_subscription_id = ?,
+           mp_preapproval_status = ?,
+           next_billing = ?,
+           updated_at = datetime('now')
+       WHERE id = ?`
+    ).run(dbStatus, mpId, mpStatus, nextBilling, sub.id);
+  } else {
+    db.prepare(
+      `UPDATE subscriptions
+       SET status = ?,
+           mp_subscription_id = ?,
+           mp_preapproval_status = ?,
+           updated_at = datetime('now')
+       WHERE id = ?`
+    ).run(dbStatus, mpId, mpStatus, sub.id);
+  }
+
+  console.log('[WEBHOOK] Suscripción actualizada', { local_id: sub.id, dbStatus, mpStatus });
+}
+
+async function processMercadoPagoWebhook(req) {
+  const { topic, id, action } = extractNotificationPayload(req);
+
+  console.log('[WEBHOOK] Payload', { topic, id, action });
+
+  if (!id) {
+    console.log('[WEBHOOK] Sin id; ignorado');
+    return;
+  }
+
+  const topicStr = String(topic || '').toLowerCase();
+  const isPreapproval =
+    topicStr === 'preapproval' ||
+    topicStr.includes('preapproval') ||
+    topicStr === 'subscription_preapproval' ||
+    topicStr === 'subscription_preapproved';
+
+  if (isPreapproval || action === 'updated' || action === 'created') {
+    await syncSubscriptionFromPreapproval(id);
+    return;
+  }
+
+  if (topicStr === 'payment' || topicStr.includes('payment')) {
+    console.log('[WEBHOOK] Notificación payment (legacy); id=', id);
+    // Opcional: integrar Payment.get para conciliar; PreApproval es el flujo principal.
+  }
+}
+
+async function handleWebhook(req, res) {
+  try {
+    await processMercadoPagoWebhook(req);
+    return res.sendStatus(200);
+  } catch (e) {
+    console.error('[WEBHOOK] Error:', e.message, e.stack);
+    return res.sendStatus(200);
+  }
+}
+
+router.post('/mp', handleWebhook);
+router.get('/mp', handleWebhook);
 
 module.exports = router;

@@ -94,4 +94,10 @@ try {
   // Column may already exist on existing databases.
 }
 
+try {
+  db.exec("ALTER TABLE subscriptions ADD COLUMN mp_preapproval_status TEXT;");
+} catch (e) {
+  // Column may already exist on existing databases.
+}
+
 module.exports = db;
