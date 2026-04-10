@@ -576,8 +576,9 @@
 <div id="landing" class="page active">
 
   <section class="hero">
-    <div class="hero-badge">✦ La plataforma para creadores</div>
+    <div class="hero-badge" style="background: #8B5CF6; color: white;">🎯 RECIBE MÁS DEL 90% DE TUS GANANCIAS</div>
     <h1>Sé el patrocinador<br>de los creadores <em>que amas</em></h1>
+    <p style="max-width: 600px;">Sin comisiones ocultas. Solo lo que cobra Mercado Pago. Tú te llevas casi todo.</p>
     <p>BizPonzor conecta a creadores de contenido con su comunidad más fiel. Apoya, accede a contenido exclusivo y forma parte de algo especial.</p>
     <div class="hero-cta">
       <button class="btn btn-primary" onclick="showAuth('register')">Empezar como creador</button>
@@ -634,6 +635,11 @@
       </div>
       <div class="feature-card">
         <div class="feature-icon">🚀</div>
+        <h3>Incentivo para creadores</h3>
+        <p>Sé parte de nuestra red y recibe incentivos para seguir inspirando. Creemos en tu talento.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">✨</div>
         <h3>Perfil profesional</h3>
         <p>Tu propio perfil con banner, bio y feed de contenido. Comparte tu link y empieza a recibir suscriptores.</p>
       </div>
@@ -760,9 +766,9 @@
     <!-- Sidebar -->
     <div class="sidebar">
       <div style="display:flex;align-items:center;gap:10px;padding:8px 12px;margin-bottom:16px;">
-        <div style="width:38px;height:38px;background:var(--black);border-radius:50%;display:flex;align-items:center;justify-content:center;color:white;font-weight:800;font-size:0.9rem;" id="sidebar-avatar">A</div>
+        <div style="width:38px;height:38px;background:var(--black);border-radius:50%;display:flex;align-items:center;justify-content:center;color:white;font-weight:800;font-size:0.9rem;" id="sidebar-avatar">?</div>
         <div>
-          <div style="font-size:0.85rem;font-weight:700;" id="sidebar-name">Ana Molina</div>
+          <div style="font-size:0.85rem;font-weight:700;" id="sidebar-name"></div>
           <div style="font-size:0.72rem;color:var(--gray-500);" id="sidebar-handle">@anamolina</div>
         </div>
       </div>
@@ -788,7 +794,7 @@
       <!-- OVERVIEW TAB -->
       <div id="dash-overview">
         <div class="page-header">
-          <h2>Bienvenida, Ana 👋</h2>
+          <h2 id="dash-welcome-heading">Bienvenido/a 👋</h2>
           <p>Aquí tienes un resumen de tu actividad reciente</p>
         </div>
         <div class="stats-row">
@@ -1602,17 +1608,20 @@ function logout() {
 
 // ─── CREATOR DASHBOARD ──────────────────────────────────
 async function loadCreatorDashboard() {
+  if (!CURRENT_USER) return;
+  const name = (CURRENT_USER.name && String(CURRENT_USER.name).trim()) || 'Creador';
+  const initial = name.replace(/\s/g, '').charAt(0).toUpperCase() || '?';
+
   const sidebarAvatar = document.getElementById('sidebar-avatar');
   const sidebarName = document.getElementById('sidebar-name');
   const sidebarHandle = document.getElementById('sidebar-handle');
-  if (sidebarAvatar) sidebarAvatar.textContent = CURRENT_USER.name[0].toUpperCase();
-  if (sidebarName) sidebarName.textContent = CURRENT_USER.name;
-  if (sidebarHandle) sidebarHandle.textContent = CURRENT_USER.handle || '@' + CURRENT_USER.name.toLowerCase();
+  if (sidebarAvatar) sidebarAvatar.textContent = initial;
+  if (sidebarName) sidebarName.textContent = name;
+  if (sidebarHandle) sidebarHandle.textContent = CURRENT_USER.handle || '@' + name.toLowerCase().replace(/\s+/g, '');
 
-  // Update sidebar name
-  document.querySelector('#creator-dashboard .sidebar > div:first-child div:nth-child(2) div:first-child').textContent = CURRENT_USER.name;
-  document.querySelector('#creator-dashboard .sidebar > div:first-child div:nth-child(2) div:nth-child(2)').textContent = CURRENT_USER.handle || '@' + CURRENT_USER.name.toLowerCase();
-  document.querySelector('#creator-dashboard .sidebar > div:first-child div:first-child').textContent = CURRENT_USER.name[0].toUpperCase();
+  const welcome = document.getElementById('dash-welcome-heading');
+  if (welcome) welcome.textContent = `Bienvenido/a, ${name} 👋`;
+
   await loadStats();
   await loadMyContent();
 }
