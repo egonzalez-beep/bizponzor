@@ -12,6 +12,7 @@ const {
 
 const MP_CURRENCY = process.env.MP_CURRENCY_ID || 'MXN';
 const APP_URL = 'https://bizponzor-production.up.railway.app';
+const MIN_AMOUNT = 10;
 
 const isValidEmail = (email) => {
   return typeof email === 'string' && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
@@ -48,8 +49,18 @@ router.post('/checkout', auth, async (req, res) => {
       });
     }
 
-    const sub_id = uuidv4();
     const amount = Number(plan.price);
+
+    if (amount < MIN_AMOUNT) {
+      console.error('[MP] Monto inválido:', amount);
+
+      return res.status(400).json({
+        success: false,
+        error: 'El monto mínimo de suscripción es $10 MXN'
+      });
+    }
+
+    const sub_id = uuidv4();
 
     db.prepare(
       `INSERT INTO subscriptions (id, fan_id, creator_id, plan_id, status, amount)
