@@ -793,7 +793,7 @@
               <option value="public">🔓 Público — visible para todos</option>
             </select>
           </div>
-          <button class="btn btn-primary" onclick="showNotif('¡Contenido publicado exitosamente! 🎉')">Publicar ahora</button>
+          <button class="btn btn-primary" onclick="publishContent(event)">Publicar ahora</button>
         </div>
       </div>
 
@@ -1406,7 +1406,7 @@ async function handleFileUpload(input) {
   window._pendingFile = f;
 }
 
-async function publishContent() {
+async function publishContent(evt) {
   if (!window._pendingFile) { showNotif('⚠️ Primero selecciona un archivo'); return; }
   const title = document.querySelector('#dash-upload input[type=text]').value;
   const description = document.querySelector('#dash-upload textarea').value;
@@ -1416,9 +1416,25 @@ async function publishContent() {
   formData.append('title', title || window._pendingFile.name);
   formData.append('description', description);
   formData.append('is_exclusive', is_exclusive);
-  const btn = event.target; btn.textContent = 'Subiendo...'; btn.disabled = true;
-  const res = await api.upload('/content/upload', formData);
-  btn.textContent = 'Publicar ahora'; btn.disabled = false;
+  console.log('[publishContent] sending file', {
+    name: window._pendingFile.name,
+    size: window._pendingFile.size,
+    type: window._pendingFile.type,
+    hasFileInFormData: !!formData.get('file')
+  });
+  const btn = evt?.target || document.querySelector('#dash-upload .btn-primary');
+  if (btn) { btn.textContent = 'Subiendo...'; btn.disabled = true; }
+  let res;
+  try {
+    res = await api.upload('/content/upload', formData);
+  } catch (err) {
+    console.error('[publishContent] upload fetch error', err);
+    if (btn) { btn.textContent = 'Publicar ahora'; btn.disabled = false; }
+    showNotif('❌ Error de red al subir archivo');
+    return;
+  }
+  if (btn) { btn.textContent = 'Publicar ahora'; btn.disabled = false; }
+  console.log('[publishContent] upload response', res);
   if (res.error) { showNotif('❌ ' + res.error); return; }
   showNotif('🎉 ¡Contenido publicado exitosamente!');
   window._pendingFile = null;
@@ -1599,7 +1615,7 @@ async function loadEarnings() {
 document.addEventListener('DOMContentLoaded', () => {
   // Wire up publish button properly
   const publishBtn = document.querySelector('#dash-upload .btn-primary');
-  if (publishBtn) publishBtn.setAttribute('onclick', 'publishContent()');
+  if (publishBtn) publishBtn.setAttribute('onclick', 'publishContent(event)');
   // Check if already logged in
   if (TOKEN && CURRENT_USER) {
     if (CURRENT_USER.role === 'creator') loadCreatorDashboard();

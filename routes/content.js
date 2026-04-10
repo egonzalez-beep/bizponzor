@@ -7,19 +7,43 @@ const { v4: uuidv4 } = require('uuid');
 const db = require('../db');
 const authMiddleware = require('../middleware/auth');
 
+const uploadsDir = path.join(__dirname, '../uploads');
+fs.mkdirSync(uploadsDir, { recursive: true });
+
 const storage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    const dir = path.join(__dirname, '../uploads');
-    fs.mkdirSync(dir, { recursive: true });
-    cb(null, dir);
-  },
+  destination: (req, file, cb) => cb(null, uploadsDir),
   filename: (req, file, cb) => cb(null, uuidv4() + path.extname(file.originalname))
 });
-const upload = multer({ storage, limits: { fileSize: 4 * 1024 * 1024 * 1024 } });
+const upload = multer({ storage, limits: { fileSize: 50 * 1024 * 1024 } });
 
-router.post('/upload', authMiddleware, upload.single('file'), (req, res) => {
+function uploadSingleFile(req, res, next) {
+  upload.single('file')(req, res, (err) => {
+    if (err) {
+      if (err.code === 'LIMIT_FILE_SIZE') {
+        return res.status(400).json({ error: 'Archivo demasiado grande (max 50MB)' });
+      }
+      return res.status(400).json({ error: 'Error al procesar archivo', detail: err.message });
+    }
+    next();
+  });
+}
+
+router.post('/upload', authMiddleware, (req, res, next) => {
+  console.log('[content/upload] Incoming request', {
+    contentType: req.headers['content-type'],
+    authHeader: !!req.headers.authorization
+  });
+  next();
+}, uploadSingleFile, (req, res) => {
   try {
     if (req.user.role !== 'creator') return res.status(403).json({ error: 'Solo creadores' });
+    console.log('[content/upload] Parsed payload', {
+      bodyKeys: Object.keys(req.body || {}),
+      hasFile: !!req.file,
+      fileField: req.file?.fieldname,
+      originalName: req.file?.originalname,
+      savedAs: req.file?.filename
+    });
     if (!req.file) return res.status(400).json({ error: 'Archivo requerido' });
     const { title, description, is_exclusive } = req.body;
     const ext = path.extname(req.file.filename).toLowerCase();
@@ -29,7 +53,10 @@ router.post('/upload', authMiddleware, upload.single('file'), (req, res) => {
     db.prepare('INSERT INTO content (id, creator_id, title, description, type, file_url, is_exclusive) VALUES (?,?,?,?,?,?,?)')
       .run(id, req.user.id, title || 'Sin titulo', description || '', type, file_url, is_exclusive === 'true' ? 1 : 0);
     res.json({ id, title, type, file_url, is_exclusive: is_exclusive === 'true' });
-  } catch (e) { res.status(500).json({ error: e.message }); }
+  } catch (e) {
+    console.error('[content/upload] Handler error:', e);
+    res.status(500).json({ error: e.message });
+  }
 });
 
 router.get('/feed/:creatorId', (req, res) => {
