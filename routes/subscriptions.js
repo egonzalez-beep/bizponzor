@@ -46,7 +46,11 @@ router.post('/checkout', auth, async (req, res) => {
         }],
         marketplace_fee: Math.round(plan.price * 0.15 * 100) / 100,  // 15% de comisión para la plataforma
         payer: { email: req.user.email },
-        back_urls: { success: process.env.APP_URL + '/success?sub=' + sub_id, failure: process.env.APP_URL + '/failure', pending: process.env.APP_URL + '/pending' },
+        back_urls: {
+          success: process.env.APP_URL + '/success?sub=' + sub_id,
+          failure: process.env.APP_URL + '/failure',
+          pending: process.env.APP_URL + '/pending'
+        },
         auto_return: 'approved',
         notification_url: process.env.APP_URL + '/api/webhook/mp',
         external_reference: sub_id,
