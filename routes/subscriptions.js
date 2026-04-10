@@ -13,6 +13,10 @@ const {
 const MP_CURRENCY = process.env.MP_CURRENCY_ID || 'MXN';
 const APP_URL = process.env.APP_URL || 'http://localhost:3000';
 
+const isValidEmail = (email) => {
+  return typeof email === 'string' && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+};
+
 /**
  * POST /api/subscriptions/checkout
  * Crea fila pending en DB y luego PreApproval en Mercado Pago (suscripción recurrente real).
@@ -34,6 +38,15 @@ router.post('/checkout', auth, async (req, res) => {
 
     if (!plan) return res.status(404).json({ error: 'Plan no encontrado' });
     if (!creator) return res.status(404).json({ error: 'Creador no encontrado' });
+
+    if (!req.user || !isValidEmail(req.user.email)) {
+      console.error('[MP] Email inválido:', req.user?.email);
+
+      return res.status(400).json({
+        success: false,
+        error: 'Tu cuenta tiene un email inválido. Actualízalo antes de continuar.'
+      });
+    }
 
     const sub_id = uuidv4();
     const amount = Number(plan.price);
@@ -86,6 +99,7 @@ router.post('/checkout', auth, async (req, res) => {
     });
 
     try {
+      console.log('[MP] Enviando email a MP:', req.user.email);
       const rawMp = await preApprovalClient.create({ body });
       const mpResponse = normalizePreapprovalPayload(rawMp) || rawMp;
       const mpId = mpResponse.id;
