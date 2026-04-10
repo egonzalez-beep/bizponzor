@@ -55,7 +55,11 @@ router.put('/profile', require('../middleware/auth'), (req, res) => {
   if (!cleanedHandle || cleanedHandle.length < 3) {
     return res.status(400).json({ error: 'Tu alias debe tener al menos 3 caracteres' });
   }
-  const normalizedHandle = cleanedHandle.startsWith('@') ? cleanedHandle : ('@' + cleanedHandle);
+  const handleCore = cleanedHandle.replace(/^@+/, '').toLowerCase().replace(/[^a-z0-9._]/g, '');
+  if (!handleCore || handleCore.length < 3) {
+    return res.status(400).json({ error: 'Usa solo letras, numeros, punto o guion bajo (min 3)' });
+  }
+  const normalizedHandle = '@' + handleCore;
   const handleTaken = db.prepare('SELECT id FROM users WHERE handle = ? AND id != ?').get(normalizedHandle, req.user.id);
   if (handleTaken) return res.status(409).json({ error: 'Ese alias ya está en uso' });
   db.prepare('UPDATE users SET handle=?, bio=?, category=?, avatar_color=? WHERE id=?')

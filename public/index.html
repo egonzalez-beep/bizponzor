@@ -1329,9 +1329,48 @@
   }
 
   async function showCreatorProfile() {
-    if (CURRENT_USER && CURRENT_USER.role === 'creator' && CURRENT_USER.handle) {
-      await openCreatorProfile(CURRENT_USER.handle);
-      return;
+    if (CURRENT_USER && CURRENT_USER.role === 'creator') {
+      const creator = await api.get('/creators/me');
+      if (!creator.error) {
+        CURRENT_CREATOR_ID = creator.id;
+        document.querySelector('.profile-name').textContent = creator.name;
+        document.querySelector('.profile-handle').textContent = (creator.handle || '') + ' · ' + (creator.category || 'Creador');
+        document.querySelector('.profile-bio').textContent = creator.bio || 'Bienvenido a mi perfil en BizPonzor';
+        document.querySelectorAll('.profile-info strong')[0].textContent = creator.subscribers;
+        document.querySelectorAll('.profile-info strong')[1].textContent = creator.content_count;
+        const avatarDiv = document.querySelector('.profile-avatar');
+        if (avatarDiv) {
+          avatarDiv.style.backgroundImage = '';
+          avatarDiv.style.background = creator.avatar_color || '#333333';
+          const aliasInitial = (creator.handle || creator.name || 'C').replace('@', '').charAt(0).toUpperCase();
+          avatarDiv.textContent = aliasInitial;
+        }
+        const bannerDiv = document.querySelector('.profile-banner');
+        if (bannerDiv) {
+          if (creator.banner_url) {
+            bannerDiv.style.backgroundImage = `url(${creator.banner_url})`;
+            bannerDiv.style.backgroundSize = 'cover';
+            bannerDiv.style.backgroundPosition = 'center';
+          } else {
+            bannerDiv.style.backgroundImage = '';
+            bannerDiv.style.background = 'linear-gradient(135deg, #1a1a1a 0%, #444 100%)';
+          }
+        }
+        const content = await api.get('/content/feed/' + creator.id);
+        const grid = document.querySelector('.profile-feed .content-grid');
+        if (grid && Array.isArray(content)) renderFanContent(grid, content);
+        const plans = await api.get('/plans/' + creator.id);
+        const plansContainer = document.querySelector('.profile-sidebar-card > div');
+        if (plansContainer && Array.isArray(plans)) {
+          plansContainer.innerHTML = plans.map((p, i) => `
+            <div style="border:${p.is_featured ? '2px solid var(--black);background:var(--black);color:white' : '1.5px solid var(--gray-200)'};border-radius:var(--radius-sm);padding:14px;cursor:pointer;margin-bottom:10px;" onclick="selectPlan('${p.id}','${creator.id}','${p.name}',${p.price})">
+              <div style="font-weight:700;font-size:0.9rem;">${['⭐','💎','👑'][i] || '✦'} ${p.name} — $${p.price}/mes</div>
+              <div style="font-size:0.75rem;color:${p.is_featured ? 'var(--gray-300)' : 'var(--gray-500)'};margin-top:4px;">${p.features[0] || ''}</div>
+            </div>`).join('');
+        }
+        showPage('creator-profile');
+        return;
+      }
     }
     showPage('creator-profile');
   }
