@@ -759,25 +759,26 @@
   <div class="dashboard-layout">
     <!-- Sidebar -->
     <div class="sidebar">
-      <div style="display:flex;align-items:center;gap:10px;padding:8px 12px;margin-bottom:24px;">
-        <div style="width:38px;height:38px;background:var(--black);border-radius:50%;display:flex;align-items:center;justify-content:center;color:white;font-weight:800;font-size:0.9rem;">A</div>
+      <div style="display:flex;align-items:center;gap:10px;padding:8px 12px;margin-bottom:16px;">
+        <div style="width:38px;height:38px;background:var(--black);border-radius:50%;display:flex;align-items:center;justify-content:center;color:white;font-weight:800;font-size:0.9rem;" id="sidebar-avatar">A</div>
         <div>
-          <div style="font-size:0.85rem;font-weight:700;">Ana Molina</div>
-          <div style="font-size:0.72rem;color:var(--gray-500);">@anamolina</div>
+          <div style="font-size:0.85rem;font-weight:700;" id="sidebar-name">Ana Molina</div>
+          <div style="font-size:0.72rem;color:var(--gray-500);" id="sidebar-handle">@anamolina</div>
         </div>
       </div>
+      <button class="btn btn-outline btn-sm" style="width:100%;margin-bottom:24px;" onclick="showCreatorProfile()">🔍 Ver mi perfil público</button>
       <div class="sidebar-section">
-        <div class="sidebar-label">Principal</div>
+        <div class="sidebar-label">PRINCIPAL</div>
         <div class="sidebar-item active" onclick="setDashTab('overview', this)"><span class="icon">📊</span> Resumen</div>
         <div class="sidebar-item" onclick="setDashTab('content', this)"><span class="icon">🎬</span> Mi Contenido</div>
         <div class="sidebar-item" onclick="setDashTab('upload', this)"><span class="icon">⬆️</span> Subir</div>
         <div class="sidebar-item" onclick="setDashTab('plans', this)"><span class="icon">💳</span> Mis Planes</div>
       </div>
       <div class="sidebar-section">
-        <div class="sidebar-label">Cuenta</div>
-        <div class="sidebar-item" onclick="setDashTab('profile', this)"><span class="icon">👤</span> Mi Perfil</div>
+        <div class="sidebar-label">CUENTA</div>
+        <div class="sidebar-item" onclick="setDashTab('settings', this)"><span class="icon">⚙️</span> Configuración</div>
         <div class="sidebar-item" onclick="setDashTab('earnings', this)"><span class="icon">💰</span> Ganancias</div>
-        <div class="sidebar-item" onclick="showPage('landing')"><span class="icon">🚪</span> Salir</div>
+        <div class="sidebar-item" onclick="logout()"><span class="icon">🚪</span> Salir</div>
       </div>
     </div>
 
@@ -953,7 +954,7 @@
       </div>
 
       <!-- PROFILE TAB -->
-      <div id="dash-profile" style="display:none;">
+      <div id="dash-settings" style="display:none;">
         <div class="page-header"><h2>Mi Perfil</h2><p>Así te ven tus patrocinadores</p></div>
         <div style="background:var(--white);border:1px solid var(--gray-200);border-radius:var(--radius);padding:28px;max-width:600px;">
           <div class="form-group">
@@ -1272,7 +1273,9 @@
 
   function updateNavbar(page) {
     const actions = document.getElementById('navbar-actions');
-    if (CURRENT_USER && CURRENT_USER.role === 'creator') {
+    if (page === 'creator-profile') {
+      actions.innerHTML = `<button class="btn btn-ghost" onclick="goBackToDashboard()">← Volver al panel</button>`;
+    } else if (CURRENT_USER && CURRENT_USER.role === 'creator') {
       actions.innerHTML = `<span style="font-size:0.82rem;color:var(--gray-500);">${CURRENT_USER.name}</span><button class="btn btn-outline btn-sm" onclick="logout()">Salir</button>`;
     } else if (CURRENT_USER && CURRENT_USER.role === 'fan') {
       actions.innerHTML = `<span style="font-size:0.82rem;color:var(--gray-500);">${CURRENT_USER.name} 👋</span><button class="btn btn-outline btn-sm" onclick="logout()">Salir</button>`;
@@ -1307,8 +1310,23 @@
     showPage('creator-profile');
   }
 
+  function goBackToDashboard() {
+    if (CURRENT_USER && CURRENT_USER.role === 'creator') {
+      document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+      document.getElementById('creator-dashboard').classList.add('active');
+      updateNavbar('creator-dashboard');
+      setDashTab('overview', document.querySelector('#creator-dashboard .sidebar-item.active'));
+    } else if (CURRENT_USER && CURRENT_USER.role === 'fan') {
+      document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+      document.getElementById('fan-dashboard').classList.add('active');
+      updateNavbar('fan-dashboard');
+    } else {
+      showPage('landing');
+    }
+  }
+
   function setDashTab(tab, el) {
-    const tabs = ['overview','content','upload','plans','profile','earnings'];
+    const tabs = ['overview','content','upload','plans','settings','earnings'];
     tabs.forEach(t => {
       const el = document.getElementById('dash-' + t);
       if (el) el.style.display = 'none';
@@ -1516,6 +1534,13 @@ function logout() {
 
 // ─── CREATOR DASHBOARD ──────────────────────────────────
 async function loadCreatorDashboard() {
+  const sidebarAvatar = document.getElementById('sidebar-avatar');
+  const sidebarName = document.getElementById('sidebar-name');
+  const sidebarHandle = document.getElementById('sidebar-handle');
+  if (sidebarAvatar) sidebarAvatar.textContent = CURRENT_USER.name[0].toUpperCase();
+  if (sidebarName) sidebarName.textContent = CURRENT_USER.name;
+  if (sidebarHandle) sidebarHandle.textContent = CURRENT_USER.handle || '@' + CURRENT_USER.name.toLowerCase();
+
   // Update sidebar name
   document.querySelector('#creator-dashboard .sidebar > div:first-child div:nth-child(2) div:first-child').textContent = CURRENT_USER.name;
   document.querySelector('#creator-dashboard .sidebar > div:first-child div:nth-child(2) div:nth-child(2)').textContent = CURRENT_USER.handle || '@' + CURRENT_USER.name.toLowerCase();
