@@ -11,7 +11,7 @@ const {
 } = require('../lib/mpSubscription');
 
 const MP_CURRENCY = process.env.MP_CURRENCY_ID || 'MXN';
-const APP_URL = process.env.APP_URL || 'http://localhost:3000';
+const APP_URL = process.env.APP_URL;
 
 const isValidEmail = (email) => {
   return typeof email === 'string' && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
@@ -71,6 +71,10 @@ router.post('/checkout', auth, async (req, res) => {
       return res.status(500).json({ error: 'Mercado Pago no configurado' });
     }
 
+    if (!APP_URL || APP_URL.includes('localhost')) {
+      throw new Error('APP_URL inválida. Debe ser una URL pública');
+    }
+
     const startDate = new Date();
     const endDate = new Date();
     endDate.setFullYear(endDate.getFullYear() + 2);
@@ -87,7 +91,7 @@ router.post('/checkout', auth, async (req, res) => {
         start_date: startDate.toISOString(),
         end_date: endDate.toISOString()
       },
-      back_url: `${APP_URL}/success?sub=${encodeURIComponent(sub_id)}`,
+      back_url: `${APP_URL}/success?sub=${sub_id}`,
       notification_url: `${APP_URL}/api/webhook/mp`
     };
 
@@ -99,6 +103,7 @@ router.post('/checkout', auth, async (req, res) => {
     });
 
     try {
+      console.log('[MP] back_url usada:', `${APP_URL}/success?sub=${sub_id}`);
       console.log('[MP] Enviando email a MP:', req.user.email);
       const rawMp = await preApprovalClient.create({ body });
       const mpResponse = normalizePreapprovalPayload(rawMp) || rawMp;
