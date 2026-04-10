@@ -5,7 +5,11 @@ const db = require('../db');
 const auth = require('../middleware/auth');
 
 router.get('/:creatorId', (req, res) => {
-  const plans = db.prepare('SELECT * FROM plans WHERE creator_id=? AND active=1 ORDER BY price ASC').all(req.params.creatorId);
+  const plans = db
+    .prepare(
+      'SELECT * FROM plans WHERE creator_id=? AND active=1 ORDER BY is_featured DESC, price ASC'
+    )
+    .all(req.params.creatorId);
   res.json(plans.map(p => ({ ...p, features: JSON.parse(p.features || '[]') })));
 });
 

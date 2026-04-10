@@ -284,6 +284,15 @@
 
   /* Content grid */
   .content-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 16px; }
+  .content-grid.creator-profile-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+  @media (max-width: 1024px) {
+    .content-grid.creator-profile-grid { grid-template-columns: repeat(2, 1fr); }
+  }
+  @media (max-width: 640px) {
+    .content-grid.creator-profile-grid { grid-template-columns: 1fr; }
+  }
   .content-item {
     background: var(--white); border-radius: var(--radius);
     border: 1px solid var(--gray-200); overflow: hidden;
@@ -295,24 +304,43 @@
     background: var(--gray-200); position: relative;
     display: flex; align-items: center; justify-content: center;
     font-size: 2.5rem;
+    overflow: hidden;
+  }
+  .content-thumb.aspect-photo { aspect-ratio: 1 / 1; }
+  .content-thumb.aspect-video { aspect-ratio: 16 / 9; }
+  .content-thumb.aspect-text {
+    aspect-ratio: 1 / 1;
+    background: #f3f4f6 !important;
+    cursor: pointer;
+  }
+  .content-thumb .thumb-fill-media {
+    position: absolute; inset: 0; width: 100%; height: 100%;
+    object-fit: cover;
+    pointer-events: none;
   }
   .content-type-badge {
     position: absolute; top: 10px; left: 10px;
     background: rgba(0,0,0,0.75); color: white;
     padding: 3px 10px; border-radius: 999px; font-size: 0.68rem; font-weight: 700;
     text-transform: uppercase; letter-spacing: 0.5px;
+    z-index: 2;
+  }
+  .content-type-badge.text-type-badge {
+    background: #6B7280;
+    text-transform: none;
   }
   .lock-overlay {
     position: absolute; inset: 0;
     background: rgba(10,10,10,0.65); backdrop-filter: blur(4px);
     display: flex; align-items: center; justify-content: center;
     color: white; font-size: 2rem;
+    z-index: 3;
   }
   .content-info { padding: 14px; }
   .content-info h4 { font-size: 0.875rem; font-weight: 700; margin-bottom: 4px; }
   .content-info p { font-size: 0.75rem; color: var(--gray-500); }
   .content-info .exclusive-badge {
-    display: inline-block; background: var(--black); color: white;
+    display: inline-block; background: #EF4444; color: white;
     font-size: 0.65rem; font-weight: 700; padding: 2px 8px; border-radius: 999px;
     margin-top: 6px; text-transform: uppercase; letter-spacing: 0.5px;
   }
@@ -467,9 +495,13 @@
   /* Creator Profile (public) */
   #creator-profile { padding-top: 64px; }
   .profile-banner {
-    height: 260px;
+    height: min(280px, 36vw);
+    min-height: 200px;
     background: linear-gradient(135deg, #1a1a1a 0%, #444 100%);
     position: relative;
+    background-size: cover;
+    background-position: center;
+    box-shadow: inset 0 -1px 0 rgba(0,0,0,0.08);
   }
   .profile-info {
     max-width: 900px; margin: 0 auto; padding: 0 32px;
@@ -478,9 +510,10 @@
     margin-top: -50px; margin-bottom: 20px; position: relative; display: inline-block;
   }
   .profile-avatar {
-    width: 100px; height: 100px; border-radius: 50%;
+    width: 104px; height: 104px; border-radius: 50%;
     background: linear-gradient(135deg, #333 0%, #888 100%);
     border: 4px solid var(--white);
+    box-shadow: 0 8px 24px rgba(0,0,0,0.12);
     display: flex; align-items: center; justify-content: center;
     font-size: 2.5rem; font-weight: 800; color: white;
   }
@@ -865,37 +898,53 @@
       <div id="dash-upload" style="display:none;">
         <div class="page-header">
           <h2>Subir Contenido</h2>
-          <p>Sube fotos o videos directamente desde tu ordenador</p>
+          <p>Fotos, videos o publicaciones de texto</p>
         </div>
-        <div class="upload-area" onclick="simulateUpload()">
-          <div class="upload-icon">☁️</div>
-          <h3>Arrastra archivos aquí o haz clic para seleccionar</h3>
-          <p>Soporta JPG, PNG, GIF, MP4, MOV, AVI · Máximo 4GB por archivo</p>
-          <input type="file" id="file-upload" multiple accept="image/*,video/*" style="display:none;" onchange="handleFileUpload(this)">
+        <div class="form-group" style="max-width:400px;">
+          <label class="form-label">Tipo de contenido</label>
+          <select class="form-input" id="upload-content-type" onchange="onUploadTypeChange()">
+            <option value="file">📷 Archivo (foto o video)</option>
+            <option value="text">📝 Texto</option>
+          </select>
         </div>
-        <div id="upload-preview" style="display:none;background:var(--white);border:1px solid var(--gray-200);border-radius:var(--radius);padding:24px;margin-bottom:24px;">
-          <div style="display:flex;align-items:center;gap:12px;margin-bottom:16px;">
-            <span style="font-size:1.5rem;">📁</span>
-            <div>
-              <div style="font-size:0.9rem;font-weight:700;" id="upload-filename">archivo.jpg</div>
-              <div style="font-size:0.75rem;color:var(--gray-500);">Listo para publicar</div>
+        <div id="upload-file-section">
+          <div class="upload-area" onclick="simulateUpload()">
+            <div class="upload-icon">☁️</div>
+            <h3>Arrastra archivos aquí o haz clic para seleccionar</h3>
+            <p>Soporta JPG, PNG, GIF, MP4, MOV, AVI · Máximo 4GB por archivo</p>
+            <input type="file" id="file-upload" multiple accept="image/*,video/*" style="display:none;" onchange="handleFileUpload(this)">
+          </div>
+          <div id="upload-preview" style="display:none;background:var(--white);border:1px solid var(--gray-200);border-radius:var(--radius);padding:24px;margin-bottom:24px;">
+            <div style="display:flex;align-items:center;gap:12px;margin-bottom:16px;">
+              <span style="font-size:1.5rem;">📁</span>
+              <div>
+                <div style="font-size:0.9rem;font-weight:700;" id="upload-filename">archivo.jpg</div>
+                <div style="font-size:0.75rem;color:var(--gray-500);">Listo para publicar</div>
+              </div>
+              <span class="tag-pill green" style="margin-left:auto;">✓ Cargado</span>
             </div>
-            <span class="tag-pill green" style="margin-left:auto;">✓ Cargado</span>
+          </div>
+        </div>
+        <div id="upload-text-section" style="display:none;background:var(--white);border:1px solid var(--gray-200);border-radius:var(--radius);padding:28px;margin-bottom:24px;">
+          <h3 style="font-size:1rem;font-weight:700;margin-bottom:16px;">📝 Publicación de texto</h3>
+          <div class="form-group">
+            <label class="form-label">Texto completo</label>
+            <textarea class="form-input" id="upload-text-body" rows="8" placeholder="Escribe tu publicación..."></textarea>
           </div>
         </div>
         <div style="background:var(--white);border:1px solid var(--gray-200);border-radius:var(--radius);padding:28px;">
           <h3 style="font-size:1rem;font-weight:700;margin-bottom:20px;">Detalles de publicación</h3>
           <div class="form-group">
             <label class="form-label">Título del contenido</label>
-            <input type="text" class="form-input" placeholder="Dale un nombre a tu contenido">
+            <input type="text" class="form-input" id="upload-title" placeholder="Dale un nombre a tu contenido">
           </div>
           <div class="form-group">
             <label class="form-label">Descripción (opcional)</label>
-            <textarea class="form-input" rows="3" placeholder="Describe este contenido..."></textarea>
+            <textarea class="form-input" id="upload-description" rows="3" placeholder="Describe este contenido..."></textarea>
           </div>
           <div class="form-group">
             <label class="form-label">Acceso</label>
-            <select class="form-input">
+            <select class="form-input" id="upload-access">
               <option value="exclusive">🔒 Exclusivo — solo para suscriptores</option>
               <option value="public">🔓 Público — visible para todos</option>
             </select>
@@ -1018,15 +1067,30 @@
 
       <!-- EARNINGS TAB -->
       <div id="dash-earnings" style="display:none;">
-        <div class="page-header"><h2>Mis Ganancias</h2><p>Historial de pagos y transacciones</p></div>
+        <div class="page-header"><h2>Mis Ganancias</h2><p>Suscripciones y donaciones recibidas</p></div>
         <div class="stats-row">
-          <div class="stat-card"><div class="s-label">Total acumulado</div><div class="s-value">$24,600</div><div class="s-change">↑ Histórico</div></div>
-          <div class="stat-card"><div class="s-label">Este mes</div><div class="s-value">$4,920</div><div class="s-change">↑ +12% vs. anterior</div></div>
-          <div class="stat-card"><div class="s-label">Próximo pago</div><div class="s-value">$4,920</div><div class="s-change">15 de Mayo 2025</div></div>
+          <div class="stat-card"><div class="s-label">Total donaciones</div><div class="s-value" id="earnings-donations-total">$0</div><div class="s-change">Confirmadas vía MP</div></div>
+          <div class="stat-card"><div class="s-label">Este mes (suscripciones)</div><div class="s-value" id="earnings-sub-month">$0</div><div class="s-change">Ingresos recurrentes</div></div>
+          <div class="stat-card"><div class="s-label">Suscriptores</div><div class="s-value" id="earnings-sub-count">0</div><div class="s-change">Activos</div></div>
+        </div>
+        <div style="background:var(--white);border:1px solid var(--gray-200);border-radius:var(--radius);overflow:hidden;margin-bottom:24px;">
+          <div style="padding:20px 24px;border-bottom:1px solid var(--gray-200);">
+            <h3 style="font-size:1rem;font-weight:800;">Donaciones recibidas</h3>
+          </div>
+          <table style="width:100%;border-collapse:collapse;">
+            <thead><tr style="background:var(--gray-100);">
+              <th style="padding:12px 24px;text-align:left;font-size:0.75rem;color:var(--gray-500);font-weight:700;">FAN</th>
+              <th style="padding:12px 24px;text-align:left;font-size:0.75rem;color:var(--gray-500);font-weight:700;">FECHA</th>
+              <th style="padding:12px 24px;text-align:right;font-size:0.75rem;color:var(--gray-500);font-weight:700;">MONTO</th>
+            </tr></thead>
+            <tbody id="donations-tbody">
+              <tr><td colspan="3" style="padding:24px;text-align:center;color:var(--gray-500);">Cargando…</td></tr>
+            </tbody>
+          </table>
         </div>
         <div style="background:var(--white);border:1px solid var(--gray-200);border-radius:var(--radius);overflow:hidden;">
           <div style="padding:20px 24px;border-bottom:1px solid var(--gray-200);">
-            <h3 style="font-size:1rem;font-weight:800;">Últimas transacciones</h3>
+            <h3 style="font-size:1rem;font-weight:800;">Suscriptores (planes)</h3>
           </div>
           <table style="width:100%;border-collapse:collapse;">
             <thead><tr style="background:var(--gray-100);">
@@ -1035,31 +1099,8 @@
               <th style="padding:12px 24px;text-align:left;font-size:0.75rem;color:var(--gray-500);font-weight:700;">FECHA</th>
               <th style="padding:12px 24px;text-align:right;font-size:0.75rem;color:var(--gray-500);font-weight:700;">MONTO</th>
             </tr></thead>
-            <tbody>
-              <tr style="border-top:1px solid var(--gray-200);">
-                <td style="padding:14px 24px;font-size:0.875rem;font-weight:600;">Luis García</td>
-                <td style="padding:14px 24px;"><span class="tag-pill">Premium</span></td>
-                <td style="padding:14px 24px;font-size:0.82rem;color:var(--gray-500);">4 Mayo 2025</td>
-                <td style="padding:14px 24px;text-align:right;font-weight:700;">$12.00</td>
-              </tr>
-              <tr style="border-top:1px solid var(--gray-200);">
-                <td style="padding:14px 24px;font-size:0.875rem;font-weight:600;">Sara López</td>
-                <td style="padding:14px 24px;"><span class="tag-pill">VIP</span></td>
-                <td style="padding:14px 24px;font-size:0.82rem;color:var(--gray-500);">3 Mayo 2025</td>
-                <td style="padding:14px 24px;text-align:right;font-weight:700;">$25.00</td>
-              </tr>
-              <tr style="border-top:1px solid var(--gray-200);">
-                <td style="padding:14px 24px;font-size:0.875rem;font-weight:600;">Pedro M.</td>
-                <td style="padding:14px 24px;"><span class="tag-pill">Básico</span></td>
-                <td style="padding:14px 24px;font-size:0.82rem;color:var(--gray-500);">2 Mayo 2025</td>
-                <td style="padding:14px 24px;text-align:right;font-weight:700;">$5.00</td>
-              </tr>
-              <tr style="border-top:1px solid var(--gray-200);">
-                <td style="padding:14px 24px;font-size:0.875rem;font-weight:600;">Daniela R.</td>
-                <td style="padding:14px 24px;"><span class="tag-pill">Premium</span></td>
-                <td style="padding:14px 24px;font-size:0.82rem;color:var(--gray-500);">1 Mayo 2025</td>
-                <td style="padding:14px 24px;text-align:right;font-weight:700;">$12.00</td>
-              </tr>
+            <tbody id="earnings-subs-tbody">
+              <tr><td colspan="4" style="padding:24px;text-align:center;color:var(--gray-500);">Cargando…</td></tr>
             </tbody>
           </table>
         </div>
@@ -1192,44 +1233,17 @@
   <div class="profile-body">
     <div class="profile-feed">
       <h3>Publicaciones recientes</h3>
-      <div class="content-grid">
-        <div class="content-item"><div class="content-thumb" style="background:#f0f0f0">📸<span class="content-type-badge">FOTO</span></div><div class="content-info"><h4>Sesión Abril 2025</h4><p>hace 2 días</p><span class="exclusive-badge">Exclusivo</span></div></div>
-        <div class="content-item">
-          <div class="content-thumb" style="background:#e8e8e8">
-            🎬<span class="content-type-badge">VIDEO</span>
-            <div class="lock-overlay">🔒</div>
-          </div>
-          <div class="content-info"><h4>BTS Shooting ciudad</h4><p>Solo para suscriptores</p></div>
-        </div>
-        <div class="content-item"><div class="content-thumb" style="background:#f5f5f5">📸<span class="content-type-badge">FOTO</span></div><div class="content-info"><h4>Portfolio Marzo</h4><p>hace 1 semana</p></div></div>
-        <div class="content-item">
-          <div class="content-thumb" style="background:#ebebeb">
-            🎬<span class="content-type-badge">VIDEO</span>
-            <div class="lock-overlay">🔒</div>
-          </div>
-          <div class="content-info"><h4>Tutorial de edición</h4><p>Solo para suscriptores</p></div>
-        </div>
-      </div>
+      <div class="content-grid creator-profile-grid" id="profile-content-grid"></div>
     </div>
     <div>
-      <div class="profile-sidebar-card">
+      <div class="profile-sidebar-card" id="profile-plans-card">
         <h4>Hazte patrocinador 💎</h4>
-        <p style="font-size:0.82rem;color:var(--gray-600);margin-bottom:20px;">Accede a contenido exclusivo y apoya directamente a Ana</p>
-        <div style="display:flex;flex-direction:column;gap:10px;">
-          <div style="border:1.5px solid var(--gray-200);border-radius:var(--radius-sm);padding:14px;cursor:pointer;transition:all 0.15s;" onmouseenter="this.style.borderColor='#000'" onmouseleave="this.style.borderColor='var(--gray-200)'">
-            <div style="font-weight:700;font-size:0.9rem;">⭐ Básico — $5/mes</div>
-            <div style="font-size:0.75rem;color:var(--gray-500);margin-top:4px;">Fotos exclusivas</div>
-          </div>
-          <div style="border:2px solid var(--black);border-radius:var(--radius-sm);padding:14px;cursor:pointer;background:var(--black);color:white;">
-            <div style="font-weight:700;font-size:0.9rem;">💎 Premium — $12/mes</div>
-            <div style="font-size:0.75rem;color:var(--gray-400);margin-top:4px;">Fotos + Videos exclusivos</div>
-          </div>
-          <div style="border:1.5px solid var(--gray-200);border-radius:var(--radius-sm);padding:14px;cursor:pointer;transition:all 0.15s;" onmouseenter="this.style.borderColor='#000'" onmouseleave="this.style.borderColor='var(--gray-200)'">
-            <div style="font-weight:700;font-size:0.9rem;">👑 VIP — $25/mes</div>
-            <div style="font-size:0.75rem;color:var(--gray-500);margin-top:4px;">Todo + Contenido personalizado</div>
-          </div>
+        <p id="profile-plans-intro" style="font-size:0.82rem;color:var(--gray-600);margin-bottom:16px;">Accede a contenido exclusivo y apoya al creador</p>
+        <div id="profile-action-buttons" style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:16px;">
+          <button type="button" class="btn btn-full" style="background:#3B82F6;color:white;border:none;flex:1;min-width:120px;" id="profile-btn-donate" onclick="openDonateModal()">Donar</button>
+          <button type="button" class="btn btn-primary btn-full" style="flex:1;min-width:120px;" id="profile-btn-subscribe" onclick="subscribeFromProfile()">Suscribirse</button>
         </div>
-        <button class="btn btn-primary btn-full" style="margin-top:16px;" onclick="openModal()">Suscribirme con MercadoPago</button>
+        <div id="profile-single-plan-slot"></div>
       </div>
     </div>
   </div>
@@ -1271,6 +1285,33 @@
 
 <!-- NOTIFICATION -->
 <div class="notification" id="notif"></div>
+
+<!-- DONATE MODAL -->
+<div class="modal-overlay" id="donate-modal">
+  <div class="modal">
+    <h3>Donar 💙</h3>
+    <p>Apoya a este creador con un pago único vía Mercado Pago. Monto mínimo <strong>$10 MXN</strong>.</p>
+    <div class="form-group">
+      <label class="form-label">Monto (MXN)</label>
+      <input type="number" class="form-input" id="donate-amount" min="10" step="1" value="10" placeholder="10">
+    </div>
+    <div class="modal-actions">
+      <button class="btn btn-outline" type="button" onclick="closeDonateModal()">Cancelar</button>
+      <button class="btn btn-primary" type="button" style="flex:1;background:#3B82F6;border-color:#3B82F6;" onclick="submitDonation(event)">Continuar al pago</button>
+    </div>
+  </div>
+</div>
+
+<!-- TEXT CONTENT MODAL -->
+<div class="modal-overlay" id="text-modal">
+  <div class="modal" style="max-width:520px;">
+    <h3 id="text-modal-title">Publicación</h3>
+    <div id="text-modal-body" style="white-space:pre-wrap;color:var(--gray-800);font-size:0.9rem;line-height:1.6;max-height:60vh;overflow:auto;"></div>
+    <div class="modal-actions" style="margin-top:20px;">
+      <button class="btn btn-primary btn-full" type="button" onclick="closeTextModal()">Cerrar</button>
+    </div>
+  </div>
+</div>
 
 <!-- MEDIA MODAL -->
 <div class="media-modal" id="media-modal" onclick="if (event.target === this) closeMediaModal()">
@@ -1363,17 +1404,10 @@
           }
         }
         const content = await api.get('/content/feed/' + creator.id);
-        const grid = document.querySelector('.profile-feed .content-grid');
-        if (grid && Array.isArray(content)) renderFanContent(grid, content);
+        const grid = document.getElementById('profile-content-grid');
+        if (grid && Array.isArray(content)) renderFanContent(grid, content, { profile: true });
         const plans = await api.get('/plans/' + creator.id);
-        const plansContainer = document.querySelector('.profile-sidebar-card > div');
-        if (plansContainer && Array.isArray(plans)) {
-          plansContainer.innerHTML = plans.map((p, i) => `
-            <div style="border:${p.is_featured ? '2px solid var(--black);background:var(--black);color:white' : '1.5px solid var(--gray-200)'};border-radius:var(--radius-sm);padding:14px;cursor:pointer;margin-bottom:10px;" onclick="selectPlan('${p.id}','${creator.id}','${p.name}',${p.price})">
-              <div style="font-weight:700;font-size:0.9rem;">${['⭐','💎','👑'][i] || '✦'} ${p.name} — $${p.price}/mes</div>
-              <div style="font-size:0.75rem;color:${p.is_featured ? 'var(--gray-300)' : 'var(--gray-500)'};margin-top:4px;">${p.features[0] || ''}</div>
-            </div>`).join('');
-        }
+        fillCreatorProfileSidebar(creator, plans);
         showPage('creator-profile');
         return;
       }
@@ -1540,8 +1574,162 @@ function closeMediaModal() {
 }
 
 document.addEventListener('keydown', (e) => {
-  if (e.key === 'Escape') closeMediaModal();
+  if (e.key === 'Escape') {
+    closeMediaModal();
+    closeTextModal();
+    closeDonateModal();
+  }
 });
+
+function openTextModal(title, body) {
+  const tEl = document.getElementById('text-modal-title');
+  const bEl = document.getElementById('text-modal-body');
+  const m = document.getElementById('text-modal');
+  if (tEl) tEl.textContent = title || 'Publicación';
+  if (bEl) bEl.textContent = body || '';
+  if (m) {
+    m.classList.add('open');
+    document.body.style.overflow = 'hidden';
+  }
+}
+
+function closeTextModal() {
+  const m = document.getElementById('text-modal');
+  if (m) m.classList.remove('open');
+  document.body.style.overflow = '';
+}
+
+function openDonateModal() {
+  if (!CURRENT_USER) {
+    showAuth('login');
+    return;
+  }
+  if (CURRENT_USER.role !== 'fan') {
+    showNotif('Solo los fans pueden donar');
+    return;
+  }
+  const inp = document.getElementById('donate-amount');
+  if (inp) inp.value = '10';
+  const dm = document.getElementById('donate-modal');
+  if (dm) dm.classList.add('open');
+}
+
+function closeDonateModal() {
+  const dm = document.getElementById('donate-modal');
+  if (dm) dm.classList.remove('open');
+}
+
+async function submitDonation(evt) {
+  const raw = parseFloat(String(document.getElementById('donate-amount')?.value || '0'));
+  if (!Number.isFinite(raw) || raw < 10) {
+    showNotif('El monto mínimo es $10 MXN');
+    return;
+  }
+  if (!CURRENT_CREATOR_ID) {
+    showNotif('Error: creador no definido');
+    return;
+  }
+  const btn = evt?.target;
+  if (btn) {
+    btn.textContent = 'Procesando...';
+    btn.disabled = true;
+  }
+  const res = await api.post('/donations/checkout', {
+    creator_id: CURRENT_CREATOR_ID,
+    amount: raw
+  });
+  if (btn) {
+    btn.textContent = 'Continuar al pago';
+    btn.disabled = false;
+  }
+  if (res.error) {
+    showNotif('❌ ' + (res.error || 'Error'));
+    return;
+  }
+  if (res.checkout_url) {
+    window.location.href = res.checkout_url;
+    return;
+  }
+  showNotif('❌ No se pudo iniciar el pago');
+}
+
+async function subscribeFromProfile() {
+  if (!CURRENT_USER) {
+    showAuth('login');
+    return;
+  }
+  if (CURRENT_USER.role !== 'fan') {
+    showNotif('Solo los fans pueden suscribirse');
+    return;
+  }
+  const p = window.PROFILE_SELECTED_PLAN;
+  if (!p) {
+    showNotif('No hay un plan disponible');
+    return;
+  }
+  showNotif('⏳ Preparando checkout...');
+  const res = await api.post('/subscriptions/checkout', {
+    plan_id: p.planId,
+    creator_id: p.creatorId
+  });
+  if (res.error) {
+    showNotif('❌ ' + res.error);
+    return;
+  }
+  if (res.checkout_url && !res.demo_mode) {
+    window.location.href = res.checkout_url;
+    return;
+  }
+  if (res.sub_id) {
+    const activate = await api.post('/subscriptions/activate/' + res.sub_id, {});
+    if (activate.success) {
+      showNotif('🎉 ¡Suscripción activada!');
+      closeModal();
+    }
+  }
+}
+
+function pickSinglePlan(plans) {
+  if (!Array.isArray(plans) || !plans.length) return null;
+  const featured = plans.find((x) => Number(x.is_featured) === 1);
+  return featured || plans[0];
+}
+
+function fillCreatorProfileSidebar(creator, plans) {
+  const intro = document.getElementById('profile-plans-intro');
+  if (intro) {
+    intro.textContent =
+      'Accede a contenido exclusivo y apoya a ' + (creator.name || 'este creador');
+  }
+  const ab = document.getElementById('profile-action-buttons');
+  const isOwn =
+    CURRENT_USER &&
+    CURRENT_USER.role === 'creator' &&
+    CURRENT_USER.id === creator.id;
+  if (ab) ab.style.display = isOwn ? 'none' : 'flex';
+  const slot = document.getElementById('profile-single-plan-slot');
+  const p = pickSinglePlan(plans);
+  window.PROFILE_SELECTED_PLAN = p
+    ? {
+        planId: p.id,
+        creatorId: creator.id,
+        planName: p.name,
+        price: p.price
+      }
+    : null;
+  if (slot) {
+    if (!p) {
+      slot.innerHTML =
+        '<p style="font-size:0.82rem;color:var(--gray-500);">Sin planes activos aún.</p>';
+    } else {
+      const feat = Number(p.is_featured) === 1;
+      slot.innerHTML = `<div style="border:2px solid var(--black);border-radius:var(--radius-sm);padding:14px;background:var(--black);color:white;">
+        <div style="font-weight:700;font-size:0.9rem;">${feat ? '💎 ' : '✦ '}${p.name} — $${p.price}/mes</div>
+        <div style="font-size:0.75rem;color:var(--gray-400);margin-top:4px;">${(p.features && p.features[0]) || 'Suscripción mensual'}</div>
+      </div>`;
+    }
+  }
+}
 
 const api = {
   headers: () => ({ 'Content-Type': 'application/json', ...(TOKEN ? { 'Authorization': 'Bearer ' + TOKEN } : {}) }),
@@ -1707,25 +1895,39 @@ async function loadMyContent(tab = 'overview') {
 }
 
 function renderContentGrid(container, items) {
-  if (!items.length) { container.innerHTML = '<div style="padding:40px;color:var(--gray-500);text-align:center;grid-column:1/-1;">No hay contenido aún. ¡Sube tu primer archivo!</div>'; return; }
-  container.innerHTML = items.map(c => `
-    <div class="content-item">
-      <div class="content-thumb" style="background:#f0f0f0" ${c.file_url ? `onclick="openMediaModal('${c.file_url}','${c.type}')" title="Ver"` : ''}>
-        ${c.type === 'video' ? '🎬' : '📸'}
-        <span class="content-type-badge">${c.type === 'video' ? 'VIDEO' : 'FOTO'}</span>
-        ${c.file_url && c.type === 'video' ? '<span style="position:absolute;bottom:10px;right:10px;background:rgba(0,0,0,0.60);padding:6px 10px;border-radius:999px;color:white;font-size:0.75rem;font-weight:700;">▶ Ver</span>' : ''}
-      </div>
+  if (!items.length) {
+    container.innerHTML = '<div style="padding:40px;color:var(--gray-500);text-align:center;grid-column:1/-1;">No hay contenido aún. ¡Sube tu primer archivo!</div>';
+    return;
+  }
+  container.innerHTML = items.map((c) => {
+    const isText = c.type === 'text';
+    const isVid = c.type === 'video';
+    const aspect = isText ? 'aspect-text' : isVid ? 'aspect-video' : 'aspect-photo';
+    let thumb = '';
+    if (isText) {
+      const tJson = JSON.stringify(c.title || '');
+      const bJson = JSON.stringify(c.text_body || '');
+      thumb = `<div class="content-thumb ${aspect}" onclick='openTextModal(${tJson}, ${bJson})'>📝<span class="content-type-badge text-type-badge">📝 Texto</span></div>`;
+    } else if (c.file_url) {
+      const vidHint = isVid ? '<span style="position:absolute;bottom:10px;right:10px;background:rgba(0,0,0,0.60);padding:6px 10px;border-radius:999px;color:white;font-size:0.75rem;font-weight:700;z-index:2;">▶ Ver</span>' : '';
+      thumb = `<div class="content-thumb ${aspect}" onclick="openMediaModal('${c.file_url}','${c.type}')">${isVid ? `<video class="thumb-fill-media" src="${c.file_url}" muted preload="metadata"></video>` : `<img class="thumb-fill-media" src="${c.file_url}" alt="">`}<span class="content-type-badge">${isVid ? 'VIDEO' : 'FOTO'}</span>${vidHint}</div>`;
+    } else {
+      thumb = `<div class="content-thumb ${aspect}">${isVid ? '🎬' : '📸'}<span class="content-type-badge">${isVid ? 'VIDEO' : 'FOTO'}</span></div>`;
+    }
+    return `<div class="content-item">
+      ${thumb}
       <div class="content-info">
         <h4>${c.title}</h4>
         <p>${new Date(c.created_at).toLocaleDateString('es')}</p>
         ${c.is_exclusive ? '<span class="exclusive-badge">Exclusivo</span>' : ''}
-        ${c.file_url ? `<div style="display:flex;gap:10px;align-items:center;margin-top:6px;">
+        ${!isText && c.file_url ? `<div style="display:flex;gap:10px;align-items:center;margin-top:6px;">
           <a href="${c.file_url}" target="_blank" rel="noopener noreferrer" style="font-size:0.75rem;color:var(--gray-500);text-decoration:underline;">Abrir</a>
           <a href="${c.file_url}" download style="font-size:0.75rem;color:var(--gray-500);text-decoration:underline;">Descargar</a>
         </div>` : ''}
         <button onclick="deleteContent('${c.id}')" style="background:none;border:none;color:var(--gray-400);cursor:pointer;font-size:0.75rem;margin-top:4px;">🗑 Eliminar</button>
       </div>
-    </div>`).join('');
+    </div>`;
+  }).join('');
 }
 
 async function deleteContent(id) {
@@ -1744,15 +1946,63 @@ async function handleFileUpload(input) {
   window._pendingFile = f;
 }
 
+function onUploadTypeChange() {
+  const mode = document.getElementById('upload-content-type')?.value || 'file';
+  const fs = document.getElementById('upload-file-section');
+  const ts = document.getElementById('upload-text-section');
+  if (fs) fs.style.display = mode === 'file' ? 'block' : 'none';
+  if (ts) ts.style.display = mode === 'text' ? 'block' : 'none';
+}
+
+async function publishTextContent(evt) {
+  const body = document.getElementById('upload-text-body')?.value?.trim();
+  if (!body) {
+    showNotif('⚠️ Escribe el contenido de texto');
+    return;
+  }
+  const title = document.getElementById('upload-title')?.value;
+  const description = document.getElementById('upload-description')?.value;
+  const is_exclusive = document.getElementById('upload-access')?.value === 'exclusive';
+  const btn = evt?.target || document.querySelector('#dash-upload .btn-primary');
+  if (btn) {
+    btn.textContent = 'Publicando...';
+    btn.disabled = true;
+  }
+  const res = await api.post('/content/text', {
+    title: title || 'Publicación',
+    description: description || '',
+    text_body: body,
+    is_exclusive
+  });
+  if (btn) {
+    btn.textContent = 'Publicar ahora';
+    btn.disabled = false;
+  }
+  if (res.error) {
+    showNotif('❌ ' + res.error);
+    return;
+  }
+  showNotif('🎉 ¡Publicación de texto lista!');
+  document.getElementById('upload-text-body').value = '';
+  await loadMyContent();
+}
+
 async function publishContent(evt) {
-  if (!window._pendingFile) { showNotif('⚠️ Primero selecciona un archivo'); return; }
-  const title = document.querySelector('#dash-upload input[type=text]').value;
-  const description = document.querySelector('#dash-upload textarea').value;
-  const is_exclusive = document.querySelector('#dash-upload select').value === 'exclusive' ? 'true' : 'false';
+  const mode = document.getElementById('upload-content-type')?.value || 'file';
+  if (mode === 'text') {
+    return publishTextContent(evt);
+  }
+  if (!window._pendingFile) {
+    showNotif('⚠️ Primero selecciona un archivo');
+    return;
+  }
+  const title = document.getElementById('upload-title')?.value;
+  const description = document.getElementById('upload-description')?.value;
+  const is_exclusive = document.getElementById('upload-access')?.value === 'exclusive' ? 'true' : 'false';
   const formData = new FormData();
   formData.append('file', window._pendingFile);
   formData.append('title', title || window._pendingFile.name);
-  formData.append('description', description);
+  formData.append('description', description || '');
   formData.append('is_exclusive', is_exclusive);
   console.log('[publishContent] sending file', {
     name: window._pendingFile.name,
@@ -1821,25 +2071,49 @@ async function loadFanFeed() {
   renderFanContent(document.querySelector('#fan-feed .content-grid'), allContent);
 }
 
-function renderFanContent(container, items) {
-  if (!items.length) { container.innerHTML = '<div style="padding:40px;text-align:center;color:var(--gray-500);grid-column:1/-1;">No hay contenido aún</div>'; return; }
-  container.innerHTML = items.map(c => `
-    <div class="content-item">
-      <div class="content-thumb" style="background:#f0f0f0" ${(!c.locked && c.file_url) ? `onclick="openMediaModal('${c.file_url}','${c.type}')" title="Ver"` : ''}>
-        ${c.type === 'video' ? '🎬' : '📸'}
-        <span class="content-type-badge">${c.type === 'video' ? 'VIDEO' : 'FOTO'}</span>
-        ${c.locked ? '<div class="lock-overlay">🔒</div>' : (c.file_url && c.type === 'video' ? '<span style="position:absolute;bottom:10px;right:10px;background:rgba(0,0,0,0.60);padding:6px 10px;border-radius:999px;color:white;font-size:0.75rem;font-weight:700;">▶ Ver</span>' : '')}
-      </div>
+function renderFanContent(container, items, opts) {
+  const profileGrid = opts && opts.profile;
+  if (profileGrid) container.classList.add('creator-profile-grid');
+  else container.classList.remove('creator-profile-grid');
+  if (!items.length) {
+    container.innerHTML = '<div style="padding:40px;text-align:center;color:var(--gray-500);grid-column:1/-1;">No hay contenido aún</div>';
+    return;
+  }
+  container.innerHTML = items.map((c) => {
+    const locked = !!c.locked;
+    const isText = c.type === 'text';
+    const isVid = c.type === 'video';
+    const aspect = isText ? 'aspect-text' : isVid ? 'aspect-video' : 'aspect-photo';
+    let thumbInner = '';
+    if (isText) {
+      if (locked) {
+        thumbInner = `<div class="content-thumb ${aspect}">📝<span class="content-type-badge text-type-badge">📝 Texto</span><div class="lock-overlay">🔒</div></div>`;
+      } else {
+        const tJson = JSON.stringify(c.title || '');
+        const bJson = JSON.stringify(c.text_body || '');
+        thumbInner = `<div class="content-thumb ${aspect}" onclick='openTextModal(${tJson}, ${bJson})'>📝<span class="content-type-badge text-type-badge">📝 Texto</span></div>`;
+      }
+    } else if (locked) {
+      thumbInner = `<div class="content-thumb ${aspect}">${isVid ? '🎬' : '📸'}<span class="content-type-badge">${isVid ? 'VIDEO' : 'FOTO'}</span><div class="lock-overlay">🔒</div></div>`;
+    } else if (c.file_url) {
+      const vidHint = isVid ? '<span style="position:absolute;bottom:10px;right:10px;background:rgba(0,0,0,0.60);padding:6px 10px;border-radius:999px;color:white;font-size:0.75rem;font-weight:700;z-index:2;">▶ Ver</span>' : '';
+      thumbInner = `<div class="content-thumb ${aspect}" onclick="openMediaModal('${c.file_url}','${c.type}')">${isVid ? `<video class="thumb-fill-media" src="${c.file_url}" muted preload="metadata"></video>` : `<img class="thumb-fill-media" src="${c.file_url}" alt="">`}<span class="content-type-badge">${isVid ? 'VIDEO' : 'FOTO'}</span>${vidHint}</div>`;
+    } else {
+      thumbInner = `<div class="content-thumb ${aspect}">${isVid ? '🎬' : '📸'}<span class="content-type-badge">${isVid ? 'VIDEO' : 'FOTO'}</span></div>`;
+    }
+    return `<div class="content-item">
+      ${thumbInner}
       <div class="content-info">
         <h4>${c.title}</h4>
         <p>${c.creator_name ? c.creator_name + ' · ' : ''}${new Date(c.created_at).toLocaleDateString('es')}</p>
         ${c.is_exclusive ? '<span class="exclusive-badge">Exclusivo</span>' : ''}
-        ${(!c.locked && c.file_url) ? `<div style="display:flex;gap:10px;align-items:center;margin-top:6px;">
+        ${!locked && !isText && c.file_url ? `<div style="display:flex;gap:10px;align-items:center;margin-top:6px;">
           <a href="${c.file_url}" target="_blank" rel="noopener noreferrer" style="font-size:0.75rem;color:var(--gray-500);text-decoration:underline;">Abrir</a>
           <a href="${c.file_url}" download style="font-size:0.75rem;color:var(--gray-500);text-decoration:underline;">Descargar</a>
         </div>` : ''}
       </div>
-    </div>`).join('');
+    </div>`;
+  }).join('');
 }
 
 async function loadFanSubscriptions() {
@@ -1905,20 +2179,11 @@ async function openCreatorProfile(handle) {
       bannerDiv.style.background = 'linear-gradient(135deg, #1a1a1a 0%, #444 100%)';
     }
   }
-  // Load content
   const content = await api.get('/content/feed/' + creator.id);
-  const grid = document.querySelector('.profile-feed .content-grid');
-  if (grid && Array.isArray(content)) renderFanContent(grid, content);
-  // Load plans
+  const grid = document.getElementById('profile-content-grid');
+  if (grid && Array.isArray(content)) renderFanContent(grid, content, { profile: true });
   const plans = await api.get('/plans/' + creator.id);
-  const plansContainer = document.querySelector('.profile-sidebar-card > div');
-  if (plansContainer && Array.isArray(plans)) {
-    plansContainer.innerHTML = plans.map((p, i) => `
-      <div style="border:${p.is_featured ? '2px solid var(--black);background:var(--black);color:white' : '1.5px solid var(--gray-200)'};border-radius:var(--radius-sm);padding:14px;cursor:pointer;margin-bottom:10px;" onclick="selectPlan('${p.id}','${creator.id}','${p.name}',${p.price})">
-        <div style="font-weight:700;font-size:0.9rem;">${['⭐','💎','👑'][i] || '✦'} ${p.name} — $${p.price}/mes</div>
-        <div style="font-size:0.75rem;color:${p.is_featured ? 'var(--gray-300)' : 'var(--gray-500)'};margin-top:4px;">${p.features[0] || ''}</div>
-      </div>`).join('');
-  }
+  fillCreatorProfileSidebar(creator, plans);
   showPage('creator-profile');
 }
 
@@ -1956,24 +2221,68 @@ async function simulatePayment() {
 async function loadEarnings() {
   const stats = await api.get('/subscriptions/stats');
   const subs = await api.get('/subscriptions/my');
-  if (stats && !stats.error) {
-    const vals = document.querySelectorAll('#dash-earnings .s-value');
-    if (vals[1]) vals[1].textContent = '$' + stats.monthly_revenue.toFixed(2);
+  const donSum = await api.get('/donations/summary');
+  const donations = await api.get('/donations/my');
+
+  if (donSum && !donSum.error) {
+    const el = document.getElementById('earnings-donations-total');
+    if (el) el.textContent = '$' + Number(donSum.total_donations || 0).toFixed(2);
   }
-  if (subs && !subs.error) {
-    const tbody = document.querySelector('#dash-earnings tbody');
-    if (tbody) tbody.innerHTML = subs.map(s => `
+  if (stats && !stats.error) {
+    const m = document.getElementById('earnings-sub-month');
+    const c = document.getElementById('earnings-sub-count');
+    if (m) m.textContent = '$' + stats.monthly_revenue.toFixed(2);
+    if (c) c.textContent = String(stats.subscribers);
+  }
+
+  const dbody = document.getElementById('donations-tbody');
+  if (dbody) {
+    if (donations && !donations.error && donations.length) {
+      dbody.innerHTML = donations
+        .map(
+          (d) => `
+      <tr style="border-top:1px solid var(--gray-200);">
+        <td style="padding:14px 24px;font-size:0.875rem;font-weight:600;">${d.fan_name || d.fan_email}</td>
+        <td style="padding:14px 24px;font-size:0.82rem;color:var(--gray-500);">${new Date(d.created_at).toLocaleDateString('es')}</td>
+        <td style="padding:14px 24px;text-align:right;font-weight:700;">$${Number(d.amount).toFixed(2)}</td>
+      </tr>`
+        )
+        .join('');
+    } else {
+      dbody.innerHTML =
+        '<tr><td colspan="3" style="padding:24px;text-align:center;color:var(--gray-500);">Aún no hay donaciones</td></tr>';
+    }
+  }
+
+  const sbody = document.getElementById('earnings-subs-tbody');
+  if (sbody) {
+    if (subs && !subs.error && subs.length) {
+      sbody.innerHTML = subs
+        .map(
+          (s) => `
       <tr style="border-top:1px solid var(--gray-200);">
         <td style="padding:14px 24px;font-size:0.875rem;font-weight:600;">${s.fan_name || s.fan_email}</td>
         <td style="padding:14px 24px;"><span class="tag-pill">${s.plan_name}</span></td>
         <td style="padding:14px 24px;font-size:0.82rem;color:var(--gray-500);">${new Date(s.created_at).toLocaleDateString('es')}</td>
         <td style="padding:14px 24px;text-align:right;font-weight:700;">$${s.price.toFixed(2)}</td>
-      </tr>`).join('') || '<tr><td colspan="4" style="padding:24px;text-align:center;color:var(--gray-500);">No hay suscriptores aún</td></tr>';
+      </tr>`
+        )
+        .join('');
+    } else {
+      sbody.innerHTML =
+        '<tr><td colspan="4" style="padding:24px;text-align:center;color:var(--gray-500);">No hay suscriptores aún</td></tr>';
+    }
   }
 }
 
 // Override publish button
 document.addEventListener('DOMContentLoaded', () => {
+  document.getElementById('donate-modal')?.addEventListener('click', function (e) {
+    if (e.target === this) closeDonateModal();
+  });
+  document.getElementById('text-modal')?.addEventListener('click', function (e) {
+    if (e.target === this) closeTextModal();
+  });
 if (TOKEN && CURRENT_USER) {
   document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
   if (CURRENT_USER.role === 'creator') {

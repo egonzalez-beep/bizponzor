@@ -21,6 +21,7 @@ app.use('/api/plans', require('./routes/plans'));
 app.use('/api/subscriptions', require('./routes/subscriptions'));
 app.use('/api/creators', require('./routes/creators'));
 app.use('/api/webhook', require('./routes/webhook'));
+app.use('/api/donations', require('./routes/donations'));
 
 app.get('/api/health', (req, res) => res.json({ status: 'ok', app: 'BizPonzor' }));
 app.get('*', (req, res) => res.sendFile(path.join(__dirname, 'public', 'index.html')));

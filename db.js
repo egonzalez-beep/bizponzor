@@ -100,4 +100,49 @@ try {
   // Column may already exist on existing databases.
 }
 
+db.exec(`
+  CREATE TABLE IF NOT EXISTS donations (
+    id              TEXT PRIMARY KEY,
+    fan_id          TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    creator_id      TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    amount          REAL NOT NULL,
+    currency_id     TEXT DEFAULT 'MXN',
+    status          TEXT DEFAULT 'pending' CHECK(status IN ('pending','completed','failed')),
+    mp_preference_id TEXT,
+    mp_payment_id   TEXT,
+    created_at      TEXT DEFAULT (datetime('now'))
+  );
+`);
+
+(function migrateContentForTextType() {
+  try {
+    const row = db
+      .prepare("SELECT sql FROM sqlite_master WHERE type='table' AND name='content'")
+      .get();
+    if (!row || !row.sql || row.sql.includes("'text'")) return;
+    db.exec(`
+      CREATE TABLE content_new (
+        id           TEXT PRIMARY KEY,
+        creator_id   TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+        title        TEXT NOT NULL,
+        description  TEXT,
+        type         TEXT NOT NULL CHECK(type IN ('photo','video','text')),
+        file_url     TEXT NOT NULL DEFAULT '',
+        thumbnail_url TEXT,
+        is_exclusive INTEGER DEFAULT 1,
+        views        INTEGER DEFAULT 0,
+        text_body    TEXT,
+        created_at   TEXT DEFAULT (datetime('now'))
+      );
+      INSERT INTO content_new (id, creator_id, title, description, type, file_url, thumbnail_url, is_exclusive, views, created_at, text_body)
+      SELECT id, creator_id, title, description, type, file_url, thumbnail_url, is_exclusive, views, created_at, NULL FROM content;
+      DROP TABLE content;
+      ALTER TABLE content_new RENAME TO content;
+    `);
+    console.log('✅ Migración content: soporte tipo texto');
+  } catch (e) {
+    console.error('⚠️ Migración content (texto):', e.message);
+  }
+})();
+
 module.exports = db;

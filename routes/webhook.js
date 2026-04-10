@@ -6,6 +6,10 @@ const {
   mapPreapprovalStatusToDb,
   normalizePreapprovalPayload
 } = require('../lib/mpSubscription');
+const {
+  getPaymentClient,
+  normalizeMpPayload
+} = require('../lib/mpPreference');
 
 /**
  * Extrae topic e id de notificaciones MP (GET query o POST body).
@@ -96,6 +100,41 @@ async function syncSubscriptionFromPreapproval(mpPreapprovalId) {
   console.log('[WEBHOOK] Suscripción actualizada', { local_id: sub.id, dbStatus, mpStatus });
 }
 
+async function syncDonationFromPayment(mpPaymentId) {
+  const paymentClient = getPaymentClient();
+  if (!paymentClient) {
+    console.warn('[WEBHOOK] MP_ACCESS_TOKEN no configurado; no se consulta Payment');
+    return;
+  }
+  const raw = await paymentClient.get({ id: String(mpPaymentId) });
+  const pay = normalizeMpPayload(raw) || raw;
+  const extRef = pay.external_reference;
+  const status = pay.status;
+  const mpId = String(pay.id || mpPaymentId);
+
+  console.log('[WEBHOOK] Payment GET', {
+    id: mpId,
+    status,
+    external_reference: extRef
+  });
+
+  if (!extRef) return;
+
+  const donation = db.prepare('SELECT * FROM donations WHERE id = ?').get(extRef);
+  if (!donation) return;
+  if (donation.status === 'completed') return;
+
+  if (status === 'approved') {
+    db.prepare(
+      `UPDATE donations SET status = 'completed', mp_payment_id = ? WHERE id = ?`
+    ).run(mpId, extRef);
+    console.log('[WEBHOOK] Donación completada', { id: extRef });
+  } else if (status === 'rejected' || status === 'cancelled' || status === 'refunded') {
+    db.prepare(`UPDATE donations SET status = 'failed' WHERE id = ?`).run(extRef);
+    console.log('[WEBHOOK] Donación no aprobada', { id: extRef, status });
+  }
+}
+
 async function processMercadoPagoWebhook(req) {
   const { topic, id, action } = extractNotificationPayload(req);
 
@@ -113,14 +152,14 @@ async function processMercadoPagoWebhook(req) {
     topicStr === 'subscription_preapproval' ||
     topicStr === 'subscription_preapproved';
 
-  if (isPreapproval || action === 'updated' || action === 'created') {
+  if (isPreapproval) {
     await syncSubscriptionFromPreapproval(id);
     return;
   }
 
   if (topicStr === 'payment' || topicStr.includes('payment')) {
-    console.log('[WEBHOOK] Notificación payment (legacy); id=', id);
-    // Opcional: integrar Payment.get para conciliar; PreApproval es el flujo principal.
+    await syncDonationFromPayment(id);
+    return;
   }
 }
 

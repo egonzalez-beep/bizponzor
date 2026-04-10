@@ -78,6 +78,36 @@ function uploadSingleFile(req, res, next) {
   });
 }
 
+router.post('/text', authMiddleware, requireCreator, ensureAuthedUserInDb, (req, res) => {
+  try {
+    const { title, description, text_body, is_exclusive } = req.body;
+    const body = String(text_body || '').trim();
+    if (!body) return res.status(400).json({ error: 'El texto es obligatorio' });
+    const userExists = db.prepare('SELECT id FROM users WHERE id = ?').get(req.user.id);
+    if (!userExists) return res.status(400).json({ error: 'Usuario no encontrado' });
+    const id = uuidv4();
+    const file_url = 'text://' + id;
+    const excl = is_exclusive === false || is_exclusive === 'false' ? 0 : 1;
+    db.prepare(
+      `INSERT INTO content (id, creator_id, title, description, type, file_url, is_exclusive, text_body)
+       VALUES (?,?,?,?,?,?,?,?)`
+    ).run(
+      id,
+      req.user.id,
+      title || 'Publicación',
+      description || '',
+      'text',
+      file_url,
+      excl,
+      body
+    );
+    res.json({ id, title: title || 'Publicación', type: 'text', is_exclusive: !!excl });
+  } catch (e) {
+    console.error('[content/text]', e);
+    res.status(500).json({ error: e.message });
+  }
+});
+
 router.post('/upload', authMiddleware, requireCreator, ensureAuthedUserInDb, (req, res, next) => {
   console.log('[content/upload] Incoming request', {
     contentType: req.headers['content-type'],
@@ -118,13 +148,37 @@ router.get('/feed/:creatorId', (req, res) => {
     const token = req.headers.authorization?.split(' ')[1];
     if (token) userId = jwt.verify(token, process.env.JWT_SECRET).id;
   } catch {}
-  const allContent = db.prepare('SELECT * FROM content WHERE creator_id = ? ORDER BY created_at DESC').all(creatorId);
+  const allContent = db
+    .prepare('SELECT * FROM content WHERE creator_id = ? ORDER BY created_at DESC')
+    .all(creatorId);
   let hasAccess = userId === creatorId;
   if (!hasAccess && userId) {
-    const sub = db.prepare("SELECT id FROM subscriptions WHERE fan_id=? AND creator_id=? AND status='active'").get(userId, creatorId);
+    const sub = db
+      .prepare(
+        "SELECT id FROM subscriptions WHERE fan_id=? AND creator_id=? AND status='active'"
+      )
+      .get(userId, creatorId);
     hasAccess = !!sub;
   }
-  res.json(allContent.map(c => ({ ...c, file_url: (c.is_exclusive && !hasAccess) ? null : c.file_url, locked: !!(c.is_exclusive && !hasAccess) })));
+  res.json(
+    allContent.map((c) => {
+      const locked = !!(c.is_exclusive && !hasAccess);
+      if (c.type === 'text') {
+        return {
+          ...c,
+          file_url: locked ? null : c.file_url,
+          text_body: locked ? null : (c.text_body || ''),
+          locked
+        };
+      }
+      return {
+        ...c,
+        file_url: locked ? null : c.file_url,
+        text_body: null,
+        locked
+      };
+    })
+  );
 });
 
 router.get('/my', authMiddleware, (req, res) => {
