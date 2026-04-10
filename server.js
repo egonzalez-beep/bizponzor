@@ -20,6 +20,6 @@ app.use('/api/creators', require('./routes/creators'));
 app.use('/api/webhook', require('./routes/webhook'));
 
 app.get('/api/health', (req, res) => res.json({ status: 'ok', app: 'BizPonzor' }));
-app.get('/{*path}', (req, res) => res.sendFile(path.join(__dirname, 'public', 'index.html')));
+app.get('*', (req, res) => res.sendFile(path.join(__dirname, 'public', 'index.html')));
 
 app.listen(PORT, () => console.log('BizPonzor corriendo en http://localhost:' + PORT));

@@ -3,6 +3,7 @@ const router = require('express').Router();
 const { v4: uuidv4 } = require('uuid');
 const db = require('../db');
 const auth = require('../middleware/auth');
+const { MercadoPagoConfig, Preference } = require('mercadopago');
 
 // Iniciar proceso de suscripcion con MercadoPago
 router.post('/checkout', auth, async (req, res) => {
@@ -23,6 +24,8 @@ router.post('/checkout', auth, async (req, res) => {
     }
     
     // MercadoPago real
+    const client = new MercadoPagoConfig({ accessToken: process.env.MP_ACCESS_TOKEN });
+    const preference = new Preference(client);
 
     const response = await preference.create({
       body: {
