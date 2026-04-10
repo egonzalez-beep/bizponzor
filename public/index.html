@@ -955,36 +955,58 @@
 
       <!-- PROFILE TAB -->
       <div id="dash-settings" style="display:none;">
-        <div class="page-header"><h2>Mi Perfil</h2><p>Así te ven tus patrocinadores</p></div>
+        <div class="page-header">
+          <h2>Configuración de Perfil</h2>
+          <p>Edita cómo te ven tus patrocinadores</p>
+        </div>
         <div style="background:var(--white);border:1px solid var(--gray-200);border-radius:var(--radius);padding:28px;max-width:600px;">
           <div class="form-group">
-            <label class="form-label">Nombre de usuario</label>
-            <input type="text" class="form-input" value="Ana Molina">
+            <label class="form-label">Nombre completo</label>
+            <input type="text" class="form-input" id="settings-name" placeholder="Tu nombre">
+            <div style="font-size:0.7rem;color:var(--gray-400);margin-top:4px;">Tu nombre visible para todos</div>
           </div>
           <div class="form-group">
-            <label class="form-label">Handle (URL de tu perfil)</label>
-            <input type="text" class="form-input" value="@anamolina">
+            <label class="form-label">Apodo (handle)</label>
+            <input type="text" class="form-input" id="settings-handle" placeholder="@usuario" disabled style="background:var(--gray-100);color:var(--gray-500);">
+            <div style="font-size:0.7rem;color:var(--gray-400);margin-top:4px;">⚠️ El handle se crea al registrarse y no se puede cambiar</div>
           </div>
           <div class="form-group">
             <label class="form-label">Categoría</label>
-            <select class="form-input"><option>Fotografía & Lifestyle</option><option>Música</option><option>Arte & Diseño</option><option>Tech & Tutoriales</option><option>Gaming</option></select>
+            <select class="form-input" id="settings-category">
+              <option value="🎨 Arte & Ilustración">🎨 Arte & Ilustración</option>
+              <option value="📸 Fotografía & Lifestyle">📸 Fotografía & Lifestyle</option>
+              <option value="🎬 Cine & Video">🎬 Cine & Video</option>
+              <option value="🎵 Música & Producción">🎵 Música & Producción</option>
+              <option value="💻 Tech & Tutoriales">💻 Tech & Tutoriales</option>
+              <option value="🎮 Gaming & Streams">🎮 Gaming & Streams</option>
+              <option value="📚 Educación & Cursos">📚 Educación & Cursos</option>
+              <option value="🏋️ Fitness & Salud">🏋️ Fitness & Salud</option>
+              <option value="🍳 Cocina & Recetas">🍳 Cocina & Recetas</option>
+              <option value="✈️ Viajes & Aventura">✈️ Viajes & Aventura</option>
+              <option value="💄 Belleza & Moda">💄 Belleza & Moda</option>
+              <option value="🐾 Mascotas & Animales">🐾 Mascotas & Animales</option>
+            </select>
           </div>
           <div class="form-group">
             <label class="form-label">Biografía</label>
-            <textarea class="form-input" rows="4">Fotógrafa apasionada por capturar momentos únicos. Comparto mi proceso creativo y contenido exclusivo con mi comunidad.</textarea>
+            <textarea class="form-input" id="settings-bio" rows="4" placeholder="Cuéntale a tus fans sobre ti..."></textarea>
+            <div style="font-size:0.7rem;color:var(--gray-400);margin-top:4px;">Máximo 200 caracteres</div>
           </div>
           <div class="form-group">
             <label class="form-label">Foto de perfil</label>
-            <input type="file" class="form-input" accept="image/*">
+            <input type="file" class="form-input" id="settings-avatar" accept="image/*">
+            <div style="font-size:0.7rem;color:var(--gray-400);margin-top:4px;">Recomendado: 400x400px, máximo 5MB</div>
           </div>
           <div class="form-group">
             <label class="form-label">Banner (imagen de portada)</label>
-            <input type="file" class="form-input" accept="image/*">
+            <input type="file" class="form-input" id="settings-banner" accept="image/*">
+            <div style="font-size:0.7rem;color:var(--gray-400);margin-top:4px;">Recomendado: 1200x300px, máximo 10MB</div>
           </div>
           <div style="display:flex;gap:12px;margin-top:8px;">
-            <button class="btn btn-primary" onclick="showNotif('✅ Perfil guardado correctamente')">Guardar cambios</button>
-            <button class="btn btn-outline" onclick="showCreatorProfile()">Ver mi perfil público</button>
+            <button class="btn btn-primary" id="save-profile-btn">💾 Guardar cambios</button>
+            <button class="btn btn-outline" onclick="showCreatorProfile()">🔍 Ver mi perfil público</button>
           </div>
+          <div id="profile-save-message" style="margin-top:16px;display:none;"></div>
         </div>
       </div>
 
@@ -1346,6 +1368,9 @@
       if (tab === 'plans' && typeof loadPlans === 'function') loadPlans();
       if (tab === 'content' && typeof loadMyContent === 'function') loadMyContent();
       if (tab === 'earnings' && typeof loadEarnings === 'function') loadEarnings();
+      if (tab === 'settings' && typeof loadProfileSettings === 'function') {
+        loadProfileSettings();
+      }
     } catch (e) {
       console.error('[BizPonzor] Error loading creator dashboard tab:', tab, e);
     }
@@ -1549,6 +1574,71 @@ async function loadCreatorDashboard() {
   await loadMyContent();
 }
 
+async function loadProfileSettings() {
+  if (!CURRENT_USER) return;
+  const res = await api.get('/auth/me');
+  if (res.error) return;
+  document.getElementById('settings-name').value = res.name || '';
+  document.getElementById('settings-handle').value = res.handle || '@' + res.name.toLowerCase();
+  document.getElementById('settings-category').value = res.category || '📸 Fotografía & Lifestyle';
+  document.getElementById('settings-bio').value = res.bio || '';
+}
+
+async function saveProfileSettings() {
+  const name = document.getElementById('settings-name').value;
+  const category = document.getElementById('settings-category').value;
+  const bio = document.getElementById('settings-bio').value;
+  
+  const btn = document.getElementById('save-profile-btn');
+  const msgDiv = document.getElementById('profile-save-message');
+  
+  btn.textContent = 'Guardando...';
+  btn.disabled = true;
+  
+  const res = await api.put('/auth/profile', { name, bio, category });
+  
+  if (res.error) {
+    msgDiv.style.display = 'block';
+    msgDiv.style.color = '#FF3B30';
+    msgDiv.textContent = '❌ ' + res.error;
+  } else {
+    msgDiv.style.display = 'block';
+    msgDiv.style.color = '#22C55E';
+    msgDiv.textContent = '✅ ¡Perfil actualizado correctamente!';
+    setTimeout(() => msgDiv.style.display = 'none', 3000);
+    
+    // Actualizar datos locales
+    CURRENT_USER.name = name;
+    localStorage.setItem('bp_user', JSON.stringify(CURRENT_USER));
+    
+    // Actualizar sidebar
+    const sidebarName = document.getElementById('sidebar-name');
+    if (sidebarName) sidebarName.textContent = name;
+    
+    // Si hay foto de perfil o banner, subirlos
+    const avatarFile = document.getElementById('settings-avatar').files[0];
+    const bannerFile = document.getElementById('settings-banner').files[0];
+    
+    if (avatarFile) {
+      const formData = new FormData();
+      formData.append('avatar', avatarFile);
+      const avatarRes = await api.upload('/auth/avatar', formData);
+      if (avatarRes.avatar_url) {
+        document.querySelector('.profile-avatar').style.backgroundImage = `url(${avatarRes.avatar_url})`;
+      }
+    }
+    
+    if (bannerFile) {
+      const formData = new FormData();
+      formData.append('banner', bannerFile);
+      await api.upload('/auth/banner', formData);
+    }
+  }
+  
+  btn.textContent = '💾 Guardar cambios';
+  btn.disabled = false;
+}
+
 async function loadStats() {
   const stats = await api.get('/subscriptions/stats');
   if (stats.error) return;
@@ -1748,6 +1838,23 @@ async function openCreatorProfile(handle) {
   document.querySelectorAll('.profile-info strong')[0].textContent = creator.subscribers;
   document.querySelectorAll('.profile-info strong')[1].textContent = creator.content_count;
   document.querySelector('.profile-avatar').textContent = creator.name[0];
+  if (creator.avatar_url) {
+    const avatarDiv = document.querySelector('.profile-avatar');
+    if (avatarDiv) {
+      avatarDiv.style.backgroundImage = `url(${creator.avatar_url})`;
+      avatarDiv.style.backgroundSize = 'cover';
+      avatarDiv.style.backgroundPosition = 'center';
+      avatarDiv.textContent = '';
+    }
+  }
+  if (creator.banner_url) {
+    const bannerDiv = document.querySelector('.profile-banner');
+    if (bannerDiv) {
+      bannerDiv.style.backgroundImage = `url(${creator.banner_url})`;
+      bannerDiv.style.backgroundSize = 'cover';
+      bannerDiv.style.backgroundPosition = 'center';
+    }
+  }
   // Load content
   const content = await api.get('/content/feed/' + creator.id);
   const grid = document.querySelector('.profile-feed .content-grid');
@@ -1832,6 +1939,8 @@ if (TOKEN && CURRENT_USER) {
   // Wire up publish button properly
   const publishBtn = document.querySelector('#dash-upload .btn-primary');
   if (publishBtn) publishBtn.setAttribute('onclick', 'publishContent(event)');
+  const saveProfileBtn = document.getElementById('save-profile-btn');
+  if (saveProfileBtn) saveProfileBtn.setAttribute('onclick', 'saveProfileSettings()');
   // Check if already logged in
   if (TOKEN && CURRENT_USER) {
     if (CURRENT_USER.role === 'creator') loadCreatorDashboard();

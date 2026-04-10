@@ -2,8 +2,10 @@
 const router = require('express').Router();
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
+const multer = require('multer');
 const { v4: uuidv4 } = require('uuid');
 const db = require('../db');
+const upload = multer({ dest: 'uploads/' });
 
 router.post('/register', async (req, res) => {
   try {
@@ -51,6 +53,21 @@ router.put('/profile', require('../middleware/auth'), (req, res) => {
   const { name, bio, category } = req.body;
   db.prepare('UPDATE users SET name=?, bio=?, category=? WHERE id=?').run(name, bio, category, req.user.id);
   res.json({ success: true });
+});
+
+// Subir foto de perfil
+router.post('/avatar', require('../middleware/auth'), upload.single('avatar'), (req, res) => {
+  if (!req.file) return res.status(400).json({ error: 'Archivo requerido' });
+  const avatar_url = '/uploads/' + req.file.filename;
+  db.prepare('UPDATE users SET avatar_url = ? WHERE id = ?').run(avatar_url, req.user.id);
+  res.json({ avatar_url });
+});
+
+router.post('/banner', require('../middleware/auth'), upload.single('banner'), (req, res) => {
+  if (!req.file) return res.status(400).json({ error: 'Archivo requerido' });
+  const banner_url = '/uploads/' + req.file.filename;
+  db.prepare('UPDATE users SET banner_url = ? WHERE id = ?').run(banner_url, req.user.id);
+  res.json({ banner_url });
 });
 
 module.exports = router;
