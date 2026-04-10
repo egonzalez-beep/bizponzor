@@ -192,7 +192,8 @@
   footer strong { color: var(--black); }
 
   /* ─── AUTH ─── */
-  #auth { padding-top: 64px; min-height: 100vh; display: flex; align-items: center; justify-content: center; }
+  #auth { padding-top: 64px; min-height: 100vh; display: none; align-items: center; justify-content: center; }
+  #auth.active { display: flex; }
   .auth-container {
     width: 100%; max-width: 420px; padding: 24px;
     margin: 40px auto;
