@@ -14,6 +14,12 @@ router.post('/checkout', auth, async (req, res) => {
     const creator = db.prepare('SELECT id, name, mp_access_token FROM users WHERE id=? AND role=?').get(creator_id, 'creator');
     if (!plan) return res.status(404).json({ error: 'Plan no encontrado' });
     if (!creator) return res.status(404).json({ error: 'Creador no encontrado' });
+    console.log('[MP] Iniciando creación de preferencia con:', {
+      access_token_prefix: process.env.MP_ACCESS_TOKEN?.substring(0, 15),
+      plan_price: plan.price,
+      currency: 'MXN',
+      creator_id: creator_id
+    });
     
     const sub_id = uuidv4();
     db.prepare('INSERT INTO subscriptions (id, fan_id, creator_id, plan_id, status, amount) VALUES (?,?,?,?,?,?)')
@@ -26,18 +32,17 @@ router.post('/checkout', auth, async (req, res) => {
     }
     
     // MercadoPago real
-    const creatorToken = creator.mp_access_token || process.env.MP_ACCESS_TOKEN;
-    const client = new MercadoPagoConfig({ accessToken: creatorToken });
+    const client = new MercadoPagoConfig({ accessToken: process.env.MP_ACCESS_TOKEN });
     const preference = new Preference(client);
 
-    const response = await preference.create({
+    const preferenceData = {
       body: {
         items: [{
           id: plan_id,
           title: `BizPonzor - ${plan.name} - ${creator.name}`,
           quantity: 1,
-          unit_price: plan.price,
-          currency_id: 'ARS'
+          unit_price: 10,
+          currency_id: 'MXN'
         }],
         marketplace_fee: Math.round(plan.price * 0.15 * 100) / 100,  // 15% de comisión para la plataforma
         payer: { email: req.user.email },
@@ -47,8 +52,20 @@ router.post('/checkout', auth, async (req, res) => {
         external_reference: sub_id,
         metadata: { sub_id, fan_id: req.user.id, creator_id, plan_id }
       }
-    });
-    res.json({ checkout_url: response.init_point, preference_id: response.id, sub_id });
+    };
+
+    try {
+      const response = await preference.create(preferenceData);
+      console.log('[MP] Preferencia creada:', response.id);
+      res.json({ checkout_url: response.init_point, preference_id: response.id, sub_id });
+    } catch (mpError) {
+      console.error('[MP] Error al crear preferencia:', {
+        message: mpError.message,
+        status: mpError.status,
+        response: mpError.response?.data
+      });
+      return res.status(500).json({ error: 'Error al conectar con MercadoPago: ' + mpError.message });
+    }
   } catch (e) {
     // Si MP no está configurado, simular para demo
     if (e.message && e.message.includes('ACCESS_TOKEN')) {
