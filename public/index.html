@@ -10,6 +10,8 @@
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
   :root {
+    --brand: #8B5CF6;
+    --brand-hover: #7C3AED;
     --black: #0A0A0A;
     --white: #FFFFFF;
     --gray-100: #F7F7F7;
@@ -60,8 +62,8 @@
     border: none; transition: all 0.18s ease; text-decoration: none;
     font-family: 'Inter', sans-serif;
   }
-  .btn-primary { background: var(--black); color: var(--white); }
-  .btn-primary:hover { background: var(--gray-800); transform: translateY(-1px); box-shadow: var(--shadow-md); }
+  .btn-primary { background: var(--brand); color: var(--white); }
+  .btn-primary:hover { background: var(--brand-hover); transform: translateY(-1px); box-shadow: var(--shadow-md); }
   .btn-outline { background: transparent; color: var(--black); border: 1.5px solid var(--gray-300); }
   .btn-outline:hover { border-color: var(--black); background: var(--gray-100); }
   .btn-ghost { background: transparent; color: var(--gray-600); border: none; padding: 10px 16px; }
@@ -75,40 +77,90 @@
   #landing { padding-top: 64px; }
 
   .hero {
-    min-height: 92vh;
+    min-height: 88vh;
     display: flex; flex-direction: column; align-items: center; justify-content: center;
-    text-align: center; padding: 80px 24px 60px;
-    background: linear-gradient(180deg, var(--white) 0%, var(--gray-100) 100%);
+    text-align: center; padding: 80px 24px 72px;
+    background: #0A0A0A;
+    background-image:
+      radial-gradient(ellipse 90% 70% at 50% -30%, rgba(139, 92, 246, 0.5), transparent 55%),
+      radial-gradient(ellipse 50% 40% at 90% 20%, rgba(124, 58, 237, 0.22), transparent),
+      radial-gradient(ellipse 45% 35% at 10% 60%, rgba(139, 92, 246, 0.12), transparent),
+      #0A0A0A;
+    color: var(--white);
   }
   .hero-badge {
     display: inline-flex; align-items: center; gap: 6px;
-    background: var(--black); color: var(--white);
+    background: #8B5CF6; color: white;
     padding: 6px 16px; border-radius: 999px;
     font-size: 0.75rem; font-weight: 600; letter-spacing: 0.5px;
-    margin-bottom: 32px; text-transform: uppercase;
+    margin-bottom: 28px; text-transform: uppercase;
   }
   .hero h1 {
-    font-size: clamp(2.8rem, 7vw, 5.5rem);
-    font-weight: 900; line-height: 1.05;
-    letter-spacing: -2px; max-width: 800px;
-    margin-bottom: 24px;
+    font-size: clamp(2.2rem, 5.5vw, 3.75rem);
+    font-weight: 900; line-height: 1.12;
+    letter-spacing: -1.5px; max-width: 920px;
+    margin-bottom: 20px;
+    color: var(--white);
   }
-  .hero h1 em { font-style: normal; color: var(--gray-500); }
-  .hero p {
-    font-size: 1.15rem; color: var(--gray-600);
-    max-width: 520px; line-height: 1.7; margin-bottom: 44px;
+  .hero h1 em { font-style: normal; color: var(--gray-400); }
+  .hero .hero-subtitle {
+    font-size: 1.12rem; color: rgba(255,255,255,0.82);
+    max-width: 640px; line-height: 1.75; margin-bottom: 14px;
   }
-  .hero-cta { display: flex; gap: 12px; flex-wrap: wrap; justify-content: center; }
+  .hero .hero-note {
+    font-size: 0.95rem; color: rgba(255,255,255,0.55);
+    max-width: 560px; line-height: 1.6; margin-bottom: 36px;
+  }
+  .hero-cta { display: flex; gap: 12px; flex-wrap: wrap; justify-content: center; margin-bottom: 8px; }
   .hero-cta .btn { font-size: 0.95rem; padding: 14px 30px; }
-
-  .hero-stats {
-    display: flex; gap: 48px; margin-top: 72px;
-    padding-top: 48px; border-top: 1px solid var(--gray-300);
-    flex-wrap: wrap; justify-content: center;
+  .hero .btn-primary { background: var(--brand); color: var(--white); }
+  .hero .btn-primary:hover { background: var(--brand-hover); }
+  .hero .btn-outline {
+    border: 1.5px solid rgba(255,255,255,0.35);
+    color: var(--white);
+    background: transparent;
   }
-  .stat-item { text-align: center; }
-  .stat-number { font-size: 2rem; font-weight: 800; letter-spacing: -1px; }
-  .stat-label { font-size: 0.8rem; color: var(--gray-500); margin-top: 4px; text-transform: uppercase; letter-spacing: 0.5px; }
+  .hero .btn-outline:hover {
+    border-color: rgba(255,255,255,0.55);
+    background: rgba(255,255,255,0.08);
+  }
+
+  /* Bloque estadísticas (landing) */
+  .stats-showcase {
+    padding: 80px 40px;
+    background: var(--gray-100);
+    border-top: 1px solid var(--gray-200);
+    border-bottom: 1px solid var(--gray-200);
+  }
+  .stats-showcase-inner { max-width: 1100px; margin: 0 auto; text-align: center; }
+  .stats-showcase-title {
+    font-size: clamp(1.5rem, 3.5vw, 2.25rem);
+    font-weight: 800;
+    letter-spacing: -0.5px;
+    margin-bottom: 48px;
+    color: var(--black);
+  }
+  .stats-showcase-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 32px 24px;
+    align-items: start;
+  }
+  .stats-showcase-item { text-align: center; }
+  .stats-showcase-num {
+    font-size: clamp(1.75rem, 4vw, 2.35rem);
+    font-weight: 800;
+    letter-spacing: -1px;
+    color: var(--brand);
+    margin-bottom: 8px;
+  }
+  .stats-showcase-label {
+    font-size: 0.85rem;
+    color: var(--gray-600);
+    line-height: 1.45;
+    max-width: 200px;
+    margin: 0 auto;
+  }
 
   /* Features */
   .features {
@@ -117,7 +169,7 @@
   }
   .section-label {
     font-size: 0.75rem; font-weight: 700; letter-spacing: 1.5px;
-    text-transform: uppercase; color: var(--gray-500); margin-bottom: 16px;
+    text-transform: uppercase; color: var(--brand); margin-bottom: 16px;
   }
   .section-title {
     font-size: clamp(1.8rem, 4vw, 2.8rem);
@@ -130,13 +182,18 @@
   .feature-card {
     background: var(--gray-100); border-radius: var(--radius);
     padding: 32px; border: 1px solid var(--gray-200);
-    transition: all 0.2s;
+    transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
   }
-  .feature-card:hover { transform: translateY(-4px); box-shadow: var(--shadow-md); background: var(--white); }
+  .feature-card:hover {
+    transform: scale(1.02);
+    box-shadow: var(--shadow-lg);
+    background: var(--white);
+  }
   .feature-icon {
-    width: 48px; height: 48px; background: var(--black); border-radius: var(--radius-sm);
+    width: 48px; height: 48px; background: var(--brand); border-radius: var(--radius-sm);
     display: flex; align-items: center; justify-content: center;
     font-size: 1.3rem; margin-bottom: 20px;
+    color: var(--white);
   }
   .feature-card h3 { font-size: 1.05rem; font-weight: 700; margin-bottom: 8px; }
   .feature-card p { font-size: 0.875rem; color: var(--gray-600); line-height: 1.6; }
@@ -155,21 +212,79 @@
   .creator-card {
     background: #161616; border-radius: var(--radius);
     border: 1px solid #2a2a2a; padding: 24px; text-align: center;
-    transition: all 0.2s; cursor: pointer;
+    transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+    cursor: pointer;
   }
-  .creator-card:hover { border-color: #444; transform: translateY(-4px); }
+  .creator-card:hover {
+    border-color: rgba(139, 92, 246, 0.45);
+    transform: scale(1.02);
+    box-shadow: 0 16px 48px rgba(0, 0, 0, 0.45);
+  }
   .creator-avatar {
-    width: 72px; height: 72px; border-radius: 50%;
-    margin: 0 auto 16px; overflow: hidden;
-    background: linear-gradient(135deg, #333 0%, #666 100%);
+    width: 80px; height: 80px; border-radius: 50%;
+    margin: 0 auto 12px; overflow: hidden;
+    background: #2a2a2a;
     display: flex; align-items: center; justify-content: center;
     font-size: 1.8rem; font-weight: 700; color: white;
+    border: 2px solid rgba(139, 92, 246, 0.35);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+  }
+  .creator-avatar img {
+    width: 100%; height: 100%; object-fit: cover;
   }
   .creator-card h4 { font-size: 0.95rem; font-weight: 700; margin-bottom: 4px; color: white; }
-  .creator-card p { font-size: 0.78rem; color: var(--gray-500); margin-bottom: 16px; }
+  .creator-handle { font-size: 0.78rem; color: var(--brand); margin-bottom: 6px; font-weight: 600; }
+  .creator-card p { font-size: 0.78rem; color: var(--gray-500); margin-bottom: 14px; }
   .creator-card .tag {
-    display: inline-block; background: #222; color: var(--gray-400);
+    display: inline-block; background: rgba(139, 92, 246, 0.15); color: #c4b5fd;
     padding: 4px 12px; border-radius: 999px; font-size: 0.72rem;
+    border: 1px solid rgba(139, 92, 246, 0.35);
+  }
+
+  /* Testimonios */
+  .testimonials-section {
+    padding: 100px 40px;
+    background: var(--white);
+    max-width: 1100px;
+    margin: 0 auto;
+    text-align: center;
+  }
+  .testimonials-section .section-label { display: inline-block; }
+  .testimonials-section .section-title { margin-bottom: 48px; margin-left: auto; margin-right: auto; }
+  .testimonials-grid { text-align: left; }
+  .testimonials-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 24px;
+  }
+  .testimonial-card {
+    background: var(--gray-100);
+    border: 1px solid var(--gray-200);
+    border-radius: var(--radius);
+    padding: 28px;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+  }
+  .testimonial-card:hover {
+    transform: scale(1.02);
+    box-shadow: var(--shadow-md);
+  }
+  .testimonial-head {
+    display: flex; align-items: center; gap: 14px;
+    margin-bottom: 16px;
+  }
+  .testimonial-avatar {
+    width: 52px; height: 52px; border-radius: 50%;
+    object-fit: cover;
+    background: var(--gray-300);
+    border: 2px solid rgba(139, 92, 246, 0.35);
+  }
+  .testimonial-name { font-weight: 800; font-size: 0.92rem; color: var(--black); }
+  .testimonial-role { font-size: 0.75rem; color: var(--gray-500); margin-top: 2px; }
+  .testimonial-stars { color: #FBBF24; font-size: 0.9rem; letter-spacing: 2px; margin-bottom: 12px; }
+  .testimonial-quote {
+    font-size: 0.9rem; color: var(--gray-700);
+    line-height: 1.65;
+    font-style: italic;
   }
 
   /* CTA section */
@@ -182,6 +297,13 @@
     font-weight: 900; letter-spacing: -1.5px; margin-bottom: 20px;
   }
   .cta-section p { color: var(--gray-600); font-size: 1.05rem; margin-bottom: 40px; }
+  .cta-section .btn-primary {
+    background: var(--brand);
+    color: var(--white);
+  }
+  .cta-section .btn-primary:hover {
+    background: var(--brand-hover);
+  }
 
   /* Footer */
   footer {
@@ -577,8 +699,8 @@
     .navbar { padding: 0 20px; }
     .hero { padding: 60px 20px 40px; }
     .hero h1 { letter-spacing: -1px; }
-    .hero-stats { gap: 28px; }
-    .features, .creators-section, .cta-section { padding: 60px 20px; }
+    .stats-showcase { padding: 56px 20px; }
+    .features, .creators-section, .testimonials-section, .cta-section { padding: 60px 20px; }
     .sidebar { display: none; }
     .main-content { padding: 20px; }
     .profile-body { grid-template-columns: 1fr; }
@@ -609,30 +731,36 @@
 <div id="landing" class="page active">
 
   <section class="hero">
-    <div class="hero-badge" style="background: #8B5CF6; color: white;">🎯 RECIBE MÁS DEL 90% DE TUS GANANCIAS</div>
-    <h1>Sé el patrocinador<br>de los creadores <em>que amas</em></h1>
-    <p style="max-width: 600px;">Sin comisiones ocultas. Solo lo que cobra Mercado Pago. Tú te llevas casi todo.</p>
-    <p>BizPonzor conecta a creadores de contenido con su comunidad más fiel. Apoya, accede a contenido exclusivo y forma parte de algo especial.</p>
+    <div class="hero-badge">🎯 RECIBE MÁS DEL 90% DE TUS GANANCIAS</div>
+    <h1>Conoce a creadores que inspiran. Conecta con tu comunidad.</h1>
+    <p class="hero-subtitle">La plataforma donde los creadores construyen comunidades, comparten contenido exclusivo y reciben apoyo directo de sus fans.</p>
+    <p class="hero-note">Sin comisiones ocultas. Solo lo que cobra Mercado Pago. Tú te llevas casi todo.</p>
     <div class="hero-cta">
       <button class="btn btn-primary" onclick="showAuth('register')">Empezar como creador</button>
       <button class="btn btn-outline" onclick="showAuth('register')">Explorar creadores</button>
     </div>
-    <div class="hero-stats">
-      <div class="stat-item">
-        <div class="stat-number">2.4K+</div>
-        <div class="stat-label">Creadores activos</div>
-      </div>
-      <div class="stat-item">
-        <div class="stat-number">18K+</div>
-        <div class="stat-label">Patrocinadores</div>
-      </div>
-      <div class="stat-item">
-        <div class="stat-number">$1.2M</div>
-        <div class="stat-label">Pagados a creadores</div>
-      </div>
-      <div class="stat-item">
-        <div class="stat-number">4.9★</div>
-        <div class="stat-label">Valoración promedio</div>
+  </section>
+
+  <section class="stats-showcase" aria-label="Estadísticas globales">
+    <div class="stats-showcase-inner">
+      <h2 class="stats-showcase-title">Números que hablan por sí solos</h2>
+      <div class="stats-showcase-grid">
+        <div class="stats-showcase-item">
+          <div class="stats-showcase-num">12,500+</div>
+          <div class="stats-showcase-label">Creadores activos</div>
+        </div>
+        <div class="stats-showcase-item">
+          <div class="stats-showcase-num">$4.2M</div>
+          <div class="stats-showcase-label">Pagado a creadores este año</div>
+        </div>
+        <div class="stats-showcase-item">
+          <div class="stats-showcase-num">850K+</div>
+          <div class="stats-showcase-label">Suscriptores apoyando</div>
+        </div>
+        <div class="stats-showcase-item">
+          <div class="stats-showcase-num">32.0%</div>
+          <div class="stats-showcase-label">Crecimiento mensual</div>
+        </div>
       </div>
     </div>
   </section>
@@ -685,29 +813,81 @@
       <div class="section-title">Algunos de nuestros talentos</div>
       <div class="creators-grid">
         <div class="creator-card" onclick="showCreatorProfile()">
-          <div class="creator-avatar">A</div>
+          <div class="creator-avatar">
+            <img src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=200&h=200&fit=crop&q=80" alt="" width="80" height="80" loading="lazy" decoding="async">
+          </div>
           <h4>Ana Molina</h4>
-          <p>Fotografía & Lifestyle</p>
-          <span class="tag">1.2K patrocinadores</span>
+          <div class="creator-handle">@anamolina</div>
+          <p>Fotografía &amp; Lifestyle</p>
+          <span class="tag">1.2K seguidores</span>
         </div>
         <div class="creator-card" onclick="showCreatorProfile()">
-          <div class="creator-avatar" style="background:linear-gradient(135deg,#2a2a2a,#888)">J</div>
+          <div class="creator-avatar">
+            <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=200&h=200&fit=crop&q=80" alt="" width="80" height="80" loading="lazy" decoding="async">
+          </div>
           <h4>Jorge Restrepo</h4>
-          <p>Tech & Tutoriales</p>
-          <span class="tag">3.4K patrocinadores</span>
+          <div class="creator-handle">@jorge_rest</div>
+          <p>Tech &amp; Tutoriales</p>
+          <span class="tag">3.4K seguidores</span>
         </div>
         <div class="creator-card" onclick="showCreatorProfile()">
-          <div class="creator-avatar" style="background:linear-gradient(135deg,#1a1a1a,#555)">M</div>
+          <div class="creator-avatar">
+            <img src="https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=200&h=200&fit=crop&q=80" alt="" width="80" height="80" loading="lazy" decoding="async">
+          </div>
           <h4>María Valentina</h4>
-          <p>Arte & Ilustración</p>
-          <span class="tag">890 patrocinadores</span>
+          <div class="creator-handle">@mvalentina</div>
+          <p>Arte &amp; Ilustración</p>
+          <span class="tag">890 seguidores</span>
         </div>
         <div class="creator-card" onclick="showCreatorProfile()">
-          <div class="creator-avatar" style="background:linear-gradient(135deg,#333,#777)">C</div>
+          <div class="creator-avatar">
+            <img src="https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=200&h=200&fit=crop&q=80" alt="" width="80" height="80" loading="lazy" decoding="async">
+          </div>
           <h4>Carlos Vega</h4>
-          <p>Música & Producción</p>
-          <span class="tag">2.1K patrocinadores</span>
+          <div class="creator-handle">@carlosvega</div>
+          <p>Música &amp; Producción</p>
+          <span class="tag">2.1K seguidores</span>
         </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="testimonials-section">
+    <div class="section-label">Testimonios</div>
+    <div class="section-title">Lo que dicen quienes ya crean en BizPonzor</div>
+    <div class="testimonials-grid">
+      <div class="testimonial-card">
+        <div class="testimonial-head">
+          <img class="testimonial-avatar" src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=120&h=120&fit=crop&q=80" alt="" width="52" height="52" loading="lazy">
+          <div>
+            <div class="testimonial-name">Laura Méndez</div>
+            <div class="testimonial-role">Ilustración digital</div>
+          </div>
+        </div>
+        <div class="testimonial-stars">★★★★★</div>
+        <p class="testimonial-quote">«BizPonzor cambió mi vida: ahora vivo de mi arte y conecto con gente que de verdad valora lo que hago.»</p>
+      </div>
+      <div class="testimonial-card">
+        <div class="testimonial-head">
+          <img class="testimonial-avatar" src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=120&h=120&fit=crop&q=80" alt="" width="52" height="52" loading="lazy">
+          <div>
+            <div class="testimonial-name">Diego Ríos</div>
+            <div class="testimonial-role">Tech &amp; educación</div>
+          </div>
+        </div>
+        <div class="testimonial-stars">★★★★★</div>
+        <p class="testimonial-quote">«Por fin una plataforma clara, con Mercado Pago y sin comisiones raras. Mis suscriptores confían.»</p>
+      </div>
+      <div class="testimonial-card">
+        <div class="testimonial-head">
+          <img class="testimonial-avatar" src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=120&h=120&fit=crop&q=80" alt="" width="52" height="52" loading="lazy">
+          <div>
+            <div class="testimonial-name">Valentina Soto</div>
+            <div class="testimonial-role">Fitness &amp; lifestyle</div>
+          </div>
+        </div>
+        <div class="testimonial-stars">★★★★★</div>
+        <p class="testimonial-quote">«Mi comunidad creció en semanas. El contenido exclusivo y los planes hacen todo más simple.»</p>
       </div>
     </div>
   </section>
