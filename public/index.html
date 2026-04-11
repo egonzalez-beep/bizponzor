@@ -74,14 +74,8 @@
   .btn-danger:hover { background: #E0342A; }
 
   /* ─── LANDING ─── */
-  #landing { padding-top: 64px; }
-
-  .hero {
-    min-height: 88vh;
-    display: flex; flex-direction: column; align-items: center; justify-content: center;
-    text-align: center; padding: 80px 24px 72px;
-    position: relative;
-    overflow: hidden;
+  #landing {
+    padding-top: 64px;
     background: #000000;
     background-image:
       radial-gradient(ellipse 110% 85% at 50% -20%, rgba(76, 29, 149, 0.65), transparent 52%),
@@ -89,7 +83,19 @@
       radial-gradient(ellipse 65% 50% at 5% 25%, rgba(124, 58, 237, 0.25), transparent 50%),
       radial-gradient(ellipse 90% 70% at 50% 110%, rgba(76, 29, 149, 0.2), transparent 55%),
       radial-gradient(ellipse 50% 40% at 80% 70%, rgba(139, 92, 246, 0.12), transparent),
+      radial-gradient(ellipse 80% 50% at 50% 45%, rgba(76, 29, 149, 0.18), transparent 60%),
+      radial-gradient(ellipse 70% 45% at 20% 80%, rgba(124, 58, 237, 0.14), transparent 55%),
       linear-gradient(165deg, #000000 0%, #06040c 35%, #0a0614 70%, #050308 100%);
+    background-attachment: scroll;
+  }
+
+  .hero {
+    min-height: 88vh;
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    text-align: center; padding: 80px 24px 72px;
+    position: relative;
+    overflow: hidden;
+    background: transparent;
     color: var(--white);
   }
   .hero-badge {
@@ -159,6 +165,11 @@
     border-top: 1px solid var(--gray-200);
     border-bottom: 1px solid var(--gray-200);
   }
+  #landing .stats-showcase {
+    background: transparent;
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  }
   .stats-showcase-inner { max-width: 1100px; margin: 0 auto; text-align: center; }
   .stats-showcase-title {
     font-size: clamp(1.5rem, 3.5vw, 2.25rem);
@@ -167,6 +178,7 @@
     margin-bottom: 48px;
     color: var(--black);
   }
+  #landing .stats-showcase-title { color: var(--white); }
   .stats-showcase-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
@@ -188,6 +200,7 @@
     max-width: 200px;
     margin: 0 auto;
   }
+  #landing .stats-showcase-label { color: rgba(255, 255, 255, 0.68); }
 
   /* Features */
   .features {
@@ -224,6 +237,19 @@
   }
   .feature-card h3 { font-size: 1.05rem; font-weight: 700; margin-bottom: 8px; }
   .feature-card p { font-size: 0.875rem; color: var(--gray-600); line-height: 1.6; }
+
+  #landing .features .section-title { color: var(--white); }
+  #landing .feature-card {
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(8px);
+  }
+  #landing .feature-card:hover {
+    background: rgba(255, 255, 255, 0.1);
+    box-shadow: 0 16px 48px rgba(0, 0, 0, 0.35);
+  }
+  #landing .feature-card h3 { color: var(--white); }
+  #landing .feature-card p { color: rgba(255, 255, 255, 0.72); }
 
   /* Creators showcase */
   .creators-section {
@@ -272,9 +298,14 @@
   .testimonials-section {
     padding: 100px 40px;
     background: var(--white);
+    max-width: none;
+    width: 100%;
+    margin: 0;
+    text-align: center;
+  }
+  .testimonials-inner {
     max-width: 1100px;
     margin: 0 auto;
-    text-align: center;
   }
   .testimonials-section .section-label { display: inline-block; }
   .testimonials-section .section-title { margin-bottom: 48px; margin-left: auto; margin-right: auto; }
@@ -319,11 +350,17 @@
     padding: 120px 40px; text-align: center;
     background: var(--gray-100);
   }
+  #landing .cta-section {
+    background: transparent;
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+  }
   .cta-section h2 {
     font-size: clamp(2rem, 5vw, 3.5rem);
     font-weight: 900; letter-spacing: -1.5px; margin-bottom: 20px;
   }
+  #landing .cta-section h2 { color: var(--white); }
   .cta-section p { color: var(--gray-600); font-size: 1.05rem; margin-bottom: 40px; }
+  #landing .cta-section p { color: rgba(255, 255, 255, 0.72); }
   .cta-section .btn-primary {
     background: var(--brand);
     color: var(--white);
@@ -339,6 +376,11 @@
     color: var(--gray-500); font-size: 0.82rem;
   }
   footer strong { color: var(--black); }
+  #landing footer {
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    color: rgba(255, 255, 255, 0.5);
+  }
+  #landing footer strong { color: rgba(255, 255, 255, 0.92); }
 
   /* ─── AUTH ─── */
   #auth { padding-top: 64px; min-height: 100vh; display: none; align-items: center; justify-content: center; }
@@ -764,7 +806,7 @@
       <span class="hero-badge-dot" aria-hidden="true"></span>
       <span class="hero-badge-text">0% DE COMISIÓN POR TIEMPO LIMITADO</span>
     </div>
-    <h1>Conoce a creadores que inspiran. Conecta con tu comunidad.</h1>
+    <h1>Apoya a los creadores que más te inspiran</h1>
     <p class="hero-subtitle">La plataforma donde los creadores construyen comunidades, comparten contenido exclusivo y reciben apoyo directo de sus fans.</p>
     <div class="hero-cta">
       <button class="btn btn-primary" onclick="showAuth('register')">Empezar como creador</button>
@@ -812,8 +854,18 @@
       </div>
       <div class="feature-card">
         <div class="feature-icon">💳</div>
-        <h3>Pagos con MercadoPago</h3>
+        <h3>Pagos con Mercado Pago</h3>
         <p>Tus fans pagan con su método favorito. El pago se procesa automáticamente y el acceso se activa al instante.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">🔐</div>
+        <h3>Pagos seguros</h3>
+        <p>Tu dinero viaja con cifrado y estándares de la industria. Integración con Mercado Pago: transacciones auditables, protección al comprador y creador, y cero improvisación en el cobro. Confianza medible, no promesas vacías.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">⚡</div>
+        <h3>Motor IA para crecer tu comunidad</h3>
+        <p>Deja de quemar horas persiguiendo métricas huecas. Nuestros motores de IA amplifican tu alcance, priorizan a quienes realmente encajan con tu marca y aceleran el crecimiento de tu comunidad. Tú inviertes el tiempo donde importa: en crear.</p>
       </div>
       <div class="feature-card">
         <div class="feature-icon">📊</div>
@@ -884,6 +936,7 @@
   </section>
 
   <section class="testimonials-section">
+    <div class="testimonials-inner">
     <div class="section-label">Testimonios</div>
     <div class="section-title">Lo que dicen quienes ya crean en BizPonzor</div>
     <div class="testimonials-grid">
@@ -921,6 +974,7 @@
         <p class="testimonial-quote">«Mi comunidad creció en semanas. El contenido exclusivo y los planes hacen todo más simple.»</p>
       </div>
     </div>
+    </div>
   </section>
 
   <section class="cta-section">
@@ -930,7 +984,7 @@
   </section>
 
   <footer>
-    <strong>BizPonzor</strong> — La plataforma de creadores · © 2025 · Todos los derechos reservados
+    <strong>BizPonzor</strong> — La plataforma de creadores · © 2026 · Todos los derechos reservados
   </footer>
 </div>
 
