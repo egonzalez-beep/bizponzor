@@ -1086,16 +1086,104 @@
   /* Creator Profile (public) */
   #creator-profile { padding-top: 64px; background: #1A1A1A; color: #FFFFFF; }
   .profile-banner {
-    height: min(320px, 38vw);
-    min-height: 220px;
+    height: min(420px, 48vw);
+    min-height: 280px;
     background: linear-gradient(135deg, #1a1a1a 0%, #444 100%);
     position: relative;
     background-size: cover;
     background-position: center;
-    box-shadow: inset 0 -1px 0 rgba(0,0,0,0.08);
+    box-shadow: inset 0 -1px 0 rgba(0,0,0,0.12);
   }
   .profile-info {
     max-width: 1320px; margin: 0 auto; padding: 0 40px;
+  }
+  .profile-info-hero {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(260px, 340px);
+    gap: 32px 40px;
+    align-items: start;
+    padding-bottom: 8px;
+  }
+  .profile-hero-main {
+    min-width: 0;
+  }
+  .profile-hero-aside {
+    background: rgba(255,255,255,0.03);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 16px;
+    padding: 22px 22px 20px;
+    margin-top: 0;
+  }
+  .profile-hero-stats {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px 16px;
+    margin-bottom: 18px;
+  }
+  .profile-stat {
+    text-align: left;
+    min-width: 0;
+  }
+  .profile-stat-value {
+    display: block;
+    font-size: 1.65rem;
+    font-weight: 800;
+    letter-spacing: -0.5px;
+    line-height: 1.15;
+    color: #FFFFFF;
+    font-variant-numeric: tabular-nums;
+  }
+  .profile-stat-label {
+    display: block;
+    font-size: 0.68rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: #737373;
+    margin-top: 6px;
+  }
+  .btn.profile-hero-cta {
+    width: 100%;
+    padding: 14px 20px;
+    font-size: 0.95rem;
+    font-weight: 700;
+    border: none;
+    border-radius: 12px;
+    background: linear-gradient(135deg, #7C3AED 0%, #8B5CF6 50%, #A78BFA 100%);
+    color: #FFFFFF;
+    cursor: pointer;
+    box-shadow: 0 4px 20px rgba(139, 92, 246, 0.35);
+    transition: transform 0.2s ease, box-shadow 0.25s ease;
+  }
+  .btn.profile-hero-cta:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 8px 28px rgba(139, 92, 246, 0.5);
+  }
+  .btn.profile-hero-cta:active {
+    transform: translateY(0);
+  }
+  .profile-owner-plan-wrap {
+    padding: 2px 0 0;
+  }
+  .profile-owner-plan-title {
+    font-size: 0.7rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: #737373;
+    margin-bottom: 10px;
+  }
+  .profile-owner-plan-name {
+    font-size: 1.05rem;
+    font-weight: 800;
+    color: #FFFFFF;
+    letter-spacing: -0.2px;
+    margin-bottom: 4px;
+  }
+  .profile-owner-plan-price {
+    font-size: 0.88rem;
+    color: #A3A3A3;
+    font-weight: 600;
   }
   .profile-avatar-wrap {
     margin-top: -50px; margin-bottom: 20px; position: relative; display: inline-block;
@@ -1191,6 +1279,10 @@
   #creator-profile-inner {
     background: #1A1A1A;
     color: #FFFFFF;
+  }
+  #creator-profile-inner .profile-hero-aside {
+    background: rgba(255,255,255,0.04);
+    border-color: rgba(255,255,255,0.1);
   }
 
   #fan-dashboard .sidebar > div:first-child > div:last-child > div:first-child {
@@ -1299,6 +1391,15 @@
     .profile-body { grid-template-columns: 1fr; padding: 24px 20px 40px; gap: 28px; }
     .profile-sidebar-card { position: relative; top: auto; max-height: none; }
     .profile-info { padding: 0 20px; }
+    .profile-info-hero { grid-template-columns: 1fr; gap: 24px; }
+    .profile-hero-aside { margin-top: 8px; }
+    .profile-hero-stats { grid-template-columns: repeat(3, 1fr); gap: 10px; }
+    .profile-stat-value { font-size: 1.35rem; }
+  }
+
+  @media (max-width: 900px) {
+    .profile-info-hero { grid-template-columns: 1fr; }
+    .profile-hero-aside { max-width: 100%; }
   }
 
   /* Perfil: una columna en pantallas medianas para que las miniaturas no queden diminutas */
@@ -2024,17 +2125,32 @@
   <div id="profile-mount-standalone">
     <div id="creator-profile-inner">
   <div class="profile-banner"></div>
-  <div class="profile-info">
-    <div class="profile-avatar-wrap">
-      <div class="profile-avatar">A</div>
+  <div class="profile-info profile-info-hero">
+    <div class="profile-hero-main">
+      <div class="profile-avatar-wrap">
+        <div class="profile-avatar">A</div>
+      </div>
+      <div class="profile-name">Ana Molina</div>
+      <div class="profile-handle">@anamolina · Fotografía & Lifestyle</div>
+      <div class="profile-bio">Fotógrafa apasionada por capturar momentos únicos. Comparto mi proceso creativo y contenido exclusivo con mi comunidad especial. ✨</div>
     </div>
-    <div class="profile-name">Ana Molina</div>
-    <div class="profile-handle">@anamolina · Fotografía & Lifestyle</div>
-    <div class="profile-bio">Fotógrafa apasionada por capturar momentos únicos. Comparto mi proceso creativo y contenido exclusivo con mi comunidad especial. ✨</div>
-    <div style="display:flex;gap:24px;margin-bottom:32px;flex-wrap:wrap;">
-      <div><strong>1,248</strong> <span style="color:var(--gray-500);font-size:0.875rem;">patrocinadores</span></div>
-      <div><strong>38</strong> <span style="color:var(--gray-500);font-size:0.875rem;">publicaciones</span></div>
-    </div>
+    <aside class="profile-hero-aside" aria-label="Resumen">
+      <div class="profile-hero-stats">
+        <div class="profile-stat">
+          <span class="profile-stat-value" id="profile-stat-posts">0</span>
+          <span class="profile-stat-label">Publicaciones</span>
+        </div>
+        <div class="profile-stat">
+          <span class="profile-stat-value" id="profile-stat-sponsors">0</span>
+          <span class="profile-stat-label">Patrocinadores</span>
+        </div>
+        <div class="profile-stat">
+          <span class="profile-stat-value" id="profile-stat-revenue">—</span>
+          <span class="profile-stat-label">Ingresos / mes</span>
+        </div>
+      </div>
+      <button type="button" class="btn profile-hero-cta" id="profile-share-community-btn" onclick="shareCreatorProfile()">Comparte con tu comunidad</button>
+    </aside>
   </div>
   <div class="profile-body">
     <div class="profile-feed">
@@ -2043,13 +2159,22 @@
     </div>
     <div class="profile-sidebar-col">
       <div class="profile-sidebar-card" id="profile-plans-card">
-        <h4>Hazte patrocinador 💎</h4>
-        <p id="profile-plans-intro" style="font-size:0.88rem;color:var(--gray-600);margin-bottom:18px;line-height:1.5;">Accede a contenido exclusivo y apoya al creador</p>
-        <div id="profile-action-buttons" class="profile-action-buttons">
-          <button type="button" class="btn btn-full" style="background:#3B82F6;color:white;border:none;" id="profile-btn-donate" onclick="openDonateModal()">Donar</button>
-          <button type="button" class="btn btn-primary btn-full" id="profile-btn-subscribe" onclick="subscribeFromProfile()">Suscribirse</button>
+        <div id="profile-sidebar-owner" class="profile-sidebar-owner" style="display:none;">
+          <div class="profile-owner-plan-wrap">
+            <div class="profile-owner-plan-title">Tu plan activo</div>
+            <div class="profile-owner-plan-name" id="profile-owner-plan-name">—</div>
+            <div class="profile-owner-plan-price" id="profile-owner-plan-price">—</div>
+          </div>
         </div>
-        <div id="profile-single-plan-slot"></div>
+        <div id="profile-sidebar-fan">
+          <h4>Hazte patrocinador 💎</h4>
+          <p id="profile-plans-intro" style="font-size:0.88rem;color:var(--gray-600);margin-bottom:18px;line-height:1.5;">Accede a contenido exclusivo y apoya al creador</p>
+          <div id="profile-action-buttons" class="profile-action-buttons">
+            <button type="button" class="btn btn-full" style="background:#3B82F6;color:white;border:none;" id="profile-btn-donate" onclick="openDonateModal()">Donar</button>
+            <button type="button" class="btn btn-primary btn-full" id="profile-btn-subscribe" onclick="subscribeFromProfile()">Suscribirse</button>
+          </div>
+          <div id="profile-single-plan-slot"></div>
+        </div>
       </div>
     </div>
   </div>
@@ -2223,11 +2348,17 @@
       const creator = await api.get('/creators/me');
       if (!creator.error) {
         CURRENT_CREATOR_ID = creator.id;
+        const innerRoot = document.getElementById('creator-profile-inner');
+        if (innerRoot) innerRoot.dataset.handle = creator.handle || '';
         document.querySelector('#creator-profile-inner .profile-name').textContent = creator.name;
         document.querySelector('#creator-profile-inner .profile-handle').textContent = (creator.handle || '') + ' · ' + (creator.category || 'Creador');
         document.querySelector('#creator-profile-inner .profile-bio').textContent = creator.bio || 'Bienvenido a mi perfil en BizPonzor';
-        document.querySelectorAll('#creator-profile-inner .profile-info strong')[0].textContent = creator.subscribers;
-        document.querySelectorAll('#creator-profile-inner .profile-info strong')[1].textContent = creator.content_count;
+        let monthlyRev = 0;
+        const statsRes = await api.get('/subscriptions/stats');
+        if (statsRes && !statsRes.error && statsRes.monthly_revenue !== undefined) {
+          monthlyRev = Number(statsRes.monthly_revenue) || 0;
+        }
+        fillProfileHeroStats(creator, { isOwnerView: true, monthlyRevenue: monthlyRev });
         const avatarDiv = document.querySelector('#creator-profile-inner .profile-avatar');
         if (avatarDiv) {
           avatarDiv.style.backgroundImage = '';
@@ -2545,6 +2676,58 @@ function pickSinglePlan(plans) {
   return featured || plans[0];
 }
 
+function fillProfileHeroStats(creator, opts) {
+  opts = opts || {};
+  const posts = document.getElementById('profile-stat-posts');
+  const sponsors = document.getElementById('profile-stat-sponsors');
+  const revenue = document.getElementById('profile-stat-revenue');
+  const cc = creator.content_count;
+  const subs = creator.subscribers;
+  if (posts) {
+    posts.textContent =
+      cc !== undefined && cc !== null ? Number(cc).toLocaleString('es') : '—';
+  }
+  if (sponsors) {
+    sponsors.textContent =
+      subs !== undefined && subs !== null ? Number(subs).toLocaleString('es') : '—';
+  }
+  if (revenue) {
+    if (opts.isOwnerView) {
+      const m = opts.monthlyRevenue;
+      if (m !== undefined && m !== null && !Number.isNaN(Number(m))) {
+        revenue.textContent =
+          '$' +
+          Number(m).toLocaleString('es', {
+            minimumFractionDigits: 0,
+            maximumFractionDigits: 2
+          });
+      } else {
+        revenue.textContent = '$0';
+      }
+    } else {
+      revenue.textContent = '—';
+    }
+  }
+  const shareBtn = document.getElementById('profile-share-community-btn');
+  if (shareBtn) shareBtn.style.display = opts.isOwnerView ? '' : 'none';
+}
+
+function shareCreatorProfile() {
+  const url = window.location.href;
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(url).then(
+      function () {
+        showNotif('✅ Enlace copiado. Compártelo con tu comunidad.');
+      },
+      function () {
+        showNotif('Copia el enlace desde la barra de direcciones.');
+      }
+    );
+  } else {
+    showNotif(url);
+  }
+}
+
 function fillCreatorProfileSidebar(creator, plans) {
   const intro = document.getElementById('profile-plans-intro');
   if (intro) {
@@ -2557,6 +2740,17 @@ function fillCreatorProfileSidebar(creator, plans) {
     CURRENT_USER.role === 'creator' &&
     CURRENT_USER.id === creator.id;
   if (ab) ab.style.display = isOwn ? 'none' : '';
+  const ownerSb = document.getElementById('profile-sidebar-owner');
+  const fanSb = document.getElementById('profile-sidebar-fan');
+  if (ownerSb && fanSb) {
+    if (isOwn) {
+      ownerSb.style.display = 'block';
+      fanSb.style.display = 'none';
+    } else {
+      ownerSb.style.display = 'none';
+      fanSb.style.display = 'block';
+    }
+  }
   const slot = document.getElementById('profile-single-plan-slot');
   const p = pickSinglePlan(plans);
   window.PROFILE_SELECTED_PLAN = p
@@ -2567,7 +2761,19 @@ function fillCreatorProfileSidebar(creator, plans) {
         price: p.price
       }
     : null;
-  if (slot) {
+
+  const nameEl = document.getElementById('profile-owner-plan-name');
+  const priceEl = document.getElementById('profile-owner-plan-price');
+  if (isOwn) {
+    if (p) {
+      if (nameEl) nameEl.textContent = p.name;
+      if (priceEl) priceEl.textContent = '$' + p.price + '/mes';
+    } else {
+      if (nameEl) nameEl.textContent = 'Sin plan configurado';
+      if (priceEl) priceEl.textContent = 'Crea un plan en el panel';
+    }
+    if (slot) slot.innerHTML = '';
+  } else if (slot) {
     if (!p) {
       slot.innerHTML =
         '<p style="font-size:0.88rem;color:var(--gray-500);line-height:1.45;">Sin planes activos aún.</p>';
@@ -3046,11 +3252,26 @@ async function openCreatorProfile(handle) {
   if (creator.error) { showNotif('❌ Creador no encontrado'); return; }
   if (typeof unmountCreatorProfileFromEmbed === 'function') unmountCreatorProfileFromEmbed();
   CURRENT_CREATOR_ID = creator.id;
+  const innerRoot = document.getElementById('creator-profile-inner');
+  if (innerRoot) innerRoot.dataset.handle = creator.handle || '';
   document.querySelector('#creator-profile-inner .profile-name').textContent = creator.name;
   document.querySelector('#creator-profile-inner .profile-handle').textContent = (creator.handle || '') + ' · ' + (creator.category || 'Creador');
   document.querySelector('#creator-profile-inner .profile-bio').textContent = creator.bio || 'Bienvenido a mi perfil en BizPonzor';
-  document.querySelectorAll('#creator-profile-inner .profile-info strong')[0].textContent = creator.subscribers;
-  document.querySelectorAll('#creator-profile-inner .profile-info strong')[1].textContent = creator.content_count;
+  const isOwnProfile =
+    CURRENT_USER &&
+    CURRENT_USER.role === 'creator' &&
+    CURRENT_USER.id === creator.id;
+  let monthlyRev = null;
+  if (isOwnProfile) {
+    const statsRes = await api.get('/subscriptions/stats');
+    if (statsRes && !statsRes.error && statsRes.monthly_revenue !== undefined) {
+      monthlyRev = Number(statsRes.monthly_revenue) || 0;
+    }
+  }
+  fillProfileHeroStats(creator, {
+    isOwnerView: isOwnProfile,
+    monthlyRevenue: isOwnProfile ? monthlyRev : null
+  });
   const avatarDiv = document.querySelector('#creator-profile-inner .profile-avatar');
   if (avatarDiv) {
     avatarDiv.style.backgroundImage = '';
