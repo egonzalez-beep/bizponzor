@@ -80,20 +80,51 @@
     min-height: 88vh;
     display: flex; flex-direction: column; align-items: center; justify-content: center;
     text-align: center; padding: 80px 24px 72px;
-    background: #0A0A0A;
+    position: relative;
+    overflow: hidden;
+    background: #000000;
     background-image:
-      radial-gradient(ellipse 90% 70% at 50% -30%, rgba(139, 92, 246, 0.5), transparent 55%),
-      radial-gradient(ellipse 50% 40% at 90% 20%, rgba(124, 58, 237, 0.22), transparent),
-      radial-gradient(ellipse 45% 35% at 10% 60%, rgba(139, 92, 246, 0.12), transparent),
-      #0A0A0A;
+      radial-gradient(ellipse 110% 85% at 50% -20%, rgba(76, 29, 149, 0.65), transparent 52%),
+      radial-gradient(ellipse 75% 55% at 95% 15%, rgba(88, 28, 135, 0.4), transparent 48%),
+      radial-gradient(ellipse 65% 50% at 5% 25%, rgba(124, 58, 237, 0.25), transparent 50%),
+      radial-gradient(ellipse 90% 70% at 50% 110%, rgba(76, 29, 149, 0.2), transparent 55%),
+      radial-gradient(ellipse 50% 40% at 80% 70%, rgba(139, 92, 246, 0.12), transparent),
+      linear-gradient(165deg, #000000 0%, #06040c 35%, #0a0614 70%, #050308 100%);
     color: var(--white);
   }
   .hero-badge {
-    display: inline-flex; align-items: center; gap: 6px;
-    background: #8B5CF6; color: white;
-    padding: 6px 16px; border-radius: 999px;
-    font-size: 0.75rem; font-weight: 600; letter-spacing: 0.5px;
-    margin-bottom: 28px; text-transform: uppercase;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    flex-wrap: wrap;
+    padding: 16px 32px;
+    border-radius: 999px;
+    margin-bottom: 36px;
+    max-width: min(96vw, 640px);
+    background: rgba(8, 6, 14, 0.92);
+    border: 1.5px solid rgba(167, 139, 250, 0.5);
+    box-shadow:
+      0 0 0 1px rgba(139, 92, 246, 0.12),
+      0 8px 40px rgba(76, 29, 149, 0.35),
+      inset 0 1px 0 rgba(255, 255, 255, 0.06);
+  }
+  .hero-badge-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #C4B5FD, #8B5CF6);
+    flex-shrink: 0;
+    box-shadow: 0 0 16px rgba(167, 139, 250, 0.9);
+  }
+  .hero-badge-text {
+    font-size: clamp(0.85rem, 2.8vw, 1.2rem);
+    font-weight: 800;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: #F5F3FF;
+    line-height: 1.35;
+    text-shadow: 0 1px 20px rgba(139, 92, 246, 0.35);
   }
   .hero h1 {
     font-size: clamp(2.2rem, 5.5vw, 3.75rem);
@@ -105,11 +136,7 @@
   .hero h1 em { font-style: normal; color: var(--gray-400); }
   .hero .hero-subtitle {
     font-size: 1.12rem; color: rgba(255,255,255,0.82);
-    max-width: 640px; line-height: 1.75; margin-bottom: 14px;
-  }
-  .hero .hero-note {
-    font-size: 0.95rem; color: rgba(255,255,255,0.55);
-    max-width: 560px; line-height: 1.6; margin-bottom: 36px;
+    max-width: 640px; line-height: 1.75; margin-bottom: 36px;
   }
   .hero-cta { display: flex; gap: 12px; flex-wrap: wrap; justify-content: center; margin-bottom: 8px; }
   .hero-cta .btn { font-size: 0.95rem; padding: 14px 30px; }
@@ -698,6 +725,8 @@
   @media (max-width: 768px) {
     .navbar { padding: 0 20px; }
     .hero { padding: 60px 20px 40px; }
+    .hero-badge { padding: 14px 20px; margin-bottom: 28px; }
+    .hero-badge-text { letter-spacing: 0.08em; }
     .hero h1 { letter-spacing: -1px; }
     .stats-showcase { padding: 56px 20px; }
     .features, .creators-section, .testimonials-section, .cta-section { padding: 60px 20px; }
@@ -731,10 +760,12 @@
 <div id="landing" class="page active">
 
   <section class="hero">
-    <div class="hero-badge">🎯 RECIBE MÁS DEL 90% DE TUS GANANCIAS</div>
+    <div class="hero-badge" role="status">
+      <span class="hero-badge-dot" aria-hidden="true"></span>
+      <span class="hero-badge-text">0% DE COMISIÓN POR TIEMPO LIMITADO</span>
+    </div>
     <h1>Conoce a creadores que inspiran. Conecta con tu comunidad.</h1>
     <p class="hero-subtitle">La plataforma donde los creadores construyen comunidades, comparten contenido exclusivo y reciben apoyo directo de sus fans.</p>
-    <p class="hero-note">Sin comisiones ocultas. Solo lo que cobra Mercado Pago. Tú te llevas casi todo.</p>
     <div class="hero-cta">
       <button class="btn btn-primary" onclick="showAuth('register')">Empezar como creador</button>
       <button class="btn btn-outline" onclick="showAuth('register')">Explorar creadores</button>
