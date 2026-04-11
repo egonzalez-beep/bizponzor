@@ -648,7 +648,9 @@
     width: 280px; flex-shrink: 0; background: #222222;
     border-right: 1px solid #333333; padding: 28px 18px;
     position: sticky; top: 64px; align-self: flex-start;
-    height: calc(100vh - 64px); max-height: calc(100vh - 64px);
+    min-height: calc(100vh - 64px);
+    height: auto;
+    max-height: calc(100vh - 64px);
     overflow-y: auto;
     box-shadow: none;
   }
@@ -674,6 +676,39 @@
 
   /* Main content */
   .main-content { flex: 1; padding: 36px; overflow-y: auto; }
+  #creator-dashboard .creator-app-main {
+    display: flex;
+    flex-direction: column;
+    min-height: calc(100vh - 64px);
+    padding: 0;
+    overflow: hidden;
+  }
+  #creator-dashboard .creator-app-panels {
+    flex: 1;
+    min-height: 0;
+    overflow-y: auto;
+    overflow-x: hidden;
+    padding: 36px;
+  }
+  #creator-profile-embed.creator-profile-embed {
+    padding: 24px 36px 40px;
+    background: #1A1A1A;
+  }
+  #creator-profile-embed .profile-sidebar-card {
+    top: 12px;
+    max-height: calc(100vh - 140px);
+  }
+  .btn-sidebar-public-profile {
+    background: #FFFFFF !important;
+    color: #000000 !important;
+    border: none !important;
+    font-weight: 700 !important;
+  }
+  .btn-sidebar-public-profile:hover {
+    background: #F0F0F0 !important;
+    color: #000000 !important;
+    transform: translateY(-1px);
+  }
   .page-header { margin-bottom: 32px; }
   .page-header h2 { font-size: 1.7rem; font-weight: 800; letter-spacing: -0.5px; }
   .page-header p { color: var(--gray-600); font-size: 0.9rem; margin-top: 6px; }
@@ -1074,11 +1109,11 @@
     font-size: 2.5rem; font-weight: 800; color: white;
   }
   .profile-name { font-size: 1.6rem; font-weight: 800; letter-spacing: -0.5px; }
-  #creator-profile .profile-name { color: #FFFFFF; }
+  #creator-profile-inner .profile-name { color: #FFFFFF; }
   .profile-handle { color: var(--gray-500); font-size: 0.9rem; margin-bottom: 12px; }
-  #creator-profile .profile-handle { color: #A3A3A3; }
+  #creator-profile-inner .profile-handle { color: #A3A3A3; }
   .profile-bio { font-size: 0.9rem; color: var(--gray-700); max-width: 500px; line-height: 1.6; margin-bottom: 24px; }
-  #creator-profile .profile-bio { color: #A3A3A3; }
+  #creator-profile-inner .profile-bio { color: #A3A3A3; }
   .profile-body {
     max-width: 1320px; margin: 0 auto; padding: 40px 40px 56px;
     display: grid;
@@ -1093,7 +1128,7 @@
     font-size: 1.25rem; font-weight: 800; margin-bottom: 24px;
     letter-spacing: -0.3px;
   }
-  #creator-profile .profile-feed h3 { color: #FFFFFF; }
+  #creator-profile-inner .profile-feed h3 { color: #FFFFFF; }
   .profile-sidebar-col {
     position: relative;
     align-self: start;
@@ -1108,12 +1143,12 @@
     overflow-y: auto;
     box-shadow: var(--shadow-md);
   }
-  #creator-profile .profile-sidebar-card {
+  #creator-profile-inner .profile-sidebar-card {
     background: #222222;
     border: 1px solid #333333;
   }
   .profile-sidebar-card h4 { font-size: 1.05rem; font-weight: 800; margin-bottom: 12px; }
-  #creator-profile .profile-sidebar-card h4 { color: #FFFFFF; }
+  #creator-profile-inner .profile-sidebar-card h4 { color: #FFFFFF; }
   .profile-action-buttons {
     display: flex;
     flex-direction: column;
@@ -1128,31 +1163,35 @@
     border-radius: var(--radius-sm);
     min-height: 52px;
   }
-  #creator-profile .content-item {
+  #creator-profile-inner .content-item {
     border-radius: var(--radius);
     box-shadow: var(--shadow);
     background: #222222;
     border: 1px solid #333333;
   }
-  #creator-profile .content-info {
+  #creator-profile-inner .content-info {
     padding: 16px 18px 18px;
   }
-  #creator-profile .content-info h4 {
+  #creator-profile-inner .content-info h4 {
     font-size: 1rem;
     color: #FFFFFF;
   }
-  #creator-profile .content-info p {
+  #creator-profile-inner .content-info p {
     font-size: 0.8rem;
     color: #A3A3A3;
   }
-  #creator-profile .profile-avatar {
+  #creator-profile-inner .profile-avatar {
     border-color: #333333;
   }
-  #creator-profile #profile-plans-intro {
+  #creator-profile-inner #profile-plans-intro {
     color: #A3A3A3 !important;
   }
-  #creator-profile .profile-info strong { color: #FFFFFF; }
-  #creator-profile .profile-info span[style*="gray-500"] { color: #A3A3A3 !important; }
+  #creator-profile-inner .profile-info strong { color: #FFFFFF; }
+  #creator-profile-inner .profile-info span[style*="gray-500"] { color: #A3A3A3 !important; }
+  #creator-profile-inner {
+    background: #1A1A1A;
+    color: #FFFFFF;
+  }
 
   #fan-dashboard .sidebar > div:first-child > div:last-child > div:first-child {
     color: #FFFFFF;
@@ -1563,7 +1602,7 @@
           <div style="font-size:0.72rem;color:var(--gray-500);" id="sidebar-handle">@anamolina</div>
         </div>
       </div>
-      <button class="btn btn-outline btn-sm" style="width:100%;margin-bottom:24px;" onclick="showCreatorProfile()">🔍 Ver mi perfil público</button>
+      <button type="button" class="btn btn-sm btn-sidebar-public-profile" style="width:100%;margin-bottom:24px;" onclick="showCreatorProfile()">🔍 Ver mi perfil público</button>
       <div class="sidebar-section">
         <div class="sidebar-label">PRINCIPAL</div>
         <div class="sidebar-item active" onclick="setDashTab('overview', this)"><span class="icon">📊</span> Resumen</div>
@@ -1579,8 +1618,9 @@
       </div>
     </div>
 
-    <!-- Main -->
-    <div class="main-content" id="creator-main">
+    <!-- Main: paneles del dashboard + perfil embebido (mismo sidebar) -->
+    <div class="main-content creator-app-main" id="creator-main">
+      <div id="creator-dash-panels" class="creator-app-panels">
 
       <!-- OVERVIEW TAB -->
       <div id="dash-overview">
@@ -1820,7 +1860,7 @@
           </div>
           <div style="display:flex;gap:12px;margin-top:8px;">
             <button class="btn btn-primary" id="save-profile-btn">💾 Guardar cambios</button>
-            <button class="btn btn-outline" onclick="showCreatorProfile()">🔍 Ver mi perfil público</button>
+            <button type="button" class="btn btn-sidebar-public-profile" onclick="showCreatorProfile()">🔍 Ver mi perfil público</button>
           </div>
           <div id="profile-save-message" style="margin-top:16px;display:none;"></div>
         </div>
@@ -1867,6 +1907,9 @@
         </div>
       </div>
 
+      </div>
+
+      <div id="creator-profile-embed" class="creator-app-panels creator-profile-embed" style="display:none;" aria-hidden="true"></div>
     </div>
   </div>
 </div>
@@ -1978,6 +2021,8 @@
 <!-- ║      CREATOR PROFILE         ║ -->
 <!-- ╚══════════════════════════════╝ -->
 <div id="creator-profile" class="page">
+  <div id="profile-mount-standalone">
+    <div id="creator-profile-inner">
   <div class="profile-banner"></div>
   <div class="profile-info">
     <div class="profile-avatar-wrap">
@@ -2006,6 +2051,8 @@
         </div>
         <div id="profile-single-plan-slot"></div>
       </div>
+    </div>
+  </div>
     </div>
   </div>
 </div>
@@ -2146,24 +2193,49 @@
     document.getElementById('role-fan').classList.toggle('selected', role === 'fan');
   }
 
+  function unmountCreatorProfileFromEmbed() {
+    const inner = document.getElementById('creator-profile-inner');
+    const stand = document.getElementById('profile-mount-standalone');
+    const embed = document.getElementById('creator-profile-embed');
+    const dash = document.getElementById('creator-dash-panels');
+    if (!inner || !stand) return;
+    if (embed && inner.parentElement === embed) {
+      stand.appendChild(inner);
+      embed.style.display = 'none';
+      embed.setAttribute('aria-hidden', 'true');
+    }
+    if (dash) dash.style.display = 'block';
+  }
+
+  function mountCreatorProfileToEmbed() {
+    const inner = document.getElementById('creator-profile-inner');
+    const embed = document.getElementById('creator-profile-embed');
+    const dash = document.getElementById('creator-dash-panels');
+    if (!inner || !embed || !dash) return;
+    embed.appendChild(inner);
+    dash.style.display = 'none';
+    embed.style.display = 'block';
+    embed.setAttribute('aria-hidden', 'false');
+  }
+
   async function showCreatorProfile() {
     if (CURRENT_USER && CURRENT_USER.role === 'creator') {
       const creator = await api.get('/creators/me');
       if (!creator.error) {
         CURRENT_CREATOR_ID = creator.id;
-        document.querySelector('.profile-name').textContent = creator.name;
-        document.querySelector('.profile-handle').textContent = (creator.handle || '') + ' · ' + (creator.category || 'Creador');
-        document.querySelector('.profile-bio').textContent = creator.bio || 'Bienvenido a mi perfil en BizPonzor';
-        document.querySelectorAll('.profile-info strong')[0].textContent = creator.subscribers;
-        document.querySelectorAll('.profile-info strong')[1].textContent = creator.content_count;
-        const avatarDiv = document.querySelector('.profile-avatar');
+        document.querySelector('#creator-profile-inner .profile-name').textContent = creator.name;
+        document.querySelector('#creator-profile-inner .profile-handle').textContent = (creator.handle || '') + ' · ' + (creator.category || 'Creador');
+        document.querySelector('#creator-profile-inner .profile-bio').textContent = creator.bio || 'Bienvenido a mi perfil en BizPonzor';
+        document.querySelectorAll('#creator-profile-inner .profile-info strong')[0].textContent = creator.subscribers;
+        document.querySelectorAll('#creator-profile-inner .profile-info strong')[1].textContent = creator.content_count;
+        const avatarDiv = document.querySelector('#creator-profile-inner .profile-avatar');
         if (avatarDiv) {
           avatarDiv.style.backgroundImage = '';
           avatarDiv.style.background = creator.avatar_color || '#333333';
           const aliasInitial = (creator.handle || creator.name || 'C').replace('@', '').charAt(0).toUpperCase();
           avatarDiv.textContent = aliasInitial;
         }
-        const bannerDiv = document.querySelector('.profile-banner');
+        const bannerDiv = document.querySelector('#creator-profile-inner .profile-banner');
         if (bannerDiv) {
           if (creator.banner_url) {
             bannerDiv.style.backgroundImage = `url(${creator.banner_url})`;
@@ -2179,15 +2251,21 @@
         if (grid && Array.isArray(content)) renderFanContent(grid, content, { profile: true });
         const plans = await api.get('/plans/' + creator.id);
         fillCreatorProfileSidebar(creator, plans);
-        showPage('creator-profile');
+        mountCreatorProfileToEmbed();
+        document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+        document.getElementById('creator-dashboard').classList.add('active');
+        updateNavbar('creator-profile');
+        window.scrollTo(0, 0);
         return;
       }
     }
+    unmountCreatorProfileFromEmbed();
     showPage('creator-profile');
   }
 
   function goBackToDashboard() {
     if (CURRENT_USER && CURRENT_USER.role === 'creator') {
+      unmountCreatorProfileFromEmbed();
       document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
       document.getElementById('creator-dashboard').classList.add('active');
       updateNavbar('creator-dashboard');
@@ -2202,6 +2280,7 @@
   }
 
   function setDashTab(tab, el) {
+    unmountCreatorProfileFromEmbed();
     const tabs = ['overview','content','upload','plans','settings','earnings'];
     tabs.forEach(t => {
       const el = document.getElementById('dash-' + t);
@@ -2558,6 +2637,7 @@ function setSession(res) {
 }
 
 function logout() {
+  if (typeof unmountCreatorProfileFromEmbed === 'function') unmountCreatorProfileFromEmbed();
   TOKEN = null; CURRENT_USER = null;
   localStorage.removeItem('bp_token');
   localStorage.removeItem('bp_user');
@@ -2964,14 +3044,14 @@ async function loadDiscoverCreators() {
 async function openCreatorProfile(handle) {
   const creator = await api.get('/creators/' + handle);
   if (creator.error) { showNotif('❌ Creador no encontrado'); return; }
+  if (typeof unmountCreatorProfileFromEmbed === 'function') unmountCreatorProfileFromEmbed();
   CURRENT_CREATOR_ID = creator.id;
-  // Update profile UI
-  document.querySelector('.profile-name').textContent = creator.name;
-  document.querySelector('.profile-handle').textContent = (creator.handle || '') + ' · ' + (creator.category || 'Creador');
-  document.querySelector('.profile-bio').textContent = creator.bio || 'Bienvenido a mi perfil en BizPonzor';
-  document.querySelectorAll('.profile-info strong')[0].textContent = creator.subscribers;
-  document.querySelectorAll('.profile-info strong')[1].textContent = creator.content_count;
-  const avatarDiv = document.querySelector('.profile-avatar');
+  document.querySelector('#creator-profile-inner .profile-name').textContent = creator.name;
+  document.querySelector('#creator-profile-inner .profile-handle').textContent = (creator.handle || '') + ' · ' + (creator.category || 'Creador');
+  document.querySelector('#creator-profile-inner .profile-bio').textContent = creator.bio || 'Bienvenido a mi perfil en BizPonzor';
+  document.querySelectorAll('#creator-profile-inner .profile-info strong')[0].textContent = creator.subscribers;
+  document.querySelectorAll('#creator-profile-inner .profile-info strong')[1].textContent = creator.content_count;
+  const avatarDiv = document.querySelector('#creator-profile-inner .profile-avatar');
   if (avatarDiv) {
     avatarDiv.style.backgroundImage = '';
     avatarDiv.style.background = creator.avatar_color || '#333333';
@@ -2979,14 +3059,14 @@ async function openCreatorProfile(handle) {
     avatarDiv.textContent = aliasInitial;
   }
   if (creator.banner_url) {
-    const bannerDiv = document.querySelector('.profile-banner');
+    const bannerDiv = document.querySelector('#creator-profile-inner .profile-banner');
     if (bannerDiv) {
       bannerDiv.style.backgroundImage = `url(${creator.banner_url})`;
       bannerDiv.style.backgroundSize = 'cover';
       bannerDiv.style.backgroundPosition = 'center';
     }
   } else {
-    const bannerDiv = document.querySelector('.profile-banner');
+    const bannerDiv = document.querySelector('#creator-profile-inner .profile-banner');
     if (bannerDiv) {
       bannerDiv.style.backgroundImage = '';
       bannerDiv.style.background = 'linear-gradient(135deg, #1a1a1a 0%, #444 100%)';
