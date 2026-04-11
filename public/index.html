@@ -441,9 +441,12 @@
 
   /* Sidebar */
   .sidebar {
-    width: 240px; flex-shrink: 0; background: var(--white);
-    border-right: 1px solid var(--gray-200); padding: 28px 16px;
-    position: sticky; top: 64px; height: calc(100vh - 64px); overflow-y: auto;
+    width: 280px; flex-shrink: 0; background: var(--white);
+    border-right: 1px solid var(--gray-200); padding: 28px 18px;
+    position: sticky; top: 64px; align-self: flex-start;
+    height: calc(100vh - 64px); max-height: calc(100vh - 64px);
+    overflow-y: auto;
+    box-shadow: 2px 0 24px rgba(0,0,0,0.04);
   }
   .sidebar-section { margin-bottom: 32px; }
   .sidebar-label { font-size: 0.68rem; font-weight: 700; letter-spacing: 1px; color: var(--gray-400); text-transform: uppercase; padding: 0 12px; margin-bottom: 8px; }
@@ -475,14 +478,23 @@
 
   /* Content grid */
   .content-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 16px; }
-  .content-grid.creator-profile-grid {
-    grid-template-columns: repeat(3, 1fr);
+  @media (min-width: 1024px) {
+    .dashboard-layout .content-grid {
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 22px;
+    }
   }
-  @media (max-width: 1024px) {
-    .content-grid.creator-profile-grid { grid-template-columns: repeat(2, 1fr); }
+  .content-grid.creator-profile-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 24px;
+  }
+  @media (min-width: 1600px) {
+    .content-grid.creator-profile-grid {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
   }
   @media (max-width: 640px) {
-    .content-grid.creator-profile-grid { grid-template-columns: 1fr; }
+    .content-grid.creator-profile-grid { grid-template-columns: 1fr; gap: 18px; }
   }
   .content-item {
     background: var(--white); border-radius: var(--radius);
@@ -684,10 +696,10 @@
   }
 
   /* Creator Profile (public) */
-  #creator-profile { padding-top: 64px; }
+  #creator-profile { padding-top: 64px; background: var(--white); }
   .profile-banner {
-    height: min(280px, 36vw);
-    min-height: 200px;
+    height: min(320px, 38vw);
+    min-height: 220px;
     background: linear-gradient(135deg, #1a1a1a 0%, #444 100%);
     position: relative;
     background-size: cover;
@@ -695,7 +707,7 @@
     box-shadow: inset 0 -1px 0 rgba(0,0,0,0.08);
   }
   .profile-info {
-    max-width: 900px; margin: 0 auto; padding: 0 32px;
+    max-width: 1320px; margin: 0 auto; padding: 0 40px;
   }
   .profile-avatar-wrap {
     margin-top: -50px; margin-bottom: 20px; position: relative; display: inline-block;
@@ -711,14 +723,80 @@
   .profile-name { font-size: 1.6rem; font-weight: 800; letter-spacing: -0.5px; }
   .profile-handle { color: var(--gray-500); font-size: 0.9rem; margin-bottom: 12px; }
   .profile-bio { font-size: 0.9rem; color: var(--gray-700); max-width: 500px; line-height: 1.6; margin-bottom: 24px; }
-  .profile-body { max-width: 900px; margin: 0 auto; padding: 32px; display: grid; grid-template-columns: 1fr 300px; gap: 32px; }
-  .profile-feed h3 { font-size: 1.1rem; font-weight: 800; margin-bottom: 20px; }
+  .profile-body {
+    max-width: 1320px; margin: 0 auto; padding: 40px 40px 56px;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(300px, 400px);
+    gap: 40px 36px;
+    align-items: start;
+  }
+  .profile-feed {
+    min-width: 0;
+  }
+  .profile-feed h3 {
+    font-size: 1.25rem; font-weight: 800; margin-bottom: 24px;
+    letter-spacing: -0.3px;
+  }
+  .profile-sidebar-col {
+    position: relative;
+    align-self: start;
+    min-width: 0;
+  }
   .profile-sidebar-card {
     background: var(--white); border: 1px solid var(--gray-200);
-    border-radius: var(--radius); padding: 24px; margin-bottom: 20px;
-    position: sticky; top: 80px;
+    border-radius: var(--radius); padding: 28px; margin-bottom: 20px;
+    position: sticky; top: 88px;
+    width: 100%;
+    max-height: calc(100vh - 100px);
+    overflow-y: auto;
+    box-shadow: var(--shadow-md);
   }
-  .profile-sidebar-card h4 { font-size: 0.95rem; font-weight: 800; margin-bottom: 16px; }
+  .profile-sidebar-card h4 { font-size: 1.05rem; font-weight: 800; margin-bottom: 12px; }
+  .profile-action-buttons {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-bottom: 20px;
+  }
+  .profile-action-buttons .btn {
+    width: 100%;
+    padding: 15px 22px;
+    font-size: 1rem;
+    font-weight: 700;
+    border-radius: var(--radius-sm);
+    min-height: 52px;
+  }
+  #creator-profile .content-item {
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+  }
+  #creator-profile .content-info {
+    padding: 16px 18px 18px;
+  }
+  #creator-profile .content-info h4 {
+    font-size: 1rem;
+  }
+  #creator-profile .content-info p {
+    font-size: 0.8rem;
+  }
+  .profile-plan-card {
+    border: 2px solid var(--black);
+    border-radius: var(--radius-sm);
+    padding: 20px 18px;
+    background: var(--black);
+    color: var(--white);
+  }
+  .profile-plan-card .profile-plan-title {
+    font-weight: 800;
+    font-size: 1.05rem;
+    line-height: 1.35;
+  }
+  .profile-plan-card .profile-plan-sub {
+    font-size: 0.82rem;
+    color: var(--gray-400);
+    margin-top: 10px;
+    line-height: 1.45;
+  }
 
   /* Subscription modal */
   .modal-overlay {
@@ -774,8 +852,26 @@
     .features, .creators-section, .testimonials-section, .cta-section { padding: 60px 20px; }
     .sidebar { display: none; }
     .main-content { padding: 20px; }
-    .profile-body { grid-template-columns: 1fr; }
+    .profile-body { grid-template-columns: 1fr; padding: 24px 20px 40px; gap: 28px; }
+    .profile-sidebar-card { position: relative; top: auto; max-height: none; }
     .profile-info { padding: 0 20px; }
+  }
+
+  /* Perfil: una columna en pantallas medianas para que las miniaturas no queden diminutas */
+  @media (max-width: 1040px) {
+    .profile-body {
+      grid-template-columns: 1fr;
+      padding: 32px 28px 48px;
+      max-width: 100%;
+    }
+    .profile-sidebar-col {
+      max-width: 520px;
+    }
+    .profile-sidebar-card {
+      position: relative;
+      top: auto;
+      max-height: none;
+    }
   }
 
   /* Scrollbar */
@@ -1503,13 +1599,13 @@
       <h3>Publicaciones recientes</h3>
       <div class="content-grid creator-profile-grid" id="profile-content-grid"></div>
     </div>
-    <div>
+    <div class="profile-sidebar-col">
       <div class="profile-sidebar-card" id="profile-plans-card">
         <h4>Hazte patrocinador 💎</h4>
-        <p id="profile-plans-intro" style="font-size:0.82rem;color:var(--gray-600);margin-bottom:16px;">Accede a contenido exclusivo y apoya al creador</p>
-        <div id="profile-action-buttons" style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:16px;">
-          <button type="button" class="btn btn-full" style="background:#3B82F6;color:white;border:none;flex:1;min-width:120px;" id="profile-btn-donate" onclick="openDonateModal()">Donar</button>
-          <button type="button" class="btn btn-primary btn-full" style="flex:1;min-width:120px;" id="profile-btn-subscribe" onclick="subscribeFromProfile()">Suscribirse</button>
+        <p id="profile-plans-intro" style="font-size:0.88rem;color:var(--gray-600);margin-bottom:18px;line-height:1.5;">Accede a contenido exclusivo y apoya al creador</p>
+        <div id="profile-action-buttons" class="profile-action-buttons">
+          <button type="button" class="btn btn-full" style="background:#3B82F6;color:white;border:none;" id="profile-btn-donate" onclick="openDonateModal()">Donar</button>
+          <button type="button" class="btn btn-primary btn-full" id="profile-btn-subscribe" onclick="subscribeFromProfile()">Suscribirse</button>
         </div>
         <div id="profile-single-plan-slot"></div>
       </div>
@@ -1974,7 +2070,7 @@ function fillCreatorProfileSidebar(creator, plans) {
     CURRENT_USER &&
     CURRENT_USER.role === 'creator' &&
     CURRENT_USER.id === creator.id;
-  if (ab) ab.style.display = isOwn ? 'none' : 'flex';
+  if (ab) ab.style.display = isOwn ? 'none' : '';
   const slot = document.getElementById('profile-single-plan-slot');
   const p = pickSinglePlan(plans);
   window.PROFILE_SELECTED_PLAN = p
@@ -1988,12 +2084,12 @@ function fillCreatorProfileSidebar(creator, plans) {
   if (slot) {
     if (!p) {
       slot.innerHTML =
-        '<p style="font-size:0.82rem;color:var(--gray-500);">Sin planes activos aún.</p>';
+        '<p style="font-size:0.88rem;color:var(--gray-500);line-height:1.45;">Sin planes activos aún.</p>';
     } else {
       const feat = Number(p.is_featured) === 1;
-      slot.innerHTML = `<div style="border:2px solid var(--black);border-radius:var(--radius-sm);padding:14px;background:var(--black);color:white;">
-        <div style="font-weight:700;font-size:0.9rem;">${feat ? '💎 ' : '✦ '}${p.name} — $${p.price}/mes</div>
-        <div style="font-size:0.75rem;color:var(--gray-400);margin-top:4px;">${(p.features && p.features[0]) || 'Suscripción mensual'}</div>
+      slot.innerHTML = `<div class="profile-plan-card">
+        <div class="profile-plan-title">${feat ? '💎 ' : '✦ '}${p.name} — $${p.price}/mes</div>
+        <div class="profile-plan-sub">${(p.features && p.features[0]) || 'Suscripción mensual'}</div>
       </div>`;
     }
   }
