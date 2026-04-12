@@ -1098,69 +1098,81 @@
     max-width: 1320px; margin: 0 auto; padding: 0 40px;
   }
   .profile-info-hero {
-    display: grid;
-    grid-template-columns: minmax(0, 1fr) minmax(260px, 340px);
-    gap: 32px 40px;
-    align-items: start;
     padding-bottom: 8px;
   }
+  .profile-hero-row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-start;
+    gap: 20px 32px;
+    justify-content: flex-start;
+  }
   .profile-hero-main {
+    flex: 1 1 260px;
+    min-width: 0;
+    max-width: 560px;
+  }
+  .profile-hero-metrics-col {
+    flex: 0 0 auto;
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 16px;
+    min-width: 0;
+    max-width: 100%;
+  }
+  .profile-inline-stats {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-start;
+    gap: 20px 32px;
+  }
+  .profile-metric {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 6px;
     min-width: 0;
   }
-  .profile-hero-aside {
-    background: rgba(255,255,255,0.03);
-    border: 1px solid rgba(255,255,255,0.08);
-    border-radius: 16px;
-    padding: 22px 22px 20px;
-    margin-top: 0;
-  }
-  .profile-hero-stats {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 12px 16px;
-    margin-bottom: 18px;
-  }
-  .profile-stat {
-    text-align: left;
-    min-width: 0;
-  }
-  .profile-stat-value {
-    display: block;
-    font-size: 1.65rem;
+  .profile-metric-value {
+    font-size: 1.75rem;
     font-weight: 800;
     letter-spacing: -0.5px;
-    line-height: 1.15;
+    line-height: 1.1;
     color: #FFFFFF;
     font-variant-numeric: tabular-nums;
   }
-  .profile-stat-label {
-    display: block;
-    font-size: 0.68rem;
+  .profile-metric-label {
+    font-size: 0.72rem;
     font-weight: 600;
     text-transform: uppercase;
-    letter-spacing: 0.06em;
-    color: #737373;
-    margin-top: 6px;
+    letter-spacing: 0.08em;
+    color: #22C55E;
   }
   .btn.profile-hero-cta {
-    width: 100%;
-    padding: 14px 20px;
+    align-self: flex-start;
+    width: auto;
+    min-width: 240px;
+    max-width: 100%;
+    padding: 14px 22px;
     font-size: 0.95rem;
     font-weight: 700;
-    border: none;
     border-radius: 12px;
-    background: linear-gradient(135deg, #7C3AED 0%, #8B5CF6 50%, #A78BFA 100%);
-    color: #FFFFFF;
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    background: linear-gradient(180deg, #9333ea 0%, #7c3aed 45%, #6d28d9 100%);
+    color: #ffffff;
     cursor: pointer;
-    box-shadow: 0 4px 20px rgba(139, 92, 246, 0.35);
-    transition: transform 0.2s ease, box-shadow 0.25s ease;
+    box-shadow: 0 4px 0 #5b21b6, 0 10px 28px rgba(124, 58, 237, 0.42);
+    transform: translateY(0);
+    transition: transform 0.15s ease, box-shadow 0.2s ease;
   }
   .btn.profile-hero-cta:hover {
-    transform: translateY(-1px);
-    box-shadow: 0 8px 28px rgba(139, 92, 246, 0.5);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 0 #5b21b6, 0 14px 32px rgba(124, 58, 237, 0.5);
   }
   .btn.profile-hero-cta:active {
-    transform: translateY(0);
+    transform: translateY(2px);
+    box-shadow: 0 2px 0 #5b21b6, 0 6px 16px rgba(124, 58, 237, 0.35);
   }
   .profile-owner-plan-wrap {
     padding: 2px 0 0;
@@ -1280,10 +1292,6 @@
     background: #1A1A1A;
     color: #FFFFFF;
   }
-  #creator-profile-inner .profile-hero-aside {
-    background: rgba(255,255,255,0.04);
-    border-color: rgba(255,255,255,0.1);
-  }
 
   #fan-dashboard .sidebar > div:first-child > div:last-child > div:first-child {
     color: #FFFFFF;
@@ -1391,15 +1399,13 @@
     .profile-body { grid-template-columns: 1fr; padding: 24px 20px 40px; gap: 28px; }
     .profile-sidebar-card { position: relative; top: auto; max-height: none; }
     .profile-info { padding: 0 20px; }
-    .profile-info-hero { grid-template-columns: 1fr; gap: 24px; }
-    .profile-hero-aside { margin-top: 8px; }
-    .profile-hero-stats { grid-template-columns: repeat(3, 1fr); gap: 10px; }
-    .profile-stat-value { font-size: 1.35rem; }
+    .profile-metric-value { font-size: 1.45rem; }
+    .profile-inline-stats { gap: 16px 24px; }
   }
 
   @media (max-width: 900px) {
-    .profile-info-hero { grid-template-columns: 1fr; }
-    .profile-hero-aside { max-width: 100%; }
+    .profile-hero-metrics-col { width: 100%; }
+    .btn.profile-hero-cta { align-self: stretch; min-width: 0; }
   }
 
   /* Perfil: una columna en pantallas medianas para que las miniaturas no queden diminutas */
@@ -1706,8 +1712,7 @@
       <button type="button" class="btn btn-sm btn-sidebar-public-profile" style="width:100%;margin-bottom:24px;" onclick="showCreatorProfile()">🔍 Ver mi perfil público</button>
       <div class="sidebar-section">
         <div class="sidebar-label">PRINCIPAL</div>
-        <div class="sidebar-item active" onclick="setDashTab('overview', this)"><span class="icon">📊</span> Resumen</div>
-        <div class="sidebar-item" onclick="setDashTab('content', this)"><span class="icon">🎬</span> Mi Contenido</div>
+        <div class="sidebar-item active" id="sidebar-tab-content" onclick="setDashTab('content', this)"><span class="icon">🎬</span> Mi Contenido</div>
         <div class="sidebar-item" onclick="setDashTab('upload', this)"><span class="icon">⬆️</span> Subir</div>
         <div class="sidebar-item" onclick="setDashTab('plans', this)"><span class="icon">💳</span> Mis Planes</div>
       </div>
@@ -1723,55 +1728,8 @@
     <div class="main-content creator-app-main" id="creator-main">
       <div id="creator-dash-panels" class="creator-app-panels">
 
-      <!-- OVERVIEW TAB -->
-      <div id="dash-overview">
-        <div class="page-header">
-          <h2 id="dash-welcome-heading">Bienvenido/a 👋</h2>
-          <p>Aquí tienes un resumen de tu actividad reciente</p>
-        </div>
-        <div class="stats-row">
-          <div class="stat-card">
-            <div class="s-label">Suscriptores</div>
-            <div class="s-value">1,248</div>
-            <div class="s-change">↑ +34 este mes</div>
-          </div>
-          <div class="stat-card">
-            <div class="s-label">Ingresos del mes</div>
-            <div class="s-value">$4,920</div>
-            <div class="s-change">↑ +12% vs. mes anterior</div>
-          </div>
-          <div class="stat-card">
-            <div class="s-label">Contenidos</div>
-            <div class="s-value">38</div>
-            <div class="s-change">↑ +5 esta semana</div>
-          </div>
-          <div class="stat-card">
-            <div class="s-label">Tasa retención</div>
-            <div class="s-value">94%</div>
-            <div class="s-change">↑ Excelente</div>
-          </div>
-        </div>
-        <div style="background:var(--white);border:1px solid var(--gray-200);border-radius:var(--radius);padding:28px;margin-bottom:24px;">
-          <h3 style="font-size:1rem;font-weight:800;margin-bottom:20px;">Últimos contenidos publicados</h3>
-          <div class="content-grid">
-            <div class="content-item">
-              <div class="content-thumb" style="background:#f0f0f0">📸<span class="content-type-badge">FOTO</span></div>
-              <div class="content-info"><h4>Sesión de fotos Abril</h4><p>Hace 2 días</p><span class="exclusive-badge">Exclusivo</span></div>
-            </div>
-            <div class="content-item">
-              <div class="content-thumb" style="background:#e8e8e8">🎬<span class="content-type-badge">VIDEO</span></div>
-              <div class="content-info"><h4>BTS: Shooting en la ciudad</h4><p>Hace 5 días</p><span class="exclusive-badge">Exclusivo</span></div>
-            </div>
-            <div class="content-item">
-              <div class="content-thumb" style="background:#f5f5f5">📸<span class="content-type-badge">FOTO</span></div>
-              <div class="content-info"><h4>Portfolio Marzo 2025</h4><p>Hace 1 semana</p></div>
-            </div>
-          </div>
-        </div>
-      </div>
-
       <!-- CONTENT TAB -->
-      <div id="dash-content" style="display:none;">
+      <div id="dash-content">
         <div class="page-header">
           <h2>Mi Contenido</h2>
           <p>Gestiona tus fotos y videos publicados</p>
@@ -2126,31 +2084,33 @@
     <div id="creator-profile-inner">
   <div class="profile-banner"></div>
   <div class="profile-info profile-info-hero">
-    <div class="profile-hero-main">
-      <div class="profile-avatar-wrap">
-        <div class="profile-avatar">A</div>
+    <div class="profile-hero-row">
+      <div class="profile-hero-main">
+        <div class="profile-avatar-wrap">
+          <div class="profile-avatar">A</div>
+        </div>
+        <div class="profile-name">Ana Molina</div>
+        <div class="profile-handle">@anamolina · Fotografía & Lifestyle</div>
+        <div class="profile-bio">Fotógrafa apasionada por capturar momentos únicos. Comparto mi proceso creativo y contenido exclusivo con mi comunidad especial. ✨</div>
       </div>
-      <div class="profile-name">Ana Molina</div>
-      <div class="profile-handle">@anamolina · Fotografía & Lifestyle</div>
-      <div class="profile-bio">Fotógrafa apasionada por capturar momentos únicos. Comparto mi proceso creativo y contenido exclusivo con mi comunidad especial. ✨</div>
+      <div class="profile-hero-metrics-col">
+        <div class="profile-inline-stats" role="group" aria-label="Métricas">
+          <div class="profile-metric">
+            <span class="profile-metric-value" id="profile-stat-subs">0</span>
+            <span class="profile-metric-label">Suscriptores</span>
+          </div>
+          <div class="profile-metric">
+            <span class="profile-metric-value" id="profile-stat-revenue">—</span>
+            <span class="profile-metric-label">Ingresos totales</span>
+          </div>
+          <div class="profile-metric">
+            <span class="profile-metric-value" id="profile-stat-posts">0</span>
+            <span class="profile-metric-label">Publicaciones</span>
+          </div>
+        </div>
+        <button type="button" class="btn profile-hero-cta" id="profile-share-community-btn" onclick="shareCreatorProfile()">Comparte con tu comunidad</button>
+      </div>
     </div>
-    <aside class="profile-hero-aside" aria-label="Resumen">
-      <div class="profile-hero-stats">
-        <div class="profile-stat">
-          <span class="profile-stat-value" id="profile-stat-posts">0</span>
-          <span class="profile-stat-label">Publicaciones</span>
-        </div>
-        <div class="profile-stat">
-          <span class="profile-stat-value" id="profile-stat-sponsors">0</span>
-          <span class="profile-stat-label">Patrocinadores</span>
-        </div>
-        <div class="profile-stat">
-          <span class="profile-stat-value" id="profile-stat-revenue">—</span>
-          <span class="profile-stat-label">Ingresos / mes</span>
-        </div>
-      </div>
-      <button type="button" class="btn profile-hero-cta" id="profile-share-community-btn" onclick="shareCreatorProfile()">Comparte con tu comunidad</button>
-    </aside>
   </div>
   <div class="profile-body">
     <div class="profile-feed">
@@ -2353,12 +2313,16 @@
         document.querySelector('#creator-profile-inner .profile-name').textContent = creator.name;
         document.querySelector('#creator-profile-inner .profile-handle').textContent = (creator.handle || '') + ' · ' + (creator.category || 'Creador');
         document.querySelector('#creator-profile-inner .profile-bio').textContent = creator.bio || 'Bienvenido a mi perfil en BizPonzor';
-        let monthlyRev = 0;
+        let totalRev = 0;
         const statsRes = await api.get('/subscriptions/stats');
         if (statsRes && !statsRes.error && statsRes.monthly_revenue !== undefined) {
-          monthlyRev = Number(statsRes.monthly_revenue) || 0;
+          totalRev = Number(statsRes.monthly_revenue) || 0;
         }
-        fillProfileHeroStats(creator, { isOwnerView: true, monthlyRevenue: monthlyRev });
+        const donRes = await api.get('/donations/summary');
+        if (donRes && !donRes.error) {
+          totalRev += Number(donRes.total_donations) || 0;
+        }
+        fillProfileHeroStats(creator, { isOwnerView: true, totalRevenue: totalRev });
         const avatarDiv = document.querySelector('#creator-profile-inner .profile-avatar');
         if (avatarDiv) {
           avatarDiv.style.backgroundImage = '';
@@ -2400,7 +2364,7 @@
       document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
       document.getElementById('creator-dashboard').classList.add('active');
       updateNavbar('creator-dashboard');
-      setDashTab('overview', document.querySelector('#creator-dashboard .sidebar-item.active'));
+      setDashTab('content', document.getElementById('sidebar-tab-content'));
     } else if (CURRENT_USER && CURRENT_USER.role === 'fan') {
       document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
       document.getElementById('fan-dashboard').classList.add('active');
@@ -2412,7 +2376,7 @@
 
   function setDashTab(tab, el) {
     unmountCreatorProfileFromEmbed();
-    const tabs = ['overview','content','upload','plans','settings','earnings'];
+    const tabs = ['content','upload','plans','settings','earnings'];
     tabs.forEach(t => {
       const el = document.getElementById('dash-' + t);
       if (el) el.style.display = 'none';
@@ -2679,7 +2643,7 @@ function pickSinglePlan(plans) {
 function fillProfileHeroStats(creator, opts) {
   opts = opts || {};
   const posts = document.getElementById('profile-stat-posts');
-  const sponsors = document.getElementById('profile-stat-sponsors');
+  const subsEl = document.getElementById('profile-stat-subs');
   const revenue = document.getElementById('profile-stat-revenue');
   const cc = creator.content_count;
   const subs = creator.subscribers;
@@ -2687,13 +2651,13 @@ function fillProfileHeroStats(creator, opts) {
     posts.textContent =
       cc !== undefined && cc !== null ? Number(cc).toLocaleString('es') : '—';
   }
-  if (sponsors) {
-    sponsors.textContent =
+  if (subsEl) {
+    subsEl.textContent =
       subs !== undefined && subs !== null ? Number(subs).toLocaleString('es') : '—';
   }
   if (revenue) {
     if (opts.isOwnerView) {
-      const m = opts.monthlyRevenue;
+      const m = opts.totalRevenue;
       if (m !== undefined && m !== null && !Number.isNaN(Number(m))) {
         revenue.textContent =
           '$' +
@@ -2713,11 +2677,14 @@ function fillProfileHeroStats(creator, opts) {
 }
 
 function shareCreatorProfile() {
-  const url = window.location.href;
+  const inner = document.getElementById('creator-profile-inner');
+  const h = inner && inner.dataset ? inner.dataset.handle : '';
+  const base = window.location.origin + window.location.pathname;
+  const url = h ? base + '?creator=' + encodeURIComponent(h.replace(/^@/, '')) : window.location.href;
   if (navigator.clipboard && navigator.clipboard.writeText) {
     navigator.clipboard.writeText(url).then(
       function () {
-        showNotif('✅ Enlace copiado. Compártelo con tu comunidad.');
+        showNotif('✅ Enlace de tu perfil copiado al portapapeles.');
       },
       function () {
         showNotif('Copia el enlace desde la barra de direcciones.');
@@ -2863,10 +2830,6 @@ async function loadCreatorDashboard() {
   if (sidebarName) sidebarName.textContent = name;
   if (sidebarHandle) sidebarHandle.textContent = CURRENT_USER.handle || '@' + name.toLowerCase().replace(/\s+/g, '');
 
-  const welcome = document.getElementById('dash-welcome-heading');
-  if (welcome) welcome.textContent = `Bienvenido/a, ${name} 👋`;
-
-  await loadStats();
   await loadMyContent();
 }
 
@@ -2930,22 +2893,9 @@ async function saveProfileSettings() {
   btn.disabled = false;
 }
 
-async function loadStats() {
-  const stats = await api.get('/subscriptions/stats');
-  if (stats.error) return;
-  const vals = document.querySelectorAll('#dash-overview .s-value');
-  if (vals[0]) vals[0].textContent = stats.subscribers.toLocaleString();
-  if (vals[1]) vals[1].textContent = '$' + stats.monthly_revenue.toFixed(2);
-  if (vals[2]) vals[2].textContent = stats.content_count;
-}
-
-async function loadMyContent(tab = 'overview') {
+async function loadMyContent() {
   const content = await api.get('/content/my');
   if (!content || content.error) return;
-  // Update overview
-  const overviewGrid = document.querySelector('#dash-overview .content-grid');
-  if (overviewGrid) renderContentGrid(overviewGrid, content.slice(0, 6));
-  // Update content tab
   const contentGrid = document.querySelector('#dash-content .content-grid');
   if (contentGrid) renderContentGrid(contentGrid, content);
 }
@@ -3261,16 +3211,21 @@ async function openCreatorProfile(handle) {
     CURRENT_USER &&
     CURRENT_USER.role === 'creator' &&
     CURRENT_USER.id === creator.id;
-  let monthlyRev = null;
+  let totalRev = null;
   if (isOwnProfile) {
+    let sub = 0;
     const statsRes = await api.get('/subscriptions/stats');
     if (statsRes && !statsRes.error && statsRes.monthly_revenue !== undefined) {
-      monthlyRev = Number(statsRes.monthly_revenue) || 0;
+      sub = Number(statsRes.monthly_revenue) || 0;
     }
+    const donRes = await api.get('/donations/summary');
+    const don =
+      donRes && !donRes.error ? Number(donRes.total_donations) || 0 : 0;
+    totalRev = sub + don;
   }
   fillProfileHeroStats(creator, {
     isOwnerView: isOwnProfile,
-    monthlyRevenue: isOwnProfile ? monthlyRev : null
+    totalRevenue: isOwnProfile ? totalRev : null
   });
   const avatarDiv = document.querySelector('#creator-profile-inner .profile-avatar');
   if (avatarDiv) {
