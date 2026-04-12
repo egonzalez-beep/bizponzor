@@ -1100,32 +1100,49 @@
   .profile-info-hero {
     padding-bottom: 8px;
   }
+  /* Bloque identidad (avatar + texto) pegado al bloque métricas, sin columna que empuje al borde */
   .profile-hero-row {
     display: flex;
     flex-wrap: wrap;
-    align-items: flex-start;
-    gap: 20px 32px;
+    align-items: center;
+    gap: 20px 28px;
     justify-content: flex-start;
   }
-  .profile-hero-main {
-    flex: 1 1 260px;
+  .profile-hero-identity {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-start;
+    gap: 16px 24px;
+    flex: 0 1 auto;
     min-width: 0;
-    max-width: 560px;
+    max-width: 100%;
+  }
+  .profile-hero-identity > .profile-avatar-wrap {
+    margin-top: -50px;
+    margin-bottom: 0;
+    flex-shrink: 0;
+  }
+  .profile-hero-text-block {
+    flex: 0 1 480px;
+    min-width: 0;
+    max-width: min(480px, 100%);
+    padding-top: 2px;
   }
   .profile-hero-metrics-col {
     flex: 0 0 auto;
     display: flex;
     flex-direction: column;
     align-items: stretch;
-    gap: 16px;
+    gap: 14px;
     min-width: 0;
     max-width: 100%;
+    align-self: center;
   }
   .profile-inline-stats {
     display: flex;
     flex-wrap: wrap;
     align-items: flex-start;
-    gap: 20px 32px;
+    gap: 18px 26px;
   }
   .profile-metric {
     display: flex;
@@ -1214,6 +1231,9 @@
   #creator-profile-inner .profile-handle { color: #A3A3A3; }
   .profile-bio { font-size: 0.9rem; color: var(--gray-700); max-width: 500px; line-height: 1.6; margin-bottom: 24px; }
   #creator-profile-inner .profile-bio { color: #A3A3A3; }
+  #creator-profile-inner .profile-hero-text-block .profile-bio {
+    margin-bottom: 0;
+  }
   .profile-body {
     max-width: 1320px; margin: 0 auto; padding: 40px 40px 56px;
     display: grid;
@@ -2085,13 +2105,15 @@
   <div class="profile-banner"></div>
   <div class="profile-info profile-info-hero">
     <div class="profile-hero-row">
-      <div class="profile-hero-main">
+      <div class="profile-hero-identity">
         <div class="profile-avatar-wrap">
           <div class="profile-avatar">A</div>
         </div>
-        <div class="profile-name">Ana Molina</div>
-        <div class="profile-handle">@anamolina · Fotografía & Lifestyle</div>
-        <div class="profile-bio">Fotógrafa apasionada por capturar momentos únicos. Comparto mi proceso creativo y contenido exclusivo con mi comunidad especial. ✨</div>
+        <div class="profile-hero-text-block">
+          <div class="profile-name">Ana Molina</div>
+          <div class="profile-handle">@anamolina · Fotografía & Lifestyle</div>
+          <div class="profile-bio">Fotógrafa apasionada por capturar momentos únicos. Comparto mi proceso creativo y contenido exclusivo con mi comunidad especial. ✨</div>
+        </div>
       </div>
       <div class="profile-hero-metrics-col">
         <div class="profile-inline-stats" role="group" aria-label="Métricas">
