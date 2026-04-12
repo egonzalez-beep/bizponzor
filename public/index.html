@@ -2078,6 +2078,11 @@
             <input type="file" class="form-input" id="settings-banner" accept="image/*">
             <div style="font-size:0.7rem;color:var(--gray-400);margin-top:4px;">Recomendado: 1200x300px, máximo 10MB</div>
           </div>
+          <div class="form-group">
+            <label class="form-label">Mercado Pago</label>
+            <div style="font-size:0.75rem;color:var(--gray-500);margin-bottom:12px;line-height:1.45;">Vincula tu cuenta para recibir pagos.</div>
+            <button type="button" class="btn btn-primary" onclick="redirectMercadoPagoOAuth()">Conectar Mercado Pago</button>
+          </div>
           <div style="display:flex;gap:12px;margin-top:8px;">
             <button class="btn btn-primary" id="save-profile-btn">💾 Guardar cambios</button>
             <button type="button" class="btn btn-sidebar-public-profile" onclick="showCreatorProfile()">Mi Perfil</button>
@@ -3074,6 +3079,11 @@ async function loadCreatorDashboard() {
   if (sidebarHandle) sidebarHandle.textContent = CURRENT_USER.handle || '@' + name.toLowerCase().replace(/\s+/g, '');
 
   await loadMyContent();
+}
+
+function redirectMercadoPagoOAuth() {
+  window.location.href =
+    'https://auth.mercadopago.com.mx/authorization?client_id=2200286157931731&response_type=code&platform_id=mp&redirect_uri=https://bizponzor-production.up.railway.app/mp/callback';
 }
 
 async function loadProfileSettings() {
