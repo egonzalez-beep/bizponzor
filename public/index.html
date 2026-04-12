@@ -1880,11 +1880,12 @@
         <div class="plan-card" style="margin-bottom: 24px; border: 2px solid var(--black);">
           <div class="plan-badge" style="background: var(--black); color: white;">✦ RECOMENDADO</div>
           <div class="plan-name">🎯 BizPonzor Premium</div>
-          <div class="plan-price" id="plan-price-display">$100</div>
+          <div class="plan-price" id="plan-price-display">$0</div>
           <div class="plan-price-sub">MXN / mes</div>
           <div style="margin: 16px 0;">
             <label class="form-label">Elige el precio (MXN)</label>
             <select class="form-input" id="plan-price-select" onchange="var d=document.getElementById('plan-price-display'); if(d) d.textContent='$'+this.value;">
+              <option value="0">$0 MXN/mes (gratis)</option>
               <option value="100">$100 MXN/mes</option>
               <option value="400">$400 MXN/mes</option>
               <option value="600">$600 MXN/mes</option>
@@ -1893,8 +1894,7 @@
           </div>
           <ul class="plan-features">
             <li class="plan-feature">✅ Acceso a contenido exclusivo del creador</li>
-            <li class="plan-feature">✅ Mensajería directa con el creador</li>
-            <li class="plan-feature">✅ Sin comisiones ocultas</li>
+            <li class="plan-feature">✅ Mensajería directa con el creador <span style="display:block;font-size:0.72rem;font-weight:500;color:var(--gray-500);margin-top:4px;">En proceso de implementación</span></li>
           </ul>
           <button type="button" class="btn btn-primary btn-full" onclick="updatePlanPrice(event)">Guardar precio</button>
           <div id="plan-price-message" style="margin-top: 12px; font-size: 0.75rem; color: #22C55E; display: none;">✅ Precio actualizado</div>
@@ -1909,7 +1909,7 @@
             <li class="plan-feature">⏳ Puedes cambiar a pago cuando quieras</li>
             <li class="plan-feature">✅ Ideal para construir audiencia</li>
           </ul>
-          <button type="button" class="btn btn-outline btn-full" onclick="activateFreePlan()">Activar plan gratuito</button>
+          <button type="button" class="btn btn-full" onclick="activateFreePlan()" style="background:#FFFFFF;color:#111827;border:1px solid #E5E7EB;font-weight:700;">Activar plan gratuito</button>
           <div style="font-size: 0.7rem; color: var(--gray-500); margin-top: 12px; text-align: center;">
             Puedes cambiar a un plan de pago cuando tu comunidad crezca
           </div>
@@ -3215,7 +3215,7 @@ async function loadPlanPrice() {
     const raw = Number(res.price);
     if (raw === 0) {
       disp.innerText = '$0';
-      sel.value = '100';
+      sel.value = '0';
     } else if ([100, 400, 600, 1000].indexOf(raw) !== -1) {
       sel.value = String(raw);
       disp.innerText = '$' + raw;

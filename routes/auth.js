@@ -21,7 +21,7 @@ router.post('/register', async (req, res) => {
     if (role === 'creator') {
       const plans = [
         { id: uuidv4(), name: 'Basico', price: 5, features: JSON.stringify(['Acceso al feed de fotos','Contenido exclusivo basico','Newsletter mensual']), is_featured: 0 },
-        { id: uuidv4(), name: 'Premium', price: 12, features: JSON.stringify(['Todo lo del plan Basico','Acceso a todos los videos','Contenido BTS exclusivo','Descarga de archivos']), is_featured: 1 },
+        { id: uuidv4(), name: 'Premium', price: 0, features: JSON.stringify(['Todo lo del plan Basico','Acceso a todos los videos','Contenido BTS exclusivo','Descarga de archivos']), is_featured: 1 },
         { id: uuidv4(), name: 'VIP', price: 25, features: JSON.stringify(['Todo lo del plan Premium','Menciones en stories','Acceso anticipado','Contenido personalizado']), is_featured: 0 }
       ];
       const stmt = db.prepare('INSERT INTO plans (id, creator_id, name, price, features, is_featured) VALUES (?,?,?,?,?,?)');

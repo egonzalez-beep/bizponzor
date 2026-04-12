@@ -51,6 +51,18 @@ router.post('/checkout', auth, async (req, res) => {
 
     const amount = Number(plan.price);
 
+    if (amount === 0) {
+      const sub_id = uuidv4();
+      const nextBilling = new Date();
+      nextBilling.setMonth(nextBilling.getMonth() + 1);
+      db.prepare(
+        `INSERT INTO subscriptions (id, fan_id, creator_id, plan_id, status, amount, next_billing)
+         VALUES (?,?,?,?,?,?,?)`
+      ).run(sub_id, req.user.id, creator_id, plan_id, 'active', 0, nextBilling.toISOString());
+      console.log('[checkout] suscripción gratuita activa', { sub_id, fan_id: req.user.id, plan_id });
+      return res.json({ success: true, sub_id, free: true });
+    }
+
     if (amount < MIN_AMOUNT) {
       console.error('[MP] Monto inválido:', amount);
 

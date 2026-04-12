@@ -24,7 +24,7 @@ router.get('/my', auth, (req, res) => {
        ORDER BY is_featured DESC, created_at ASC LIMIT 1`
     )
     .get(req.user.id);
-  res.json(plan || { price: 100, name: 'BizPonzor Premium' });
+  res.json(plan || { price: 0, name: 'BizPonzor Premium' });
 });
 
 router.post('/update-price', auth, (req, res) => {
@@ -33,8 +33,11 @@ router.post('/update-price', auth, (req, res) => {
   }
   const { price } = req.body;
   const p = parseInt(price, 10);
-  if (!p || p < 100) {
-    return res.status(400).json({ error: 'El precio mínimo es $100 MXN' });
+  if (Number.isNaN(p) || p < 0) {
+    return res.status(400).json({ error: 'Precio inválido' });
+  }
+  if (p > 0 && p < 100) {
+    return res.status(400).json({ error: 'El precio mínimo de pago es $100 MXN' });
   }
 
   const existingId = primaryPlanId(req.user.id);
