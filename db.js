@@ -108,6 +108,12 @@ try {
   }
 });
 
+try {
+  db.exec('ALTER TABLE users ADD COLUMN location TEXT;');
+} catch (e) {
+  /* exists */
+}
+
 db.exec(`
   CREATE TABLE IF NOT EXISTS donations (
     id              TEXT PRIMARY KEY,

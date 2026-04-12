@@ -1377,6 +1377,60 @@
     color: #A3A3A3 !important;
     border-color: #444444 !important;
   }
+
+  #creator-profile-inner .profile-location {
+    font-size: 0.85rem;
+    color: #A3A3A3;
+    margin-bottom: 12px;
+    line-height: 1.45;
+  }
+
+  .emoji-field-toolbar {
+    margin-bottom: 8px;
+  }
+  .emoji-picker-details {
+    display: inline-block;
+  }
+  .emoji-picker-details summary {
+    cursor: pointer;
+    font-size: 0.78rem;
+    font-weight: 600;
+    color: var(--gray-600);
+    list-style: none;
+    user-select: none;
+  }
+  .emoji-picker-details summary::-webkit-details-marker {
+    display: none;
+  }
+  .emoji-picker-panel {
+    display: grid;
+    grid-template-columns: repeat(8, 1fr);
+    gap: 4px;
+    max-height: 200px;
+    overflow-y: auto;
+    padding: 10px;
+    margin-top: 8px;
+    border: 1px solid var(--gray-200);
+    border-radius: var(--radius-sm);
+    background: var(--white);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+  }
+  #creator-dashboard .dash-settings-card .emoji-picker-panel {
+    border-color: #e5e5e5;
+  }
+  .emoji-pick-btn {
+    border: none;
+    background: transparent;
+    font-size: 1.2rem;
+    line-height: 1.2;
+    cursor: pointer;
+    padding: 4px;
+    border-radius: 6px;
+  }
+  .emoji-pick-btn:hover {
+    background: var(--gray-100);
+  }
+
   .profile-plan-card {
     border: 2px solid var(--black);
     border-radius: var(--radius-sm);
@@ -1846,17 +1900,35 @@
           <h3 style="font-size:1rem;font-weight:700;margin-bottom:16px;">📝 Publicación de texto</h3>
           <div class="form-group">
             <label class="form-label">Texto completo</label>
+            <div class="emoji-field-toolbar">
+              <details class="emoji-picker-details">
+                <summary>😀 Emojis</summary>
+                <div class="emoji-picker-panel" data-emoji-for="upload-text-body"></div>
+              </details>
+            </div>
             <textarea class="form-input" id="upload-text-body" rows="8" placeholder="Escribe tu publicación..."></textarea>
           </div>
         </div>
-        <div style="background:var(--white);border:1px solid var(--gray-200);border-radius:var(--radius);padding:28px;">
+        <div class="dash-settings-card" style="background:var(--white);border:1px solid var(--gray-200);border-radius:var(--radius);padding:28px;">
           <h3 style="font-size:1rem;font-weight:700;margin-bottom:20px;">Detalles de publicación</h3>
           <div class="form-group">
             <label class="form-label">Título del contenido</label>
+            <div class="emoji-field-toolbar">
+              <details class="emoji-picker-details">
+                <summary>😀 Emojis</summary>
+                <div class="emoji-picker-panel" data-emoji-for="upload-title"></div>
+              </details>
+            </div>
             <input type="text" class="form-input" id="upload-title" placeholder="Dale un nombre a tu contenido">
           </div>
           <div class="form-group">
             <label class="form-label">Descripción (opcional)</label>
+            <div class="emoji-field-toolbar">
+              <details class="emoji-picker-details">
+                <summary>😀 Emojis</summary>
+                <div class="emoji-picker-panel" data-emoji-for="upload-description"></div>
+              </details>
+            </div>
             <textarea class="form-input" id="upload-description" rows="3" placeholder="Describe este contenido..."></textarea>
           </div>
           <div class="form-group">
@@ -1934,7 +2006,7 @@
           <h2>Configuración de Perfil</h2>
           <p>Edita cómo te ven tus patrocinadores</p>
         </div>
-        <div style="background:var(--white);border:1px solid var(--gray-200);border-radius:var(--radius);padding:28px;max-width:600px;">
+        <div class="dash-settings-card" style="background:var(--white);border:1px solid var(--gray-200);border-radius:var(--radius);padding:28px;max-width:600px;">
           <div class="form-group">
             <label class="form-label">Nombre de usuario</label>
             <input type="text" class="form-input" id="settings-name" placeholder="Tu nombre" disabled style="background:var(--gray-100);color:var(--gray-500);">
@@ -1963,7 +2035,18 @@
             </select>
           </div>
           <div class="form-group">
+            <label class="form-label">Localidad (opcional)</label>
+            <input type="text" class="form-input" id="settings-location" maxlength="120" placeholder="Ciudad, país o región" autocomplete="address-level2">
+            <div style="font-size:0.7rem;color:var(--gray-400);margin-top:4px;">Se muestra en tu perfil público si la completas</div>
+          </div>
+          <div class="form-group">
             <label class="form-label">Biografía</label>
+            <div class="emoji-field-toolbar">
+              <details class="emoji-picker-details">
+                <summary>😀 Emojis</summary>
+                <div class="emoji-picker-panel" data-emoji-for="settings-bio"></div>
+              </details>
+            </div>
             <textarea class="form-input" id="settings-bio" rows="4" maxlength="200" placeholder="Cuéntale a tus fans sobre ti..."></textarea>
             <div style="font-size:0.7rem;color:var(--gray-400);margin-top:4px;">Máximo 200 caracteres (emojis permitidos)</div>
           </div>
@@ -2170,6 +2253,7 @@
         <div class="profile-hero-text-block">
           <div class="profile-name">Ana Molina</div>
           <div class="profile-handle">@anamolina · Fotografía & Lifestyle</div>
+          <div class="profile-location" id="profile-location-row" style="display:none;"></div>
           <div class="profile-bio">Fotógrafa apasionada por capturar momentos únicos. Comparto mi proceso creativo y contenido exclusivo con mi comunidad especial. ✨</div>
           <div id="profile-social-links" class="profile-social-links" aria-label="Redes sociales"></div>
           <button type="button" class="btn profile-hero-cta" id="profile-share-community-btn" onclick="shareCreatorProfile()" style="display:none;">Comparte tu Bizponzor</button>
@@ -2381,9 +2465,7 @@
         CURRENT_CREATOR_ID = creator.id;
         const innerRoot = document.getElementById('creator-profile-inner');
         if (innerRoot) innerRoot.dataset.handle = creator.handle || '';
-        document.querySelector('#creator-profile-inner .profile-name').textContent = creator.name;
-        document.querySelector('#creator-profile-inner .profile-handle').textContent = (creator.handle || '') + ' · ' + (creator.category || 'Creador');
-        document.querySelector('#creator-profile-inner .profile-bio').textContent = creator.bio || 'Bienvenido a mi perfil en BizPonzor';
+        applyCreatorHeroFields(creator);
         fillProfileSocialLinks(creator);
         const avatarDiv = document.querySelector('#creator-profile-inner .profile-avatar');
         if (avatarDiv) {
@@ -2709,6 +2791,70 @@ function profileSocialLinkHref(raw) {
   return 'https://' + s.replace(/^\/+/, '');
 }
 
+function applyCreatorHeroFields(creator) {
+  const nameEl = document.querySelector('#creator-profile-inner .profile-name');
+  const handleEl = document.querySelector('#creator-profile-inner .profile-handle');
+  const bioEl = document.querySelector('#creator-profile-inner .profile-bio');
+  const locEl = document.getElementById('profile-location-row');
+  if (nameEl) nameEl.textContent = creator.name || '';
+  if (handleEl) handleEl.textContent = (creator.handle || '') + ' · ' + (creator.category || 'Creador');
+  if (bioEl) bioEl.textContent = creator.bio || 'Bienvenido a mi perfil en BizPonzor';
+  if (locEl) {
+    const t = (creator.location && String(creator.location).trim()) || '';
+    if (t) {
+      locEl.style.display = '';
+      locEl.textContent = '📍 ' + t;
+    } else {
+      locEl.style.display = 'none';
+      locEl.textContent = '';
+    }
+  }
+}
+
+var CREATOR_EMOJI_PALETTE = [
+  '😀', '😃', '😄', '😁', '😅', '😂', '🤣', '😊', '😍', '🥰', '😘', '😎', '🤩', '🥳', '😇', '🙂', '😉', '🤗', '🤔', '😴', '🤯',
+  '🔥', '💯', '✨', '⭐', '🌟', '💫', '❤️', '🧡', '💛', '💚', '💙', '💜', '🖤', '🤍', '💔', '❣️', '💕', '💖',
+  '👍', '👏', '🙌', '🤝', '✌️', '🤞', '👋', '🙏', '💋',
+  '🎉', '🎁', '🎵', '🎬', '📸', '🎨', '✏️', '📝', '💡', '🚀', '✅', '❌', '⚠️',
+  '📍', '🏠', '🌍', '🌎', '☀️', '🌙', '🍕', '☕', '🎂', '🌮', '🐶', '🐱', '🌸', '🌹', '💪', '🎯', '💼', '📱', '💻',
+  '🇲🇽', '🇪🇸', '🇺🇸', '🇦🇷', '🇨🇴', '🇨🇱'
+];
+
+function insertEmojiIntoField(fieldId, emoji) {
+  const el = document.getElementById(fieldId);
+  if (!el) return;
+  const start = typeof el.selectionStart === 'number' ? el.selectionStart : el.value.length;
+  const end = typeof el.selectionEnd === 'number' ? el.selectionEnd : el.value.length;
+  const v = el.value;
+  el.value = v.slice(0, start) + emoji + v.slice(end);
+  const pos = start + emoji.length;
+  requestAnimationFrame(function () {
+    el.focus();
+    if (typeof el.setSelectionRange === 'function') el.setSelectionRange(pos, pos);
+  });
+}
+
+function initEmojiPickerPanels() {
+  document.querySelectorAll('.emoji-picker-panel[data-emoji-for]').forEach(function (panel) {
+    if (panel.getAttribute('data-emoji-loaded')) return;
+    panel.setAttribute('data-emoji-loaded', '1');
+    var id = panel.getAttribute('data-emoji-for');
+    if (!id) return;
+    CREATOR_EMOJI_PALETTE.forEach(function (ch) {
+      var b = document.createElement('button');
+      b.type = 'button';
+      b.className = 'emoji-pick-btn';
+      b.textContent = ch;
+      b.title = 'Insertar';
+      b.addEventListener('click', function (e) {
+        e.preventDefault();
+        insertEmojiIntoField(id, ch);
+      });
+      panel.appendChild(b);
+    });
+  });
+}
+
 function fillProfileSocialLinks(creator) {
   const wrap = document.getElementById('profile-social-links');
   if (!wrap) return;
@@ -2938,6 +3084,8 @@ async function loadProfileSettings() {
   document.getElementById('settings-handle').value = res.handle || '@' + res.name.toLowerCase();
   document.getElementById('settings-category').value = res.category || '📸 Fotografía & Lifestyle';
   document.getElementById('settings-bio').value = res.bio || '';
+  var locIn = document.getElementById('settings-location');
+  if (locIn) locIn.value = res.location || '';
   document.getElementById('settings-avatar-color').value = res.avatar_color || '#333333';
   const si = document.getElementById('settings-social-instagram');
   const sf = document.getElementById('settings-social-facebook');
@@ -2958,7 +3106,8 @@ async function saveProfileSettings() {
   const social_facebook = document.getElementById('settings-social-facebook')?.value ?? '';
   const social_tiktok = document.getElementById('settings-social-tiktok')?.value ?? '';
   const social_other = document.getElementById('settings-social-other')?.value ?? '';
-  
+  const location = (document.getElementById('settings-location')?.value ?? '').trim().slice(0, 120);
+
   const btn = document.getElementById('save-profile-btn');
   const msgDiv = document.getElementById('profile-save-message');
   
@@ -2969,6 +3118,7 @@ async function saveProfileSettings() {
     handle,
     bio,
     category,
+    location,
     avatar_color,
     social_instagram,
     social_facebook,
@@ -3371,9 +3521,7 @@ async function openCreatorProfile(handle) {
   CURRENT_CREATOR_ID = creator.id;
   const innerRoot = document.getElementById('creator-profile-inner');
   if (innerRoot) innerRoot.dataset.handle = creator.handle || '';
-  document.querySelector('#creator-profile-inner .profile-name').textContent = creator.name;
-  document.querySelector('#creator-profile-inner .profile-handle').textContent = (creator.handle || '') + ' · ' + (creator.category || 'Creador');
-  document.querySelector('#creator-profile-inner .profile-bio').textContent = creator.bio || 'Bienvenido a mi perfil en BizPonzor';
+  applyCreatorHeroFields(creator);
   fillProfileSocialLinks(creator);
   const avatarDiv = document.querySelector('#creator-profile-inner .profile-avatar');
   if (avatarDiv) {
@@ -3494,6 +3642,7 @@ async function loadEarnings() {
 
 // Override publish button
 document.addEventListener('DOMContentLoaded', () => {
+  initEmojiPickerPanels();
   document.getElementById('donate-modal')?.addEventListener('click', function (e) {
     if (e.target === this) closeDonateModal();
   });

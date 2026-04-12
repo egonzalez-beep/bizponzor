@@ -47,14 +47,14 @@ router.post('/login', async (req, res) => {
 router.get('/me', require('../middleware/auth'), (req, res) => {
   const user = db
     .prepare(
-      'SELECT id, name, email, role, handle, bio, category, avatar_url, banner_url, avatar_color, social_instagram, social_facebook, social_tiktok, social_other FROM users WHERE id = ?'
+      'SELECT id, name, email, role, handle, bio, category, location, avatar_url, banner_url, avatar_color, social_instagram, social_facebook, social_tiktok, social_other FROM users WHERE id = ?'
     )
     .get(req.user.id);
   res.json(user);
 });
 
 router.put('/profile', require('../middleware/auth'), (req, res) => {
-  const { handle, bio, category, avatar_color, social_instagram, social_facebook, social_tiktok, social_other } =
+  const { handle, bio, category, location, avatar_color, social_instagram, social_facebook, social_tiktok, social_other } =
     req.body;
   const cleanedHandle = (handle || '').trim();
   if (!cleanedHandle || cleanedHandle.length < 3) {
@@ -68,13 +68,15 @@ router.put('/profile', require('../middleware/auth'), (req, res) => {
   const handleTaken = db.prepare('SELECT id FROM users WHERE handle = ? AND id != ?').get(normalizedHandle, req.user.id);
   if (handleTaken) return res.status(409).json({ error: 'Ese alias ya está en uso' });
   const bioStr = typeof bio === 'string' ? bio.slice(0, 200) : '';
+  const locStr = typeof location === 'string' ? location.trim().slice(0, 120) : '';
   const s = (v) => (typeof v === 'string' ? v.trim().slice(0, 500) : '');
   db.prepare(
-    'UPDATE users SET handle=?, bio=?, category=?, avatar_color=?, social_instagram=?, social_facebook=?, social_tiktok=?, social_other=? WHERE id=?'
+    'UPDATE users SET handle=?, bio=?, category=?, location=?, avatar_color=?, social_instagram=?, social_facebook=?, social_tiktok=?, social_other=? WHERE id=?'
   ).run(
     normalizedHandle,
     bioStr,
     category || '',
+    locStr,
     avatar_color || '#333333',
     s(social_instagram),
     s(social_facebook),
