@@ -20,7 +20,11 @@ router.get('/me', auth, (req, res) => {
 
 // Perfil de un creador
 router.get('/:handle', (req, res) => {
-  const creator = db.prepare("SELECT id, name, handle, bio, category, avatar_url, banner_url, avatar_color FROM users WHERE handle=? AND role='creator'").get(req.params.handle);
+  const creator = db
+    .prepare(
+      "SELECT id, name, handle, bio, category, avatar_url, banner_url, avatar_color, social_instagram, social_facebook, social_tiktok, social_other FROM users WHERE handle=? AND role='creator'"
+    )
+    .get(req.params.handle);
   if (!creator) return res.status(404).json({ error: 'Creador no encontrado' });
   const subs = db.prepare("SELECT COUNT(*) as count FROM subscriptions WHERE creator_id=? AND status='active'").get(creator.id);
   const contentCount = db.prepare("SELECT COUNT(*) as count FROM content WHERE creator_id=?").get(creator.id);

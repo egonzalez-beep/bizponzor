@@ -45,12 +45,17 @@ router.post('/login', async (req, res) => {
 });
 
 router.get('/me', require('../middleware/auth'), (req, res) => {
-  const user = db.prepare('SELECT id, name, email, role, handle, bio, category, avatar_url, banner_url, avatar_color FROM users WHERE id = ?').get(req.user.id);
+  const user = db
+    .prepare(
+      'SELECT id, name, email, role, handle, bio, category, avatar_url, banner_url, avatar_color, social_instagram, social_facebook, social_tiktok, social_other FROM users WHERE id = ?'
+    )
+    .get(req.user.id);
   res.json(user);
 });
 
 router.put('/profile', require('../middleware/auth'), (req, res) => {
-  const { handle, bio, category, avatar_color } = req.body;
+  const { handle, bio, category, avatar_color, social_instagram, social_facebook, social_tiktok, social_other } =
+    req.body;
   const cleanedHandle = (handle || '').trim();
   if (!cleanedHandle || cleanedHandle.length < 3) {
     return res.status(400).json({ error: 'Tu alias debe tener al menos 3 caracteres' });
@@ -62,8 +67,21 @@ router.put('/profile', require('../middleware/auth'), (req, res) => {
   const normalizedHandle = '@' + handleCore;
   const handleTaken = db.prepare('SELECT id FROM users WHERE handle = ? AND id != ?').get(normalizedHandle, req.user.id);
   if (handleTaken) return res.status(409).json({ error: 'Ese alias ya está en uso' });
-  db.prepare('UPDATE users SET handle=?, bio=?, category=?, avatar_color=? WHERE id=?')
-    .run(normalizedHandle, bio || '', category || '', avatar_color || '#333333', req.user.id);
+  const bioStr = typeof bio === 'string' ? bio.slice(0, 200) : '';
+  const s = (v) => (typeof v === 'string' ? v.trim().slice(0, 500) : '');
+  db.prepare(
+    'UPDATE users SET handle=?, bio=?, category=?, avatar_color=?, social_instagram=?, social_facebook=?, social_tiktok=?, social_other=? WHERE id=?'
+  ).run(
+    normalizedHandle,
+    bioStr,
+    category || '',
+    avatar_color || '#333333',
+    s(social_instagram),
+    s(social_facebook),
+    s(social_tiktok),
+    s(social_other),
+    req.user.id
+  );
   res.json({ success: true, handle: normalizedHandle });
 });
 

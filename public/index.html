@@ -901,6 +901,25 @@
     border-color: #92400E;
     color: #FCD34D;
   }
+  #creator-dashboard .tag-pill.filter-pill {
+    cursor: pointer;
+    font: inherit;
+    font-size: 0.75rem;
+    border: 1px solid #444444;
+    padding: 6px 12px;
+    border-radius: 999px;
+  }
+  #creator-dashboard .tag-pill.filter-pill.filter-pill-active {
+    background: var(--brand);
+    border-color: var(--brand);
+    color: #FFFFFF;
+  }
+  #creator-dashboard .tag-pill.filter-pill.green.filter-pill-active,
+  #creator-dashboard .tag-pill.filter-pill.yellow.filter-pill-active {
+    background: var(--brand);
+    border-color: var(--brand);
+    color: #FFFFFF;
+  }
   #creator-dashboard .form-label,
   #fan-dashboard .form-label { color: #A3A3A3; }
   #creator-dashboard .form-input,
@@ -1738,7 +1757,7 @@
           <div style="font-size:0.72rem;color:var(--gray-500);" id="sidebar-handle">@anamolina</div>
         </div>
       </div>
-      <button type="button" class="btn btn-sm btn-sidebar-public-profile" style="width:100%;margin-bottom:24px;" onclick="showCreatorProfile()">🔍 Ver mi perfil público</button>
+      <button type="button" class="btn btn-sm btn-sidebar-public-profile" style="width:100%;margin-bottom:24px;" onclick="showCreatorProfile()">Mi Perfil</button>
       <div class="sidebar-section">
         <div class="sidebar-label">PRINCIPAL</div>
         <div class="sidebar-item active" id="sidebar-tab-content" onclick="setDashTab('content', this)"><span class="icon">🎬</span> Mi Contenido</div>
@@ -1763,21 +1782,14 @@
           <h2>Mi Contenido</h2>
           <p>Gestiona tus fotos y videos publicados</p>
         </div>
-        <div style="display:flex;gap:12px;margin-bottom:24px;flex-wrap:wrap;">
-          <span class="tag-pill">🖼 Todos (38)</span>
-          <span class="tag-pill">📸 Fotos (24)</span>
-          <span class="tag-pill">🎬 Videos (14)</span>
-          <span class="tag-pill green">🔓 Públicos (12)</span>
-          <span class="tag-pill yellow">🔒 Exclusivos (26)</span>
+        <div id="dash-content-filters" style="display:flex;gap:12px;margin-bottom:24px;flex-wrap:wrap;">
+          <button type="button" class="tag-pill filter-pill filter-pill-active" data-filter="all" onclick="applyContentFilter('all')">Todos (<span id="filter-count-all">0</span>)</button>
+          <button type="button" class="tag-pill filter-pill" data-filter="photo" onclick="applyContentFilter('photo')">Fotos (<span id="filter-count-photo">0</span>)</button>
+          <button type="button" class="tag-pill filter-pill" data-filter="video" onclick="applyContentFilter('video')">Videos (<span id="filter-count-video">0</span>)</button>
+          <button type="button" class="tag-pill filter-pill green" data-filter="public" onclick="applyContentFilter('public')">Públicos (<span id="filter-count-public">0</span>)</button>
+          <button type="button" class="tag-pill filter-pill yellow" data-filter="exclusive" onclick="applyContentFilter('exclusive')">Exclusivos (<span id="filter-count-exclusive">0</span>)</button>
         </div>
-        <div class="content-grid">
-          <div class="content-item"><div class="content-thumb" style="background:#f0f0f0">📸<span class="content-type-badge">FOTO</span></div><div class="content-info"><h4>Sesión Abril 2025</h4><p>hace 2 días · 248 vistas</p><span class="exclusive-badge">Exclusivo</span></div></div>
-          <div class="content-item"><div class="content-thumb" style="background:#e8e8e8">🎬<span class="content-type-badge">VIDEO</span></div><div class="content-info"><h4>BTS Shooting ciudad</h4><p>hace 5 días · 410 vistas</p><span class="exclusive-badge">Exclusivo</span></div></div>
-          <div class="content-item"><div class="content-thumb" style="background:#f5f5f5">📸<span class="content-type-badge">FOTO</span></div><div class="content-info"><h4>Portfolio Marzo</h4><p>hace 1 sem · 1.2K vistas</p></div></div>
-          <div class="content-item"><div class="content-thumb" style="background:#ebebeb">🎬<span class="content-type-badge">VIDEO</span></div><div class="content-info"><h4>Tutorial de edición</h4><p>hace 2 sem · 890 vistas</p><span class="exclusive-badge">Exclusivo</span></div></div>
-          <div class="content-item"><div class="content-thumb" style="background:#f2f2f2">📸<span class="content-type-badge">FOTO</span></div><div class="content-info"><h4>Street Photography</h4><p>hace 3 sem · 2.1K vistas</p></div></div>
-          <div class="content-item"><div class="content-thumb" style="background:#ededed">🎬<span class="content-type-badge">VIDEO</span></div><div class="content-info"><h4>Vlog: Un día conmigo</h4><p>hace 1 mes · 3.4K vistas</p><span class="exclusive-badge">Exclusivo</span></div></div>
-        </div>
+        <div class="content-grid"></div>
       </div>
 
       <!-- UPLOAD TAB -->
@@ -1933,8 +1945,26 @@
           </div>
           <div class="form-group">
             <label class="form-label">Biografía</label>
-            <textarea class="form-input" id="settings-bio" rows="4" placeholder="Cuéntale a tus fans sobre ti..."></textarea>
-            <div style="font-size:0.7rem;color:var(--gray-400);margin-top:4px;">Máximo 200 caracteres</div>
+            <textarea class="form-input" id="settings-bio" rows="4" maxlength="200" placeholder="Cuéntale a tus fans sobre ti..."></textarea>
+            <div style="font-size:0.7rem;color:var(--gray-400);margin-top:4px;">Máximo 200 caracteres (emojis permitidos)</div>
+          </div>
+          <div class="form-group">
+            <label class="form-label" style="font-weight:800;">Redes sociales</label>
+            <div style="font-size:0.75rem;color:var(--gray-500);margin-bottom:12px;">Opcional — URL o nombre de usuario</div>
+            <label class="form-label">Instagram</label>
+            <input type="text" class="form-input" id="settings-social-instagram" placeholder="https://instagram.com/… o @usuario" autocomplete="off">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Facebook</label>
+            <input type="text" class="form-input" id="settings-social-facebook" placeholder="https://facebook.com/…" autocomplete="off">
+          </div>
+          <div class="form-group">
+            <label class="form-label">TikTok</label>
+            <input type="text" class="form-input" id="settings-social-tiktok" placeholder="https://tiktok.com/@… o @usuario" autocomplete="off">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Otra</label>
+            <input type="text" class="form-input" id="settings-social-other" placeholder="Enlace u otro perfil" autocomplete="off">
           </div>
           <div class="form-group">
             <label class="form-label">Color del avatar</label>
@@ -1948,7 +1978,7 @@
           </div>
           <div style="display:flex;gap:12px;margin-top:8px;">
             <button class="btn btn-primary" id="save-profile-btn">💾 Guardar cambios</button>
-            <button type="button" class="btn btn-sidebar-public-profile" onclick="showCreatorProfile()">🔍 Ver mi perfil público</button>
+            <button type="button" class="btn btn-sidebar-public-profile" onclick="showCreatorProfile()">Mi Perfil</button>
           </div>
           <div id="profile-save-message" style="margin-top:16px;display:none;"></div>
         </div>
@@ -2873,13 +2903,25 @@ async function loadProfileSettings() {
   document.getElementById('settings-category').value = res.category || '📸 Fotografía & Lifestyle';
   document.getElementById('settings-bio').value = res.bio || '';
   document.getElementById('settings-avatar-color').value = res.avatar_color || '#333333';
+  const si = document.getElementById('settings-social-instagram');
+  const sf = document.getElementById('settings-social-facebook');
+  const st = document.getElementById('settings-social-tiktok');
+  const so = document.getElementById('settings-social-other');
+  if (si) si.value = res.social_instagram || '';
+  if (sf) sf.value = res.social_facebook || '';
+  if (st) st.value = res.social_tiktok || '';
+  if (so) so.value = res.social_other || '';
 }
 
 async function saveProfileSettings() {
   const handle = document.getElementById('settings-handle').value;
   const category = document.getElementById('settings-category').value;
-  const bio = document.getElementById('settings-bio').value;
+  const bio = (document.getElementById('settings-bio').value || '').slice(0, 200);
   const avatar_color = document.getElementById('settings-avatar-color').value;
+  const social_instagram = document.getElementById('settings-social-instagram')?.value ?? '';
+  const social_facebook = document.getElementById('settings-social-facebook')?.value ?? '';
+  const social_tiktok = document.getElementById('settings-social-tiktok')?.value ?? '';
+  const social_other = document.getElementById('settings-social-other')?.value ?? '';
   
   const btn = document.getElementById('save-profile-btn');
   const msgDiv = document.getElementById('profile-save-message');
@@ -2887,7 +2929,16 @@ async function saveProfileSettings() {
   btn.textContent = 'Guardando...';
   btn.disabled = true;
   
-  const res = await api.put('/auth/profile', { handle, bio, category, avatar_color });
+  const res = await api.put('/auth/profile', {
+    handle,
+    bio,
+    category,
+    avatar_color,
+    social_instagram,
+    social_facebook,
+    social_tiktok,
+    social_other
+  });
   
   if (res.error) {
     msgDiv.style.display = 'block';
@@ -2924,16 +2975,65 @@ async function saveProfileSettings() {
   btn.disabled = false;
 }
 
+window._creatorContentList = [];
+window._creatorContentFilter = 'all';
+
+function computeContentStats(items) {
+  const n = (pred) => items.filter(pred).length;
+  return {
+    all: items.length,
+    photo: n((c) => c.type === 'photo'),
+    video: n((c) => c.type === 'video'),
+    public: n((c) => Number(c.is_exclusive) !== 1),
+    exclusive: n((c) => Number(c.is_exclusive) === 1)
+  };
+}
+
+function updateContentFilterPills(stats) {
+  const pairs = [
+    ['filter-count-all', stats.all],
+    ['filter-count-photo', stats.photo],
+    ['filter-count-video', stats.video],
+    ['filter-count-public', stats.public],
+    ['filter-count-exclusive', stats.exclusive]
+  ];
+  pairs.forEach(([id, v]) => {
+    const el = document.getElementById(id);
+    if (el) el.textContent = String(v);
+  });
+}
+
+function applyContentFilter(filter) {
+  window._creatorContentFilter = filter;
+  const items = window._creatorContentList || [];
+  let filtered = items;
+  if (filter === 'photo') filtered = items.filter((c) => c.type === 'photo');
+  else if (filter === 'video') filtered = items.filter((c) => c.type === 'video');
+  else if (filter === 'public') filtered = items.filter((c) => Number(c.is_exclusive) !== 1);
+  else if (filter === 'exclusive') filtered = items.filter((c) => Number(c.is_exclusive) === 1);
+  const grid = document.querySelector('#dash-content .content-grid');
+  if (grid) renderContentGrid(grid, filtered);
+  document.querySelectorAll('#dash-content-filters .filter-pill').forEach((el) => {
+    el.classList.toggle('filter-pill-active', el.dataset.filter === filter);
+  });
+}
+
 async function loadMyContent() {
   const content = await api.get('/content/my');
   if (!content || content.error) return;
-  const contentGrid = document.querySelector('#dash-content .content-grid');
-  if (contentGrid) renderContentGrid(contentGrid, content);
+  window._creatorContentList = Array.isArray(content) ? content : [];
+  updateContentFilterPills(computeContentStats(window._creatorContentList));
+  applyContentFilter(window._creatorContentFilter || 'all');
 }
 
 function renderContentGrid(container, items) {
   if (!items.length) {
-    container.innerHTML = '<div style="padding:40px;color:var(--gray-500);text-align:center;grid-column:1/-1;">No hay contenido aún. ¡Sube tu primer archivo!</div>';
+    const hasAny = window._creatorContentList && window._creatorContentList.length > 0;
+    const msg = hasAny
+      ? 'No hay contenido para este filtro.'
+      : 'No hay contenido aún. ¡Sube tu primer archivo!';
+    container.innerHTML =
+      '<div style="padding:40px;color:var(--gray-500);text-align:center;grid-column:1/-1;">' + msg + '</div>';
     return;
   }
   container.innerHTML = items.map((c) => {

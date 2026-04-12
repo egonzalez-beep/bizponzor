@@ -100,6 +100,14 @@ try {
   // Column may already exist on existing databases.
 }
 
+['social_instagram', 'social_facebook', 'social_tiktok', 'social_other'].forEach((col) => {
+  try {
+    db.exec(`ALTER TABLE users ADD COLUMN ${col} TEXT;`);
+  } catch (e) {
+    /* exists */
+  }
+});
+
 db.exec(`
   CREATE TABLE IF NOT EXISTS donations (
     id              TEXT PRIMARY KEY,
