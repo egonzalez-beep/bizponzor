@@ -1119,11 +1119,10 @@
   .profile-info-hero {
     padding-bottom: 8px;
   }
-  /* Bloque identidad (avatar + texto) pegado al bloque métricas, sin columna que empuje al borde */
   .profile-hero-row {
     display: flex;
     flex-wrap: wrap;
-    align-items: center;
+    align-items: flex-start;
     gap: 20px 28px;
     justify-content: flex-start;
   }
@@ -1132,7 +1131,7 @@
     flex-wrap: wrap;
     align-items: flex-start;
     gap: 16px 24px;
-    flex: 0 1 auto;
+    flex: 1 1 auto;
     min-width: 0;
     max-width: 100%;
   }
@@ -1142,69 +1141,50 @@
     flex-shrink: 0;
   }
   .profile-hero-text-block {
-    flex: 0 1 480px;
+    flex: 1 1 280px;
     min-width: 0;
-    max-width: min(480px, 100%);
+    max-width: min(640px, 100%);
     padding-top: 2px;
   }
-  .profile-hero-metrics-col {
-    flex: 0 0 auto;
+  .profile-hero-text-block .profile-hero-cta {
+    margin-top: 18px;
+  }
+  /* Métricas en tarjeta lateral: mismo lenguaje que «Tu plan activo» */
+  #creator-profile-inner .profile-sidebar-metrics {
+    margin: 0 0 16px;
+    padding: 0 0 14px;
+    border-bottom: 1px solid #2a2a2a;
+  }
+  #creator-profile-inner .profile-sidebar-metrics.profile-sidebar-metrics--under-plan {
+    margin-top: 14px;
+    padding-top: 14px;
+    border-top: 1px solid #2a2a2a;
+    border-bottom: none;
+    padding-bottom: 0;
+    margin-bottom: 0;
+  }
+  #creator-profile-inner .profile-metric-row {
     display: flex;
-    flex-direction: column;
-    align-items: stretch;
-    gap: 14px;
-    min-width: 0;
-    max-width: 100%;
-    align-self: center;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 16px;
+    padding: 6px 0;
+    font-size: 0.8125rem;
+    line-height: 1.35;
   }
-  .profile-inline-stats {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: flex-start;
-    column-gap: 40px;
-    row-gap: 20px;
+  #creator-profile-inner .profile-metric-row + .profile-metric-row {
+    border-top: 1px solid rgba(255, 255, 255, 0.04);
   }
-  .profile-metric {
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 8px;
-    min-width: 0;
-    padding: 0 4px;
-    box-sizing: border-box;
-  }
-  .profile-metric-value {
-    font-size: 1.75rem;
-    font-weight: 800;
-    letter-spacing: -0.5px;
-    line-height: 1.1;
-    color: #FFFFFF;
-    font-variant-numeric: tabular-nums;
-  }
-  .profile-metric-icon {
-    font-size: 1.15rem;
-    line-height: 1;
-    letter-spacing: 0.02em;
+  #creator-profile-inner .profile-metric-label {
     color: #737373;
-    opacity: 0.92;
-    user-select: none;
+    font-weight: 500;
+    letter-spacing: 0.02em;
   }
-  .profile-metric-emoji-pair {
-    display: inline-flex;
-    align-items: center;
-    gap: 5px;
-    font-size: 1.05rem;
-  }
-  .profile-metric .visually-hidden {
-    position: absolute;
-    width: 1px;
-    height: 1px;
-    padding: 0;
-    margin: -1px;
-    overflow: hidden;
-    clip: rect(0, 0, 0, 0);
-    white-space: nowrap;
-    border: 0;
+  #creator-profile-inner .profile-metric-num {
+    color: #e5e5e5;
+    font-weight: 600;
+    font-variant-numeric: tabular-nums;
+    font-feature-settings: 'tnum' 1;
   }
   #creator-profile-inner .profile-social-links {
     display: none;
@@ -1489,12 +1469,9 @@
     .profile-body { grid-template-columns: 1fr; padding: 24px 20px 40px; gap: 28px; }
     .profile-sidebar-card { position: relative; top: auto; max-height: none; }
     .profile-info { padding: 0 20px; }
-    .profile-metric-value { font-size: 1.45rem; }
-    .profile-inline-stats { column-gap: 28px; row-gap: 18px; }
   }
 
   @media (max-width: 900px) {
-    .profile-hero-metrics-col { width: 100%; }
     .btn.profile-hero-cta { align-self: stretch; min-width: 0; }
   }
 
@@ -2195,27 +2172,8 @@
           <div class="profile-handle">@anamolina · Fotografía & Lifestyle</div>
           <div class="profile-bio">Fotógrafa apasionada por capturar momentos únicos. Comparto mi proceso creativo y contenido exclusivo con mi comunidad especial. ✨</div>
           <div id="profile-social-links" class="profile-social-links" aria-label="Redes sociales"></div>
+          <button type="button" class="btn profile-hero-cta" id="profile-share-community-btn" onclick="shareCreatorProfile()" style="display:none;">Comparte tu Bizponzor</button>
         </div>
-      </div>
-      <div class="profile-hero-metrics-col">
-        <div class="profile-inline-stats" role="group" aria-label="Métricas">
-          <div class="profile-metric" title="Suscriptores">
-            <span class="profile-metric-value" id="profile-stat-subs">0</span>
-            <span class="profile-metric-icon" aria-hidden="true">👤</span>
-            <span class="visually-hidden">Suscriptores</span>
-          </div>
-          <div class="profile-metric" title="Me gusta en tu contenido">
-            <span class="profile-metric-value" id="profile-stat-likes">0</span>
-            <span class="profile-metric-icon" aria-hidden="true">❤️</span>
-            <span class="visually-hidden">Me gusta</span>
-          </div>
-          <div class="profile-metric" title="Publicaciones">
-            <span class="profile-metric-value" id="profile-stat-posts">0</span>
-            <span class="profile-metric-icon profile-metric-emoji-pair" aria-hidden="true"><span>📷</span><span>🎬</span></span>
-            <span class="visually-hidden">Publicaciones</span>
-          </div>
-        </div>
-        <button type="button" class="btn profile-hero-cta" id="profile-share-community-btn" onclick="shareCreatorProfile()">Comparte tu Bizponzor</button>
       </div>
     </div>
   </div>
@@ -2232,6 +2190,12 @@
             <div class="profile-owner-plan-name" id="profile-owner-plan-name">—</div>
             <div class="profile-owner-plan-price" id="profile-owner-plan-price">—</div>
           </div>
+        </div>
+        <div id="profile-sidebar-metrics" class="profile-sidebar-metrics" aria-label="Estadísticas">
+          <div class="profile-metric-row"><span class="profile-metric-label">Suscriptores</span><span class="profile-metric-num" id="metric-subs">0</span></div>
+          <div class="profile-metric-row"><span class="profile-metric-label">Fotos</span><span class="profile-metric-num" id="metric-photos">0</span></div>
+          <div class="profile-metric-row"><span class="profile-metric-label">Videos</span><span class="profile-metric-num" id="metric-videos">0</span></div>
+          <div class="profile-metric-row"><span class="profile-metric-label">Estrellas</span><span class="profile-metric-num" id="metric-stars">0</span></div>
         </div>
         <div id="profile-sidebar-fan">
           <h4>Hazte patrocinador 💎</h4>
@@ -2421,7 +2385,6 @@
         document.querySelector('#creator-profile-inner .profile-handle').textContent = (creator.handle || '') + ' · ' + (creator.category || 'Creador');
         document.querySelector('#creator-profile-inner .profile-bio').textContent = creator.bio || 'Bienvenido a mi perfil en BizPonzor';
         fillProfileSocialLinks(creator);
-        fillProfileHeroStats(creator, { isOwnerView: true });
         const avatarDiv = document.querySelector('#creator-profile-inner .profile-avatar');
         if (avatarDiv) {
           avatarDiv.style.backgroundImage = '';
@@ -2781,28 +2744,32 @@ function fillProfileSocialLinks(creator) {
     .join('');
 }
 
-function fillProfileHeroStats(creator, opts) {
+function fillProfileSidebarMetrics(creator, opts) {
   opts = opts || {};
-  const posts = document.getElementById('profile-stat-posts');
-  const subsEl = document.getElementById('profile-stat-subs');
-  const likesEl = document.getElementById('profile-stat-likes');
-  const cc = creator.content_count;
-  const subs = creator.subscribers;
-  const likes = creator.total_likes;
-  if (posts) {
-    posts.textContent =
-      cc !== undefined && cc !== null ? Number(cc).toLocaleString('es') : '—';
+  const subs = document.getElementById('metric-subs');
+  const ph = document.getElementById('metric-photos');
+  const vid = document.getElementById('metric-videos');
+  const st = document.getElementById('metric-stars');
+  if (subs) {
+    subs.textContent = Number(creator.subscribers ?? 0).toLocaleString('es');
   }
-  if (subsEl) {
-    subsEl.textContent =
-      subs !== undefined && subs !== null ? Number(subs).toLocaleString('es') : '—';
+  if (ph) {
+    ph.textContent = Number(creator.count_photos ?? 0).toLocaleString('es');
   }
-  if (likesEl) {
-    likesEl.textContent =
-      likes !== undefined && likes !== null ? Number(likes).toLocaleString('es') : '0';
+  if (vid) {
+    vid.textContent = Number(creator.count_videos ?? 0).toLocaleString('es');
+  }
+  const starsVal =
+    creator.total_stars != null ? creator.total_stars : creator.total_likes;
+  if (st) {
+    st.textContent = Number(starsVal ?? 0).toLocaleString('es');
   }
   const shareBtn = document.getElementById('profile-share-community-btn');
   if (shareBtn) shareBtn.style.display = opts.isOwnerView ? '' : 'none';
+  const mEl = document.getElementById('profile-sidebar-metrics');
+  if (mEl) {
+    mEl.classList.toggle('profile-sidebar-metrics--under-plan', !!opts.isOwnerView);
+  }
 }
 
 function shareCreatorProfile() {
@@ -2825,16 +2792,17 @@ function shareCreatorProfile() {
 }
 
 function fillCreatorProfileSidebar(creator, plans) {
+  const isOwn =
+    CURRENT_USER &&
+    CURRENT_USER.role === 'creator' &&
+    CURRENT_USER.id === creator.id;
+  fillProfileSidebarMetrics(creator, { isOwnerView: isOwn });
   const intro = document.getElementById('profile-plans-intro');
   if (intro) {
     intro.textContent =
       'Accede a contenido exclusivo y apoya a ' + (creator.name || 'este creador');
   }
   const ab = document.getElementById('profile-action-buttons');
-  const isOwn =
-    CURRENT_USER &&
-    CURRENT_USER.role === 'creator' &&
-    CURRENT_USER.id === creator.id;
   if (ab) ab.style.display = isOwn ? 'none' : '';
   const ownerSb = document.getElementById('profile-sidebar-owner');
   const fanSb = document.getElementById('profile-sidebar-fan');
@@ -3407,11 +3375,6 @@ async function openCreatorProfile(handle) {
   document.querySelector('#creator-profile-inner .profile-handle').textContent = (creator.handle || '') + ' · ' + (creator.category || 'Creador');
   document.querySelector('#creator-profile-inner .profile-bio').textContent = creator.bio || 'Bienvenido a mi perfil en BizPonzor';
   fillProfileSocialLinks(creator);
-  const isOwnProfile =
-    CURRENT_USER &&
-    CURRENT_USER.role === 'creator' &&
-    CURRENT_USER.id === creator.id;
-  fillProfileHeroStats(creator, { isOwnerView: isOwnProfile });
   const avatarDiv = document.querySelector('#creator-profile-inner .profile-avatar');
   if (avatarDiv) {
     avatarDiv.style.backgroundImage = '';

@@ -14,6 +14,16 @@ function totalLikesForCreator(creatorId) {
   return row ? row.n : 0;
 }
 
+function countPhotosVideos(creatorId) {
+  const photos = db
+    .prepare("SELECT COUNT(*) as n FROM content WHERE creator_id=? AND type='photo'")
+    .get(creatorId);
+  const videos = db
+    .prepare("SELECT COUNT(*) as n FROM content WHERE creator_id=? AND type='video'")
+    .get(creatorId);
+  return { count_photos: photos ? photos.n : 0, count_videos: videos ? videos.n : 0 };
+}
+
 // Listar creadores
 router.get('/', (req, res) => {
   const creators = db.prepare("SELECT u.id, u.name, u.handle, u.bio, u.category, u.avatar_url, u.banner_url, u.avatar_color, COUNT(DISTINCT s.id) as subscribers FROM users u LEFT JOIN subscriptions s ON u.id=s.creator_id AND s.status='active' WHERE u.role='creator' GROUP BY u.id ORDER BY subscribers DESC").all();
@@ -32,11 +42,16 @@ router.get('/me', auth, (req, res) => {
   if (!creator) return res.status(404).json({ error: 'Creador no encontrado' });
   const subs = db.prepare("SELECT COUNT(*) as count FROM subscriptions WHERE creator_id=? AND status='active'").get(creator.id);
   const contentCount = db.prepare("SELECT COUNT(*) as count FROM content WHERE creator_id=?").get(creator.id);
+  const pv = countPhotosVideos(creator.id);
+  const stars = totalLikesForCreator(creator.id);
   res.json({
     ...creator,
     subscribers: subs.count,
     content_count: contentCount.count,
-    total_likes: totalLikesForCreator(creator.id)
+    count_photos: pv.count_photos,
+    count_videos: pv.count_videos,
+    total_stars: stars,
+    total_likes: stars
   });
 });
 
@@ -50,11 +65,16 @@ router.get('/:handle', (req, res) => {
   if (!creator) return res.status(404).json({ error: 'Creador no encontrado' });
   const subs = db.prepare("SELECT COUNT(*) as count FROM subscriptions WHERE creator_id=? AND status='active'").get(creator.id);
   const contentCount = db.prepare("SELECT COUNT(*) as count FROM content WHERE creator_id=?").get(creator.id);
+  const pv = countPhotosVideos(creator.id);
+  const stars = totalLikesForCreator(creator.id);
   res.json({
     ...creator,
     subscribers: subs.count,
     content_count: contentCount.count,
-    total_likes: totalLikesForCreator(creator.id)
+    count_photos: pv.count_photos,
+    count_videos: pv.count_videos,
+    total_stars: stars,
+    total_likes: stars
   });
 });
 
