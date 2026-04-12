@@ -1,6 +1,5 @@
-if (process.env.NODE_ENV !== 'production') {
-  require('dotenv').config();
-}
+require('dotenv').config();
+console.log('MP_CLIENT_SECRET:', process.env.MP_CLIENT_SECRET ? 'OK' : 'MISSING');
 
 const express = require('express');
 const cors = require('cors');
