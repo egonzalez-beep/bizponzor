@@ -115,6 +115,17 @@ try {
 }
 
 db.exec(`
+  CREATE TABLE IF NOT EXISTS mercado_pago_accounts (
+    user_id       TEXT PRIMARY KEY REFERENCES users(id) ON DELETE CASCADE,
+    access_token  TEXT NOT NULL,
+    refresh_token TEXT,
+    public_key    TEXT,
+    mp_user_id    TEXT,
+    expires_at    TEXT NOT NULL
+  );
+`);
+
+db.exec(`
   CREATE TABLE IF NOT EXISTS donations (
     id              TEXT PRIMARY KEY,
     fan_id          TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE,

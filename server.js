@@ -4,6 +4,7 @@ console.log('MP_CLIENT_SECRET:', process.env.MP_CLIENT_SECRET ? 'OK' : 'MISSING'
 const express = require('express');
 const cors = require('cors');
 const path = require('path');
+const db = require('./db');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -66,8 +67,42 @@ app.get('/mp/callback', async (req, res) => {
 
     if (!response.ok) {
       console.error('[MP OAuth] Respuesta no OK:', response.status, data);
+      return res.status(400).send('No se pudo obtener el token de Mercado Pago');
     }
 
+    if (!data.access_token) {
+      console.error('[MP OAuth] Sin access_token en respuesta:', data);
+      return res.status(400).send('Respuesta inválida de Mercado Pago');
+    }
+
+    const expiresInRaw = Number(data.expires_in);
+    const expiresInSec =
+      Number.isFinite(expiresInRaw) && expiresInRaw > 0 ? Math.floor(expiresInRaw) : 15552000;
+
+    const mpUserId = data.user_id != null && data.user_id !== '' ? String(data.user_id) : null;
+
+    const upsertMp = db.prepare(`
+      INSERT INTO mercado_pago_accounts
+      (user_id, access_token, refresh_token, public_key, mp_user_id, expires_at)
+      VALUES (?, ?, ?, ?, ?, datetime('now', '+' || ? || ' seconds'))
+      ON CONFLICT(user_id) DO UPDATE SET
+        access_token = excluded.access_token,
+        refresh_token = excluded.refresh_token,
+        public_key = excluded.public_key,
+        mp_user_id = excluded.mp_user_id,
+        expires_at = excluded.expires_at
+    `);
+
+    upsertMp.run(
+      userId,
+      data.access_token,
+      data.refresh_token ?? null,
+      data.public_key ?? null,
+      mpUserId,
+      expiresInSec
+    );
+
+    console.log('MP conectado y guardado para user:', userId);
     console.log('=== MERCADO PAGO TOKEN ===');
     console.log('creator userId (state):', userId);
     console.log(data);
