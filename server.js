@@ -114,6 +114,68 @@ app.get('/mp/callback', async (req, res) => {
   }
 });
 
+app.post('/create-payment', async (req, res) => {
+  try {
+    const { creatorId, amount, description } = req.body;
+
+    if (!creatorId || amount == null || amount === '') {
+      return res.status(400).json({ error: 'Faltan datos' });
+    }
+
+    const stmt = db.prepare(`
+      SELECT access_token FROM mercado_pago_accounts WHERE user_id = ?
+    `);
+
+    const account = stmt.get(creatorId);
+
+    if (!account) {
+      return res.status(404).json({ error: 'Creador no tiene cuenta conectada' });
+    }
+
+    const accessToken = account.access_token;
+
+    const amountNum = Number(amount);
+    if (!Number.isFinite(amountNum) || amountNum <= 0) {
+      return res.status(400).json({ error: 'Faltan datos' });
+    }
+
+    const applicationFee = Math.round(amountNum * 0.1);
+
+    const response = await fetch('https://api.mercadopago.com/checkout/preferences', {
+      method: 'POST',
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        items: [
+          {
+            title: description || 'Suscripción',
+            quantity: 1,
+            unit_price: amountNum,
+            currency_id: 'MXN'
+          }
+        ],
+        marketplace_fee: applicationFee
+      })
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      console.error('Error MP:', data);
+      return res.status(400).json({ error: 'Error al crear pago' });
+    }
+
+    return res.json({
+      init_point: data.init_point
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'Error interno' });
+  }
+});
+
 app.get('*', (req, res) => res.sendFile(path.join(__dirname, 'public', 'index.html')));
 
 app.listen(PORT, () => console.log('BizPonzor corriendo en http://localhost:' + PORT));
