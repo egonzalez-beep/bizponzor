@@ -3,6 +3,17 @@ const router = require('express').Router();
 const db = require('../db');
 const auth = require('../middleware/auth');
 
+function totalLikesForCreator(creatorId) {
+  const row = db
+    .prepare(
+      `SELECT COUNT(*) as n FROM content_likes cl
+       INNER JOIN content c ON c.id = cl.content_id
+       WHERE c.creator_id = ?`
+    )
+    .get(creatorId);
+  return row ? row.n : 0;
+}
+
 // Listar creadores
 router.get('/', (req, res) => {
   const creators = db.prepare("SELECT u.id, u.name, u.handle, u.bio, u.category, u.avatar_url, u.banner_url, u.avatar_color, COUNT(DISTINCT s.id) as subscribers FROM users u LEFT JOIN subscriptions s ON u.id=s.creator_id AND s.status='active' WHERE u.role='creator' GROUP BY u.id ORDER BY subscribers DESC").all();
@@ -11,11 +22,22 @@ router.get('/', (req, res) => {
 
 // Perfil del creador autenticado
 router.get('/me', auth, (req, res) => {
-  const creator = db.prepare("SELECT id, name, handle, bio, category, avatar_url, banner_url, avatar_color FROM users WHERE id=? AND role='creator'").get(req.user.id);
+  const creator = db
+    .prepare(
+      `SELECT id, name, handle, bio, category, avatar_url, banner_url, avatar_color,
+              social_instagram, social_facebook, social_tiktok, social_other
+       FROM users WHERE id=? AND role='creator'`
+    )
+    .get(req.user.id);
   if (!creator) return res.status(404).json({ error: 'Creador no encontrado' });
   const subs = db.prepare("SELECT COUNT(*) as count FROM subscriptions WHERE creator_id=? AND status='active'").get(creator.id);
   const contentCount = db.prepare("SELECT COUNT(*) as count FROM content WHERE creator_id=?").get(creator.id);
-  res.json({ ...creator, subscribers: subs.count, content_count: contentCount.count });
+  res.json({
+    ...creator,
+    subscribers: subs.count,
+    content_count: contentCount.count,
+    total_likes: totalLikesForCreator(creator.id)
+  });
 });
 
 // Perfil de un creador
@@ -28,7 +50,12 @@ router.get('/:handle', (req, res) => {
   if (!creator) return res.status(404).json({ error: 'Creador no encontrado' });
   const subs = db.prepare("SELECT COUNT(*) as count FROM subscriptions WHERE creator_id=? AND status='active'").get(creator.id);
   const contentCount = db.prepare("SELECT COUNT(*) as count FROM content WHERE creator_id=?").get(creator.id);
-  res.json({ ...creator, subscribers: subs.count, content_count: contentCount.count });
+  res.json({
+    ...creator,
+    subscribers: subs.count,
+    content_count: contentCount.count,
+    total_likes: totalLikesForCreator(creator.id)
+  });
 });
 
 module.exports = router;

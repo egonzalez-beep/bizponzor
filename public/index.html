@@ -1181,37 +1181,79 @@
     color: #FFFFFF;
     font-variant-numeric: tabular-nums;
   }
-  .profile-metric-label {
-    font-size: 0.72rem;
+  .profile-metric-icon {
+    font-size: 1.15rem;
+    line-height: 1;
+    letter-spacing: 0.02em;
+    color: #737373;
+    opacity: 0.92;
+    user-select: none;
+  }
+  .profile-metric-emoji-pair {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 1.05rem;
+  }
+  .profile-metric .visually-hidden {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+  }
+  #creator-profile-inner .profile-social-links {
+    display: none;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 10px 18px;
+    margin-top: 14px;
+    max-width: 100%;
+  }
+  #creator-profile-inner .profile-social-link {
+    font-size: 0.8rem;
     font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 0.08em;
-    color: #22C55E;
+    color: #A78BFA;
+    text-decoration: none;
+    border-bottom: 1px solid rgba(167, 139, 250, 0.35);
+    padding-bottom: 1px;
+    transition: color 0.15s ease, border-color 0.15s ease;
+  }
+  #creator-profile-inner .profile-social-link:hover {
+    color: #c4b5fd;
+    border-bottom-color: rgba(196, 181, 253, 0.55);
   }
   .btn.profile-hero-cta {
     align-self: flex-start;
     width: auto;
     min-width: 240px;
     max-width: 100%;
-    padding: 14px 22px;
-    font-size: 0.95rem;
+    padding: 14px 24px;
+    font-size: 0.92rem;
     font-weight: 700;
+    letter-spacing: 0.02em;
     border-radius: 12px;
-    border: 1px solid rgba(255, 255, 255, 0.12);
-    background: linear-gradient(180deg, #9333ea 0%, #7c3aed 45%, #6d28d9 100%);
+    border: 1px solid rgba(255, 255, 255, 0.14);
+    background: linear-gradient(180deg, #9333ea 0%, #7c3aed 48%, #6d28d9 100%);
     color: #ffffff;
     cursor: pointer;
-    box-shadow: 0 3px 0 #5b21b6, 0 5px 14px rgba(124, 58, 237, 0.26);
+    box-shadow: 0 3px 0 #5b21b6, 0 6px 18px rgba(124, 58, 237, 0.28), 0 0 0 1px rgba(255, 255, 255, 0.06) inset;
     transform: translateY(0);
-    transition: transform 0.15s ease, box-shadow 0.2s ease;
+    transition: transform 0.15s ease, box-shadow 0.22s ease, filter 0.2s ease;
   }
   .btn.profile-hero-cta:hover {
     transform: translateY(-2px);
-    box-shadow: 0 5px 0 #5b21b6, 0 8px 18px rgba(124, 58, 237, 0.32);
+    filter: brightness(1.03);
+    box-shadow: 0 5px 0 #5b21b6, 0 10px 22px rgba(124, 58, 237, 0.34), 0 0 28px rgba(139, 92, 246, 0.18);
   }
   .btn.profile-hero-cta:active {
     transform: translateY(2px);
-    box-shadow: 0 2px 0 #5b21b6, 0 4px 10px rgba(124, 58, 237, 0.22);
+    filter: brightness(0.98);
+    box-shadow: 0 2px 0 #5b21b6, 0 4px 12px rgba(124, 58, 237, 0.22);
   }
   .profile-owner-plan-wrap {
     padding: 0;
@@ -2152,24 +2194,28 @@
           <div class="profile-name">Ana Molina</div>
           <div class="profile-handle">@anamolina · Fotografía & Lifestyle</div>
           <div class="profile-bio">Fotógrafa apasionada por capturar momentos únicos. Comparto mi proceso creativo y contenido exclusivo con mi comunidad especial. ✨</div>
+          <div id="profile-social-links" class="profile-social-links" aria-label="Redes sociales"></div>
         </div>
       </div>
       <div class="profile-hero-metrics-col">
         <div class="profile-inline-stats" role="group" aria-label="Métricas">
-          <div class="profile-metric">
+          <div class="profile-metric" title="Suscriptores">
             <span class="profile-metric-value" id="profile-stat-subs">0</span>
-            <span class="profile-metric-label">Suscriptores</span>
+            <span class="profile-metric-icon" aria-hidden="true">👤</span>
+            <span class="visually-hidden">Suscriptores</span>
           </div>
-          <div class="profile-metric">
-            <span class="profile-metric-value" id="profile-stat-revenue">—</span>
-            <span class="profile-metric-label">Ingresos totales</span>
+          <div class="profile-metric" title="Me gusta en tu contenido">
+            <span class="profile-metric-value" id="profile-stat-likes">0</span>
+            <span class="profile-metric-icon" aria-hidden="true">❤️</span>
+            <span class="visually-hidden">Me gusta</span>
           </div>
-          <div class="profile-metric">
+          <div class="profile-metric" title="Publicaciones">
             <span class="profile-metric-value" id="profile-stat-posts">0</span>
-            <span class="profile-metric-label">Publicaciones</span>
+            <span class="profile-metric-icon profile-metric-emoji-pair" aria-hidden="true"><span>📷</span><span>🎬</span></span>
+            <span class="visually-hidden">Publicaciones</span>
           </div>
         </div>
-        <button type="button" class="btn profile-hero-cta" id="profile-share-community-btn" onclick="shareCreatorProfile()">Comparte con tu comunidad</button>
+        <button type="button" class="btn profile-hero-cta" id="profile-share-community-btn" onclick="shareCreatorProfile()">Comparte tu Bizponzor</button>
       </div>
     </div>
   </div>
@@ -2374,16 +2420,8 @@
         document.querySelector('#creator-profile-inner .profile-name').textContent = creator.name;
         document.querySelector('#creator-profile-inner .profile-handle').textContent = (creator.handle || '') + ' · ' + (creator.category || 'Creador');
         document.querySelector('#creator-profile-inner .profile-bio').textContent = creator.bio || 'Bienvenido a mi perfil en BizPonzor';
-        let totalRev = 0;
-        const statsRes = await api.get('/subscriptions/stats');
-        if (statsRes && !statsRes.error && statsRes.monthly_revenue !== undefined) {
-          totalRev = Number(statsRes.monthly_revenue) || 0;
-        }
-        const donRes = await api.get('/donations/summary');
-        if (donRes && !donRes.error) {
-          totalRev += Number(donRes.total_donations) || 0;
-        }
-        fillProfileHeroStats(creator, { isOwnerView: true, totalRevenue: totalRev });
+        fillProfileSocialLinks(creator);
+        fillProfileHeroStats(creator, { isOwnerView: true });
         const avatarDiv = document.querySelector('#creator-profile-inner .profile-avatar');
         if (avatarDiv) {
           avatarDiv.style.backgroundImage = '';
@@ -2701,13 +2739,56 @@ function pickSinglePlan(plans) {
   return featured || plans[0];
 }
 
+function profileSocialLinkHref(raw) {
+  const s = String(raw || '').trim();
+  if (!s) return '#';
+  if (/^https?:\/\//i.test(s)) return s;
+  return 'https://' + s.replace(/^\/+/, '');
+}
+
+function fillProfileSocialLinks(creator) {
+  const wrap = document.getElementById('profile-social-links');
+  if (!wrap) return;
+  const pairs = [
+    { v: creator.social_instagram, label: 'Instagram' },
+    { v: creator.social_facebook, label: 'Facebook' },
+    { v: creator.social_tiktok, label: 'TikTok' },
+    { v: creator.social_other, label: 'Web' }
+  ].filter(function (p) {
+    return p.v && String(p.v).trim();
+  });
+  if (!pairs.length) {
+    wrap.innerHTML = '';
+    wrap.style.display = 'none';
+    return;
+  }
+  wrap.style.display = 'flex';
+  wrap.innerHTML = pairs
+    .map(function (p) {
+      const href = profileSocialLinkHref(p.v);
+      const lab = String(p.label)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/"/g, '&quot;');
+      return (
+        '<a class="profile-social-link" href="' +
+        String(href).replace(/"/g, '&quot;') +
+        '" target="_blank" rel="noopener noreferrer">' +
+        lab +
+        '</a>'
+      );
+    })
+    .join('');
+}
+
 function fillProfileHeroStats(creator, opts) {
   opts = opts || {};
   const posts = document.getElementById('profile-stat-posts');
   const subsEl = document.getElementById('profile-stat-subs');
-  const revenue = document.getElementById('profile-stat-revenue');
+  const likesEl = document.getElementById('profile-stat-likes');
   const cc = creator.content_count;
   const subs = creator.subscribers;
+  const likes = creator.total_likes;
   if (posts) {
     posts.textContent =
       cc !== undefined && cc !== null ? Number(cc).toLocaleString('es') : '—';
@@ -2716,22 +2797,9 @@ function fillProfileHeroStats(creator, opts) {
     subsEl.textContent =
       subs !== undefined && subs !== null ? Number(subs).toLocaleString('es') : '—';
   }
-  if (revenue) {
-    if (opts.isOwnerView) {
-      const m = opts.totalRevenue;
-      if (m !== undefined && m !== null && !Number.isNaN(Number(m))) {
-        revenue.textContent =
-          '$' +
-          Number(m).toLocaleString('es', {
-            minimumFractionDigits: 0,
-            maximumFractionDigits: 2
-          });
-      } else {
-        revenue.textContent = '$0';
-      }
-    } else {
-      revenue.textContent = '—';
-    }
+  if (likesEl) {
+    likesEl.textContent =
+      likes !== undefined && likes !== null ? Number(likes).toLocaleString('es') : '0';
   }
   const shareBtn = document.getElementById('profile-share-community-btn');
   if (shareBtn) shareBtn.style.display = opts.isOwnerView ? '' : 'none';
@@ -2745,7 +2813,7 @@ function shareCreatorProfile() {
   if (navigator.clipboard && navigator.clipboard.writeText) {
     navigator.clipboard.writeText(url).then(
       function () {
-        showNotif('✅ Enlace de tu perfil copiado al portapapeles.');
+        showNotif('✅ Enlace de tu Bizponzor copiado al portapapeles.');
       },
       function () {
         showNotif('Copia el enlace desde la barra de direcciones.');
@@ -3338,26 +3406,12 @@ async function openCreatorProfile(handle) {
   document.querySelector('#creator-profile-inner .profile-name').textContent = creator.name;
   document.querySelector('#creator-profile-inner .profile-handle').textContent = (creator.handle || '') + ' · ' + (creator.category || 'Creador');
   document.querySelector('#creator-profile-inner .profile-bio').textContent = creator.bio || 'Bienvenido a mi perfil en BizPonzor';
+  fillProfileSocialLinks(creator);
   const isOwnProfile =
     CURRENT_USER &&
     CURRENT_USER.role === 'creator' &&
     CURRENT_USER.id === creator.id;
-  let totalRev = null;
-  if (isOwnProfile) {
-    let sub = 0;
-    const statsRes = await api.get('/subscriptions/stats');
-    if (statsRes && !statsRes.error && statsRes.monthly_revenue !== undefined) {
-      sub = Number(statsRes.monthly_revenue) || 0;
-    }
-    const donRes = await api.get('/donations/summary');
-    const don =
-      donRes && !donRes.error ? Number(donRes.total_donations) || 0 : 0;
-    totalRev = sub + don;
-  }
-  fillProfileHeroStats(creator, {
-    isOwnerView: isOwnProfile,
-    totalRevenue: isOwnProfile ? totalRev : null
-  });
+  fillProfileHeroStats(creator, { isOwnerView: isOwnProfile });
   const avatarDiv = document.querySelector('#creator-profile-inner .profile-avatar');
   if (avatarDiv) {
     avatarDiv.style.backgroundImage = '';

@@ -122,6 +122,17 @@ db.exec(`
   );
 `);
 
+db.exec(`
+  CREATE TABLE IF NOT EXISTS content_likes (
+    id         TEXT PRIMARY KEY,
+    content_id TEXT NOT NULL REFERENCES content(id) ON DELETE CASCADE,
+    fan_id     TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    created_at TEXT DEFAULT (datetime('now')),
+    UNIQUE(content_id, fan_id)
+  );
+  CREATE INDEX IF NOT EXISTS idx_content_likes_content ON content_likes(content_id);
+`);
+
 (function migrateContentForTextType() {
   try {
     const row = db
