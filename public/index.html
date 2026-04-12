@@ -3082,8 +3082,13 @@ async function loadCreatorDashboard() {
 }
 
 function redirectMercadoPagoOAuth() {
+  if (!CURRENT_USER || !CURRENT_USER.id) {
+    showNotif('⚠️ Inicia sesión como creador para conectar Mercado Pago');
+    return;
+  }
   window.location.href =
-    'https://auth.mercadopago.com.mx/authorization?client_id=2200286157931731&response_type=code&platform_id=mp&redirect_uri=https://bizponzor-production.up.railway.app/mp/callback';
+    'https://auth.mercadopago.com.mx/authorization?client_id=2200286157931731&response_type=code&platform_id=mp&redirect_uri=https://bizponzor-production.up.railway.app/mp/callback&state=' +
+    encodeURIComponent(CURRENT_USER.id);
 }
 
 async function loadProfileSettings() {

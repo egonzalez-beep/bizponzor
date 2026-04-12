@@ -30,11 +30,17 @@ const MP_CLIENT_ID = process.env.MP_CLIENT_ID || '2200286157931731';
 
 app.get('/mp/callback', async (req, res) => {
   try {
-    const { code } = req.query;
+    const { code, state } = req.query;
 
     if (!code) {
       return res.status(400).send('No se recibió el code');
     }
+
+    if (!state) {
+      return res.status(400).send('No se recibió el userId');
+    }
+
+    const userId = state;
 
     const clientSecret = process.env.MP_CLIENT_SECRET;
     if (!clientSecret) {
@@ -63,6 +69,7 @@ app.get('/mp/callback', async (req, res) => {
     }
 
     console.log('=== MERCADO PAGO TOKEN ===');
+    console.log('creator userId (state):', userId);
     console.log(data);
 
     return res.send('Cuenta de Mercado Pago conectada correctamente');
