@@ -3,11 +3,11 @@ const router = require('express').Router();
 const db = require('../db');
 const auth = require('../middleware/auth');
 
-function totalLikesForCreator(creatorId) {
+function totalStarsForCreator(creatorId) {
   const row = db
     .prepare(
-      `SELECT COUNT(*) as n FROM content_likes cl
-       INNER JOIN content c ON c.id = cl.content_id
+      `SELECT COUNT(*) as n FROM stars s
+       INNER JOIN content c ON c.id = s.content_id
        WHERE c.creator_id = ?`
     )
     .get(creatorId);
@@ -43,7 +43,7 @@ router.get('/me', auth, (req, res) => {
   const subs = db.prepare("SELECT COUNT(*) as count FROM subscriptions WHERE creator_id=? AND status='active'").get(creator.id);
   const contentCount = db.prepare("SELECT COUNT(*) as count FROM content WHERE creator_id=?").get(creator.id);
   const pv = countPhotosVideos(creator.id);
-  const stars = totalLikesForCreator(creator.id);
+  const stars = totalStarsForCreator(creator.id);
   res.json({
     ...creator,
     subscribers: subs.count,
@@ -66,7 +66,7 @@ router.get('/:handle', (req, res) => {
   const subs = db.prepare("SELECT COUNT(*) as count FROM subscriptions WHERE creator_id=? AND status='active'").get(creator.id);
   const contentCount = db.prepare("SELECT COUNT(*) as count FROM content WHERE creator_id=?").get(creator.id);
   const pv = countPhotosVideos(creator.id);
-  const stars = totalLikesForCreator(creator.id);
+  const stars = totalStarsForCreator(creator.id);
   res.json({
     ...creator,
     subscribers: subs.count,

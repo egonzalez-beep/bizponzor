@@ -149,8 +149,15 @@ router.get('/feed/:creatorId', (req, res) => {
     if (token) userId = jwt.verify(token, process.env.JWT_SECRET).id;
   } catch {}
   const allContent = db
-    .prepare('SELECT * FROM content WHERE creator_id = ? ORDER BY created_at DESC')
-    .all(creatorId);
+    .prepare(
+      `SELECT c.*,
+        (SELECT COUNT(*) FROM stars WHERE content_id = c.id) as stars_count,
+        EXISTS(SELECT 1 FROM stars WHERE content_id = c.id AND user_id = ?) as starred
+       FROM content c
+       WHERE c.creator_id = ?
+       ORDER BY c.created_at DESC`
+    )
+    .all(userId || '', creatorId);
   let hasAccess = userId === creatorId;
   if (!hasAccess && userId) {
     const sub = db
@@ -182,7 +189,18 @@ router.get('/feed/:creatorId', (req, res) => {
 });
 
 router.get('/my', authMiddleware, (req, res) => {
-  res.json(db.prepare('SELECT * FROM content WHERE creator_id = ? ORDER BY created_at DESC').all(req.user.id));
+  res.json(
+    db
+      .prepare(
+        `SELECT c.*,
+          (SELECT COUNT(*) FROM stars WHERE content_id = c.id) as stars_count,
+          EXISTS(SELECT 1 FROM stars WHERE content_id = c.id AND user_id = ?) as starred
+         FROM content c
+         WHERE c.creator_id = ?
+         ORDER BY c.created_at DESC`
+      )
+      .all(req.user.id, req.user.id)
+  );
 });
 
 router.delete('/:id', authMiddleware, (req, res) => {

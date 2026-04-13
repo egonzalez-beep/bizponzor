@@ -150,6 +150,17 @@ db.exec(`
   CREATE INDEX IF NOT EXISTS idx_content_likes_content ON content_likes(content_id);
 `);
 
+db.exec(`
+  CREATE TABLE IF NOT EXISTS stars (
+    id          TEXT PRIMARY KEY,
+    user_id     TEXT NOT NULL,
+    content_id  TEXT NOT NULL,
+    created_at  TEXT DEFAULT (datetime('now')),
+    UNIQUE(user_id, content_id)
+  );
+  CREATE INDEX IF NOT EXISTS idx_stars_content ON stars(content_id);
+`);
+
 (function migrateContentForTextType() {
   try {
     const row = db

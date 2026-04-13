@@ -4,6 +4,7 @@ console.log('MP_CLIENT_SECRET:', process.env.MP_CLIENT_SECRET ? 'OK' : 'MISSING'
 const express = require('express');
 const cors = require('cors');
 const path = require('path');
+const crypto = require('crypto');
 const db = require('./db');
 
 const app = express();
@@ -111,6 +112,38 @@ app.get('/mp/callback', async (req, res) => {
   } catch (error) {
     console.error(error);
     res.status(500).send('Error al conectar con Mercado Pago');
+  }
+});
+
+app.post('/content/:id/star', (req, res) => {
+  try {
+    const contentId = req.params.id;
+    const userId = req.body.userId;
+
+    if (!userId) {
+      return res.status(400).json({ error: 'Usuario requerido' });
+    }
+
+    const existing = db
+      .prepare('SELECT * FROM stars WHERE user_id = ? AND content_id = ?')
+      .get(userId, contentId);
+
+    if (existing) {
+      db.prepare('DELETE FROM stars WHERE user_id = ? AND content_id = ?').run(userId, contentId);
+
+      return res.json({ starred: false });
+    }
+
+    db.prepare('INSERT INTO stars (id, user_id, content_id) VALUES (?, ?, ?)').run(
+      crypto.randomUUID(),
+      userId,
+      contentId
+    );
+
+    return res.json({ starred: true });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'Error al dar star' });
   }
 });
 

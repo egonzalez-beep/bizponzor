@@ -753,6 +753,43 @@
     transition: all 0.2s; cursor: pointer;
   }
   .content-item:hover { box-shadow: var(--shadow-md); transform: translateY(-2px); }
+
+  .content-star-row {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-top: 8px;
+    font-size: 0.88rem;
+  }
+  .content-star-row--readonly span[aria-hidden="true"] {
+    opacity: 0.9;
+  }
+  .content-star-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0 4px 0 0;
+    font-size: 1rem;
+    line-height: 1;
+    opacity: 0.75;
+    transition: opacity 0.15s, transform 0.15s;
+  }
+  .content-star-btn:hover {
+    opacity: 1;
+    transform: scale(1.08);
+  }
+  .content-star-btn.content-starred {
+    opacity: 1;
+    filter: drop-shadow(0 0 4px rgba(251, 191, 36, 0.65));
+  }
+  .content-star-count {
+    font-weight: 700;
+    color: var(--gray-600);
+    min-width: 1.2em;
+  }
+  #creator-profile-inner .content-star-count {
+    color: #a3a3a3;
+  }
   .content-thumb {
     width: 100%; aspect-ratio: 16/9;
     background: var(--gray-200); position: relative;
@@ -2619,6 +2656,7 @@
 const API = '/api';
 let TOKEN = localStorage.getItem('bp_token') || null;
 let CURRENT_USER = JSON.parse(localStorage.getItem('bp_user') || 'null');
+var optsProfileStarRefresh = false;
 let CURRENT_CREATOR_ID = null;
 
 // ─── MEDIA MODAL ────────────────────────────────────────
@@ -3238,6 +3276,8 @@ function renderContentGrid(container, items) {
     return;
   }
   container.innerHTML = items.map((c) => {
+    const sc = Number(c.stars_count) || 0;
+    const starRow = `<div class="content-star-row content-star-row--readonly"><span aria-hidden="true">⭐</span><span class="content-star-count">${sc}</span></div>`;
     const isText = c.type === 'text';
     const isVid = c.type === 'video';
     const aspect = isText ? 'aspect-text' : isVid ? 'aspect-video' : 'aspect-photo';
@@ -3258,6 +3298,7 @@ function renderContentGrid(container, items) {
         <h4>${c.title}</h4>
         <p>${new Date(c.created_at).toLocaleDateString('es')}</p>
         ${c.is_exclusive ? '<span class="exclusive-badge">Exclusivo</span>' : ''}
+        ${starRow}
         ${!isText && c.file_url ? `<div style="display:flex;gap:10px;align-items:center;margin-top:6px;">
           <a href="${c.file_url}" target="_blank" rel="noopener noreferrer" style="font-size:0.75rem;color:var(--gray-500);text-decoration:underline;">Abrir</a>
           <a href="${c.file_url}" download style="font-size:0.75rem;color:var(--gray-500);text-decoration:underline;">Descargar</a>
@@ -3452,7 +3493,51 @@ async function loadFanFeed() {
   renderFanContent(document.querySelector('#fan-feed .content-grid'), allContent);
 }
 
+async function toggleContentStar(contentId, btnEl) {
+  if (!CURRENT_USER || !CURRENT_USER.id) {
+    showAuth('login');
+    return;
+  }
+  const row = btnEl && btnEl.closest ? btnEl.closest('.content-star-row') : null;
+  const countEl = row ? row.querySelector('.content-star-count') : null;
+  const prevStarred = row && row.getAttribute('data-starred') === '1';
+  try {
+    const res = await fetch('/content/' + encodeURIComponent(contentId) + '/star', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        ...(TOKEN ? { Authorization: 'Bearer ' + TOKEN } : {})
+      },
+      body: JSON.stringify({ userId: CURRENT_USER.id })
+    });
+    const data = await res.json();
+    if (data.error) {
+      showNotif('❌ ' + data.error);
+      return;
+    }
+    const nextStarred = !!data.starred;
+    if (row) row.setAttribute('data-starred', nextStarred ? '1' : '0');
+    if (btnEl) btnEl.classList.toggle('content-starred', nextStarred);
+    if (countEl) {
+      let n = parseInt(countEl.textContent, 10) || 0;
+      if (prevStarred && !nextStarred) n -= 1;
+      else if (!prevStarred && nextStarred) n += 1;
+      countEl.textContent = Math.max(0, n);
+    }
+    const metricEl = document.getElementById('metric-stars');
+    if (metricEl && optsProfileStarRefresh) {
+      const cur = parseInt(String(metricEl.textContent).replace(/[^\d]/g, ''), 10) || 0;
+      if (prevStarred && !nextStarred) metricEl.textContent = Math.max(0, cur - 1).toLocaleString('es');
+      else if (!prevStarred && nextStarred) metricEl.textContent = (cur + 1).toLocaleString('es');
+    }
+  } catch (e) {
+    console.error(e);
+    showNotif('❌ No se pudo actualizar');
+  }
+}
+
 function renderFanContent(container, items, opts) {
+  optsProfileStarRefresh = !!(opts && opts.profile);
   const profileGrid = opts && opts.profile;
   if (profileGrid) container.classList.add('creator-profile-grid');
   else container.classList.remove('creator-profile-grid');
@@ -3462,6 +3547,12 @@ function renderFanContent(container, items, opts) {
   }
   container.innerHTML = items.map((c) => {
     const locked = !!c.locked;
+    const sc = Number(c.stars_count) || 0;
+    const starred = !!c.starred;
+    const canStar = CURRENT_USER && CURRENT_USER.id;
+    const starRow = canStar
+      ? `<div class="content-star-row" data-content-id="${c.id}" data-starred="${starred ? '1' : '0'}"><button type="button" class="content-star-btn ${starred ? 'content-starred' : ''}" onclick="toggleContentStar('${c.id}', this)">⭐</button><span class="content-star-count">${sc}</span></div>`
+      : `<div class="content-star-row content-star-row--readonly"><span aria-hidden="true">⭐</span><span class="content-star-count">${sc}</span></div>`;
     const isText = c.type === 'text';
     const isVid = c.type === 'video';
     const aspect = isText ? 'aspect-text' : isVid ? 'aspect-video' : 'aspect-photo';
@@ -3488,6 +3579,7 @@ function renderFanContent(container, items, opts) {
         <h4>${c.title}</h4>
         <p>${c.creator_name ? c.creator_name + ' · ' : ''}${new Date(c.created_at).toLocaleDateString('es')}</p>
         ${c.is_exclusive ? '<span class="exclusive-badge">Exclusivo</span>' : ''}
+        ${starRow}
         ${!locked && !isText && c.file_url ? `<div style="display:flex;gap:10px;align-items:center;margin-top:6px;">
           <a href="${c.file_url}" target="_blank" rel="noopener noreferrer" style="font-size:0.75rem;color:var(--gray-500);text-decoration:underline;">Abrir</a>
           <a href="${c.file_url}" download style="font-size:0.75rem;color:var(--gray-500);text-decoration:underline;">Descargar</a>
