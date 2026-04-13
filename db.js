@@ -161,6 +161,19 @@ db.exec(`
   CREATE INDEX IF NOT EXISTS idx_stars_content ON stars(content_id);
 `);
 
+db.exec(`
+  CREATE TABLE IF NOT EXISTS messages (
+    id          TEXT PRIMARY KEY,
+    sender_id   TEXT NOT NULL,
+    receiver_id TEXT NOT NULL,
+    content     TEXT NOT NULL,
+    read_at     TEXT DEFAULT NULL,
+    created_at  TEXT DEFAULT (datetime('now'))
+  );
+  CREATE INDEX IF NOT EXISTS idx_messages_receiver ON messages(receiver_id);
+  CREATE INDEX IF NOT EXISTS idx_messages_sender ON messages(sender_id);
+`);
+
 (function migrateContentForTextType() {
   try {
     const row = db

@@ -23,6 +23,7 @@ app.use('/api/subscriptions', require('./routes/subscriptions'));
 app.use('/api/creators', require('./routes/creators'));
 app.use('/api/webhook', require('./routes/webhook'));
 app.use('/api/donations', require('./routes/donations'));
+app.use('/api/messages', require('./routes/messages'));
 
 app.get('/api/health', (req, res) => res.json({ status: 'ok', app: 'BizPonzor' }));
 

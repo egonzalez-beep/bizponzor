@@ -1487,6 +1487,48 @@
     line-height: 1.45;
   }
 
+  #creator-dashboard .creator-inbox .creator-inbox-msg {
+    background: var(--white);
+    border: 1px solid var(--gray-200);
+    border-radius: var(--radius);
+    padding: 16px 18px;
+    cursor: pointer;
+    transition: border-color 0.15s, box-shadow 0.15s;
+  }
+  #creator-dashboard .creator-inbox .creator-inbox-msg.unread {
+    border-color: var(--black);
+    box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.06);
+  }
+  #creator-dashboard .creator-inbox .inbox-sender {
+    font-weight: 800;
+    font-size: 0.88rem;
+    margin-bottom: 6px;
+    color: var(--black);
+  }
+  #creator-dashboard .creator-inbox .inbox-body {
+    font-size: 0.9rem;
+    color: var(--gray-700);
+    line-height: 1.45;
+    white-space: pre-wrap;
+    word-break: break-word;
+  }
+  #creator-dashboard .creator-inbox .inbox-meta {
+    font-size: 0.72rem;
+    color: var(--gray-500);
+    margin-top: 10px;
+  }
+  #creator-dashboard .creator-inbox .inbox-badge {
+    display: inline-block;
+    font-size: 0.65rem;
+    font-weight: 600;
+    padding: 2px 8px;
+    border-radius: 999px;
+    background: var(--black);
+    color: var(--white);
+    margin-left: 8px;
+    vertical-align: middle;
+  }
+
   /* Subscription modal */
   .modal-overlay {
     display: none; position: fixed; inset: 0; z-index: 500;
@@ -1873,6 +1915,7 @@
         <div class="sidebar-item active" id="sidebar-tab-content" onclick="setDashTab('content', this)"><span class="icon">🎬</span> Mi Contenido</div>
         <div class="sidebar-item" onclick="setDashTab('upload', this)"><span class="icon">⬆️</span> Subir</div>
         <div class="sidebar-item" onclick="setDashTab('plans', this)"><span class="icon">💳</span> Mis Planes</div>
+        <div class="sidebar-item" id="sidebar-tab-messages" onclick="setDashTab('messages', this)"><span class="icon">📬</span> Mensajes</div>
       </div>
       <div class="sidebar-section">
         <div class="sidebar-label">CUENTA</div>
@@ -2169,6 +2212,14 @@
         </div>
       </div>
 
+      <div id="dash-messages" style="display:none;">
+        <div class="page-header">
+          <h2>📬 Mensajes de suscriptores</h2>
+          <p>Solo fans con suscripción activa pueden escribirte</p>
+        </div>
+        <div id="creator-messages-list" class="creator-inbox" style="display:flex;flex-direction:column;gap:12px;max-width:720px;"></div>
+      </div>
+
       </div>
 
       <div id="creator-profile-embed" class="creator-app-panels creator-profile-embed" style="display:none;" aria-hidden="true"></div>
@@ -2331,6 +2382,16 @@
             <button type="button" class="btn btn-primary btn-full" id="profile-btn-subscribe" onclick="subscribeFromProfile()">Suscribirse</button>
           </div>
           <div id="profile-single-plan-slot"></div>
+          <div id="profile-message-wrap" style="display:none;margin-top:16px;padding-top:16px;border-top:1px solid rgba(255,255,255,0.12);">
+            <h4 style="font-size:0.9rem;font-weight:800;margin-bottom:10px;color:#FFFFFF;">Mensaje al creador</h4>
+            <div id="profile-msg-subscriber" style="display:none;">
+              <form id="profile-message-form" onsubmit="sendProfileMessage(event)">
+                <textarea id="profile-message-text" class="form-input" rows="3" maxlength="2000" placeholder="Escribe tu mensaje..." style="background:#2a2a2a;border-color:#444;color:#fff;"></textarea>
+                <button type="submit" class="btn btn-primary btn-full" style="margin-top:10px;">Enviar mensaje</button>
+              </form>
+            </div>
+            <div id="profile-msg-locked" style="display:none;font-size:0.82rem;color:#A3A3A3;line-height:1.5;"></div>
+          </div>
         </div>
       </div>
     </div>
@@ -2532,6 +2593,7 @@
         if (grid && Array.isArray(content)) renderFanContent(grid, content, { profile: true });
         const plans = await api.get('/plans/' + creator.id);
         fillCreatorProfileSidebar(creator, plans);
+        void updateProfileMessageSection(creator.id);
         mountCreatorProfileToEmbed();
         document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
         document.getElementById('creator-dashboard').classList.add('active');
@@ -2562,7 +2624,7 @@
 
   function setDashTab(tab, el) {
     unmountCreatorProfileFromEmbed();
-    const tabs = ['content','upload','plans','settings','earnings'];
+    const tabs = ['content','upload','plans','messages','settings','earnings'];
     tabs.forEach(t => {
       const el = document.getElementById('dash-' + t);
       if (el) el.style.display = 'none';
@@ -2581,6 +2643,7 @@
     try {
       if (tab === 'plans' && typeof loadPlanPrice === 'function') loadPlanPrice();
       if (tab === 'content' && typeof loadMyContent === 'function') loadMyContent();
+      if (tab === 'messages' && typeof loadCreatorInbox === 'function') loadCreatorInbox();
       if (tab === 'earnings' && typeof loadEarnings === 'function') loadEarnings();
       if (tab === 'settings' && typeof loadProfileSettings === 'function') {
         loadProfileSettings();
@@ -3048,6 +3111,119 @@ const api = {
   del: (url) => fetch(API + url, { method: 'DELETE', headers: api.headers() }).then(r => r.json()),
   upload: (url, formData) => fetch(API + url, { method: 'POST', headers: { ...(TOKEN ? { 'Authorization': 'Bearer ' + TOKEN } : {}) }, body: formData }).then(r => r.json())
 };
+
+function escapeHtml(s) {
+  return String(s || '')
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;');
+}
+
+async function updateProfileMessageSection(creatorId) {
+  const wrap = document.getElementById('profile-message-wrap');
+  const subForm = document.getElementById('profile-msg-subscriber');
+  const locked = document.getElementById('profile-msg-locked');
+  if (!wrap || !subForm || !locked) return;
+  subForm.style.display = 'none';
+  locked.style.display = 'none';
+  wrap.style.display = 'none';
+  if (!CURRENT_USER || CURRENT_USER.role !== 'fan') return;
+  wrap.style.display = 'block';
+  if (!TOKEN) {
+    locked.style.display = 'block';
+    locked.innerHTML =
+      '🔒 <a href="#" onclick="showAuth(\'login\');return false;" style="color:#93C5FD;font-weight:700;">Inicia sesión</a> y suscríbete para enviar mensajes.';
+    return;
+  }
+  const subs = await api.get('/subscriptions/my');
+  const ok =
+    Array.isArray(subs) && subs.some((s) => s.creator_id === creatorId && s.status === 'active');
+  if (ok) {
+    subForm.style.display = 'block';
+    const ta = document.getElementById('profile-message-text');
+    if (ta) ta.value = '';
+    const form = document.getElementById('profile-message-form');
+    if (form) form.dataset.receiverId = creatorId;
+  } else {
+    locked.style.display = 'block';
+    locked.innerHTML =
+      '🔒 Suscríbete para enviar mensajes. <a href="#" onclick="subscribeFromProfile();return false;" style="color:#93C5FD;font-weight:700;">Suscribirse</a>';
+  }
+}
+
+async function sendProfileMessage(e) {
+  e.preventDefault();
+  const form = document.getElementById('profile-message-form');
+  const receiverId = (form && form.dataset.receiverId) || CURRENT_CREATOR_ID;
+  const ta = document.getElementById('profile-message-text');
+  const content = ta && ta.value ? ta.value.trim() : '';
+  if (!content) {
+    showNotif('⚠️ Escribe un mensaje');
+    return;
+  }
+  const res = await api.post('/messages', { receiverId, content });
+  if (res.error) {
+    showNotif('❌ ' + res.error);
+    return;
+  }
+  showNotif('✅ Mensaje enviado correctamente');
+  if (ta) ta.value = '';
+}
+
+async function loadCreatorInbox() {
+  const list = document.getElementById('creator-messages-list');
+  if (!list || !CURRENT_USER || CURRENT_USER.role !== 'creator') return;
+  list.innerHTML = '<div style="color:var(--gray-500);padding:20px;">Cargando…</div>';
+  const msgs = await api.get('/messages/' + encodeURIComponent(CURRENT_USER.id));
+  if (msgs && msgs.error) {
+    list.innerHTML = '<div style="color:#b91c1c;padding:20px;">' + escapeHtml(msgs.error) + '</div>';
+    return;
+  }
+  if (!Array.isArray(msgs) || !msgs.length) {
+    list.innerHTML =
+      '<div style="padding:32px;text-align:center;color:var(--gray-500);">No hay mensajes aún.</div>';
+    return;
+  }
+  list.innerHTML = msgs
+    .map(function (m) {
+      const unread = !m.read_at;
+      const h = escapeHtml((m.handle || '').replace(/^@/, '') || m.sender_name || 'fan');
+      const body = escapeHtml(m.content || '');
+      const dt = m.created_at ? new Date(m.created_at).toLocaleString('es') : '';
+      return (
+        '<div class="creator-inbox-msg ' +
+        (unread ? 'unread' : 'read') +
+        '" data-msg-id="' +
+        escapeHtml(m.id) +
+        '" onclick="markCreatorMessageRead(this)">' +
+        '<div class="inbox-sender">@' +
+        h +
+        (unread ? '<span class="inbox-badge">Nuevo</span>' : '') +
+        '</div>' +
+        '<div class="inbox-body">' +
+        body +
+        '</div>' +
+        '<div class="inbox-meta">' +
+        escapeHtml(dt) +
+        '</div>' +
+        '</div>'
+      );
+    })
+    .join('');
+}
+
+async function markCreatorMessageRead(el) {
+  if (!el || !el.classList || !el.classList.contains('unread')) return;
+  const id = el.getAttribute('data-msg-id');
+  if (!id) return;
+  const res = await api.post('/messages/' + encodeURIComponent(id) + '/read', {});
+  if (res && res.error) return;
+  el.classList.remove('unread');
+  el.classList.add('read');
+  const b = el.querySelector('.inbox-badge');
+  if (b) b.remove();
+}
 
 // ─── AUTH ───────────────────────────────────────────────
 async function simulateLogin() {
@@ -3656,6 +3832,7 @@ async function openCreatorProfile(handle) {
   if (grid && Array.isArray(content)) renderFanContent(grid, content, { profile: true });
   const plans = await api.get('/plans/' + creator.id);
   fillCreatorProfileSidebar(creator, plans);
+  void updateProfileMessageSection(creator.id);
   showPage('creator-profile');
 }
 
