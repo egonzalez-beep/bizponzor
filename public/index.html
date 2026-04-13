@@ -1789,39 +1789,198 @@
   ::-webkit-scrollbar-thumb:hover { background: var(--gray-400); }
 
   @media (max-width: 768px) {
+    /* Base más grande */
     html {
       font-size: 17px;
     }
-    .creator-name, .fan-name {
-      font-size: 1.2rem;
-      font-weight: 600;
+
+    /* Nombres de creador (perfil público) */
+    .profile-name,
+    .page-header h2 {
+      font-size: 1.4rem;
+      font-weight: 800;
+      letter-spacing: -0.02em;
     }
-    .section-title, .plan-title, .post-title, .publication-title {
-      font-size: 1.15rem;
-      line-height: 1.4;
+
+    /* Handle / username */
+    .profile-handle {
+      font-size: 0.85rem;
     }
-    .creator-handle, .post-date, .stats-label {
-      font-size: 0.82rem;
+
+    /* Localidad */
+    .profile-location {
+      font-size: 0.8rem;
     }
-    .stats-value, .s-value {
-      font-size: 1.6rem;
+
+    /* Biografía */
+    .profile-bio {
+      font-size: 0.9rem;
+      line-height: 1.55;
+    }
+
+    /* Estadísticas - números grandes */
+    .profile-metric-num,
+    .stat-card .s-value {
+      font-size: 1.4rem;
+      font-weight: 800;
+    }
+
+    /* Etiquetas de estadísticas */
+    .profile-metric-label,
+    .stat-card .s-label {
+      font-size: 0.7rem;
+    }
+
+    /* Títulos de publicaciones */
+    .content-info h4 {
+      font-size: 0.95rem;
       font-weight: 700;
     }
-    .btn, button {
-      font-size: 1rem;
+
+    /* Fechas de publicaciones */
+    .content-info p {
+      font-size: 0.7rem;
+    }
+
+    /* Badge exclusivo */
+    .exclusive-badge {
+      font-size: 0.65rem;
+      padding: 2px 8px;
+    }
+
+    /* Botones */
+    .btn,
+    button {
+      font-size: 0.9rem;
       min-height: 44px;
+      padding: 12px 20px;
     }
-    .bio-text, .description, .content-card, .post-card, p {
-      font-size: 0.95rem;
-      line-height: 1.6;
+
+    .btn-sm {
+      min-height: 40px;
+      padding: 8px 14px;
+      font-size: 0.85rem;
     }
-    .message .content {
-      font-size: 0.95rem;
+
+    /* Mensajes del inbox (creador) */
+    .inbox-sender {
+      font-size: 0.9rem;
+      font-weight: 700;
+    }
+
+    .inbox-body {
+      font-size: 0.85rem;
       line-height: 1.5;
     }
-    .message .sender {
+
+    .inbox-meta {
+      font-size: 0.65rem;
+    }
+
+    /* Planes */
+    .plan-name {
+      font-size: 1rem;
+      font-weight: 700;
+    }
+
+    .plan-price {
+      font-size: 1.5rem;
+      font-weight: 800;
+    }
+
+    .plan-feature {
+      font-size: 0.75rem;
+    }
+
+    /* Sidebar items */
+    .sidebar-item {
       font-size: 0.85rem;
-      font-weight: 600;
+      padding: 10px 12px;
+    }
+
+    .sidebar-label {
+      font-size: 0.6rem;
+      letter-spacing: 0.5px;
+    }
+
+    /* Texto general */
+    p, .description, .bio-text {
+      font-size: 0.88rem;
+      line-height: 1.55;
+    }
+
+    /* Títulos de sección */
+    .section-title,
+    .page-header h2 {
+      font-size: 1.3rem;
+    }
+
+    /* Modal */
+    .modal h3 {
+      font-size: 1.2rem;
+    }
+
+    .modal p {
+      font-size: 0.85rem;
+    }
+
+    /* Formularios */
+    .form-label {
+      font-size: 0.75rem;
+    }
+
+    .form-input {
+      font-size: 0.9rem;
+      padding: 10px 14px;
+    }
+
+    /* Tarjetas de contenido */
+    .content-item {
+      font-size: 0.85rem;
+    }
+
+    /* Hero badge landing */
+    .hero-badge-text {
+      font-size: 0.75rem;
+    }
+
+    .hero h1 {
+      font-size: 1.8rem;
+    }
+
+    .hero-subtitle {
+      font-size: 0.9rem;
+    }
+
+    /* Feature cards */
+    .feature-card h3 {
+      font-size: 1rem;
+    }
+
+    .feature-card p {
+      font-size: 0.8rem;
+    }
+
+    /* Creator cards */
+    .creator-card h4 {
+      font-size: 0.9rem;
+    }
+
+    .creator-handle {
+      font-size: 0.7rem;
+    }
+
+    .creator-card p {
+      font-size: 0.7rem;
+    }
+
+    /* Testimonios */
+    .testimonial-name {
+      font-size: 0.85rem;
+    }
+
+    .testimonial-quote {
+      font-size: 0.8rem;
     }
   }
 </style>
