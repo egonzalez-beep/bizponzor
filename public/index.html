@@ -1787,6 +1787,43 @@
   ::-webkit-scrollbar-track { background: transparent; }
   ::-webkit-scrollbar-thumb { background: var(--gray-300); border-radius: 999px; }
   ::-webkit-scrollbar-thumb:hover { background: var(--gray-400); }
+
+  @media (max-width: 768px) {
+    html {
+      font-size: 17px;
+    }
+    .creator-name, .fan-name {
+      font-size: 1.2rem;
+      font-weight: 600;
+    }
+    .section-title, .plan-title, .post-title, .publication-title {
+      font-size: 1.15rem;
+      line-height: 1.4;
+    }
+    .creator-handle, .post-date, .stats-label {
+      font-size: 0.82rem;
+    }
+    .stats-value, .s-value {
+      font-size: 1.6rem;
+      font-weight: 700;
+    }
+    .btn, button {
+      font-size: 1rem;
+      min-height: 44px;
+    }
+    .bio-text, .description, .content-card, .post-card, p {
+      font-size: 0.95rem;
+      line-height: 1.6;
+    }
+    .message .content {
+      font-size: 0.95rem;
+      line-height: 1.5;
+    }
+    .message .sender {
+      font-size: 0.85rem;
+      font-weight: 600;
+    }
+  }
 </style>
 </head>
 <body>
