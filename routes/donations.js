@@ -1,3 +1,4 @@
+const crypto = require('crypto');
 const router = require('express').Router();
 const { v4: uuidv4 } = require('uuid');
 const db = require('../db');
@@ -37,6 +38,44 @@ router.post('/checkout', auth, async (req, res) => {
       .get(creator_id);
     if (!creator) return res.status(404).json({ error: 'Creador no encontrado' });
 
+    console.log('[AUDIT] Intento de pago:', {
+      timestamp: new Date().toISOString(),
+      creator_id,
+      type: 'donation',
+      action: 'init_checkout'
+    });
+
+    const account = db.prepare(`
+      SELECT user_id, access_token, mp_user_id
+      FROM mercado_pago_accounts
+      WHERE user_id = ?
+    `).get(creator_id);
+
+    console.log('[MP] Account Check:', account ? {
+      user_id: account.user_id,
+      mp_user_id: account.mp_user_id,
+      has_token: !!account.access_token,
+      token_hash: account.access_token
+        ? crypto.createHash('sha256')
+          .update(account.access_token)
+          .digest('hex')
+          .substring(0, 10)
+        : null
+    } : null);
+
+    const collectorId = Number(account?.mp_user_id);
+
+    if (
+      !account ||
+      !account.mp_user_id ||
+      isNaN(collectorId) ||
+      !Number.isInteger(collectorId)
+    ) {
+      return res.status(400).json({
+        error: 'El creador no tiene una cuenta de Mercado Pago configurada correctamente'
+      });
+    }
+
     const donationId = uuidv4();
     db.prepare(
       `INSERT INTO donations (id, fan_id, creator_id, amount, currency_id, status)
@@ -47,6 +86,8 @@ router.post('/checkout', auth, async (req, res) => {
     if (!preferenceClient) {
       return res.status(500).json({ error: 'Mercado Pago no configurado' });
     }
+
+    const marketplaceFee = Math.round(amt * 0.1);
 
     const body = {
       items: [
@@ -65,9 +106,16 @@ router.post('/checkout', auth, async (req, res) => {
         pending: `${APP_URL}/success?donation=${encodeURIComponent(donationId)}`
       },
       notification_url: `${APP_URL}/api/webhook/mp`,
-      statement_descriptor: 'BIZPONZOR'
-    };
+      statement_descriptor: 'BIZPONZOR',
+      collector_id: collectorId,
+      marketplace_fee: marketplaceFee
+    });
 
+    console.log('[MP] Donación marketplace:', {
+      creator_id,
+      collector_id: collectorId,
+      fee: marketplaceFee
+    });
     console.log('[donations] Creando preferencia', { donationId, amount: amt });
 
     const raw = await preferenceClient.create({ body });
@@ -86,7 +134,7 @@ router.post('/checkout', auth, async (req, res) => {
       preference_id: prefId
     });
   } catch (e) {
-    console.error('[donations/checkout]', e);
+    console.error('[MP][ERROR] Falló la creación:', e.message);
     return res.status(500).json({ error: e.message || 'Error al crear donación' });
   }
 });

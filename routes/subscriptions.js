@@ -1,14 +1,10 @@
-
+const crypto = require('crypto');
 const router = require('express').Router();
 const { v4: uuidv4 } = require('uuid');
 const db = require('../db');
 const auth = require('../middleware/auth');
-const {
-  getPreApprovalClient,
-  mapPreapprovalStatusToDb,
-  isDemoMode,
-  normalizePreapprovalPayload
-} = require('../lib/mpSubscription');
+const { MercadoPagoConfig, PreApproval } = require('mercadopago');
+const { normalizePreapprovalPayload } = require('../lib/mpSubscription');
 
 const MP_CURRENCY = process.env.MP_CURRENCY_ID || 'MXN';
 const APP_URL = 'https://bizponzor-production.up.railway.app';
@@ -34,7 +30,7 @@ router.post('/checkout', auth, async (req, res) => {
       .prepare('SELECT * FROM plans WHERE id=? AND creator_id=? AND active=1')
       .get(plan_id, creator_id);
     const creator = db
-      .prepare('SELECT id, name, mp_access_token FROM users WHERE id=? AND role=?')
+      .prepare('SELECT id, name FROM users WHERE id=? AND role=?')
       .get(creator_id, 'creator');
 
     if (!plan) return res.status(404).json({ error: 'Plan no encontrado' });
@@ -72,6 +68,42 @@ router.post('/checkout', auth, async (req, res) => {
       });
     }
 
+    console.log('[AUDIT] Intento de pago:', {
+      timestamp: new Date().toISOString(),
+      creator_id,
+      type: 'subscription',
+      action: 'init_checkout'
+    });
+
+    const account = db.prepare(`
+      SELECT user_id, access_token, mp_user_id
+      FROM mercado_pago_accounts
+      WHERE user_id = ?
+    `).get(creator_id);
+
+    console.log('[MP] Account Check:', account ? {
+      user_id: account.user_id,
+      mp_user_id: account.mp_user_id,
+      has_token: !!account.access_token,
+      token_hash: account.access_token
+        ? crypto.createHash('sha256')
+          .update(account.access_token)
+          .digest('hex')
+          .substring(0, 10)
+        : null
+    } : null);
+
+    if (
+      !account ||
+      !account.access_token ||
+      typeof account.access_token !== 'string' ||
+      account.access_token.length < 20
+    ) {
+      return res.status(400).json({
+        error: 'El creador no tiene una cuenta de Mercado Pago válida'
+      });
+    }
+
     const sub_id = uuidv4();
 
     db.prepare(
@@ -79,20 +111,12 @@ router.post('/checkout', auth, async (req, res) => {
        VALUES (?,?,?,?,?,?)`
     ).run(sub_id, req.user.id, creator_id, plan_id, 'pending', amount);
 
-    console.log('[MP][checkout] Suscripción pending guardada en DB', { sub_id, fan_id: req.user.id, plan_id, creator_id });
-
-    if (isDemoMode()) {
-      return res.json({
-        demo_mode: true,
-        sub_id,
-        message: 'Modo demo: configura MP_ACCESS_TOKEN para PreApproval real.'
-      });
-    }
-
-    const preApprovalClient = getPreApprovalClient();
-    if (!preApprovalClient) {
-      return res.status(500).json({ error: 'Mercado Pago no configurado' });
-    }
+    const preApprovalClient = new PreApproval(
+      new MercadoPagoConfig({
+        accessToken: account.access_token,
+        options: { timeout: 15000 }
+      })
+    );
 
     const startDate = new Date();
     const endDate = new Date();
@@ -114,18 +138,7 @@ router.post('/checkout', auth, async (req, res) => {
       notification_url: `${APP_URL}/api/webhook/mp`
     };
 
-    console.log('[MP][checkout] Creando PreApproval', {
-      external_reference: sub_id,
-      currency: MP_CURRENCY,
-      amount,
-      back_url: body.back_url
-    });
-
     try {
-      console.log('[MP] APP_URL final:', APP_URL);
-      console.log('[MP] back_url FINAL:', `${APP_URL}/success?sub=${sub_id}`);
-      console.log('[MP] notification_url:', `${APP_URL}/api/webhook/mp`);
-      console.log('[MP] Enviando email a MP:', req.user.email);
       const rawMp = await preApprovalClient.create({ body });
       const mpResponse = normalizePreapprovalPayload(rawMp) || rawMp;
       const mpId = mpResponse.id;
@@ -139,8 +152,11 @@ router.post('/checkout', auth, async (req, res) => {
         ).run(String(mpId), mpResponse.status || 'pending', sub_id);
       }
 
+      console.log('[MP] Suscripción usando token del creador:', creator_id);
       console.log('[MP][checkout] PreApproval creado', {
-        id: mpId,
+        creator_id,
+        sub_id,
+        preapproval_id: mpId,
         status: mpResponse.status
       });
 
@@ -150,15 +166,11 @@ router.post('/checkout', auth, async (req, res) => {
         sub_id,
         mp_status: mpResponse.status
       });
-    } catch (mpErr) {
-      console.error('[MP][checkout] Error PreApproval.create', {
-        message: mpErr.message,
-        cause: mpErr.cause,
-        status: mpErr.status
-      });
+    } catch (error) {
+      console.error('[MP][ERROR] Falló la creación:', error.message);
       return res.status(500).json({
         error: 'Error al crear suscripción en Mercado Pago',
-        detail: mpErr.message
+        detail: error.message
       });
     }
   } catch (e) {
