@@ -104,7 +104,7 @@ router.post('/checkout', auth, async (req, res) => {
       statement_descriptor: 'BIZPONZOR',
       collector_id: String(collectorId),
       marketplace_fee: marketplaceFee
-    });
+    };
 
     console.log('[MP] Donación marketplace:', {
       creator_id,
