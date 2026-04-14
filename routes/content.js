@@ -78,7 +78,10 @@ function resolveSchedule(scheduled_for) {
   if (!raw) {
     return { status, scheduledFor };
   }
-  const scheduledDate = new Date(raw);
+  const scheduledDate =
+    /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}$/.test(raw)
+      ? new Date(raw + ':00')
+      : new Date(raw);
   const now = new Date();
   const maxFuture = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000);
   if (isNaN(scheduledDate.getTime())) {

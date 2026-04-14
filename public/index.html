@@ -2382,7 +2382,7 @@
           </div>
           <div class="form-group">
             <label class="form-label">📅 Programar publicación (opcional)</label>
-            <input type="datetime-local" class="form-input" id="scheduled_for" />
+            <input type="datetime-local" id="scheduled_for" class="form-input" />
             <div style="font-size:0.7rem;color:var(--gray-500);margin-top:4px;">
               Deja vacío para publicar ahora. Máximo 30 días en el futuro.
             </div>
@@ -3963,6 +3963,16 @@ function onUploadTypeChange() {
   if (ts) ts.style.display = mode === 'text' ? 'block' : 'none';
 }
 
+function syncScheduledPublishButton() {
+  const scheduledInput = document.getElementById('scheduled_for');
+  const publishBtn = document.querySelector('#dash-upload .btn-primary');
+  if (scheduledInput && publishBtn) {
+    publishBtn.textContent = scheduledInput.value
+      ? '📅 Programar publicación'
+      : 'Publicar ahora';
+  }
+}
+
 async function publishTextContent(evt) {
   const body = document.getElementById('upload-text-body')?.value?.trim();
   if (!body) {
@@ -3973,6 +3983,13 @@ async function publishTextContent(evt) {
   const description = document.getElementById('upload-description')?.value;
   const is_exclusive = document.getElementById('upload-access')?.value === 'exclusive';
   const scheduled_for = document.getElementById('scheduled_for')?.value || null;
+  if (scheduled_for) {
+    const selectedDate = new Date(scheduled_for);
+    if (isNaN(selectedDate.getTime())) {
+      showNotif('❌ Fecha inválida. Usa el selector.');
+      return;
+    }
+  }
   const btn = evt?.target || document.querySelector('#dash-upload .btn-primary');
   if (btn) {
     btn.textContent = 'Publicando...';
@@ -3986,8 +4003,8 @@ async function publishTextContent(evt) {
     scheduled_for
   });
   if (btn) {
-    btn.textContent = 'Publicar ahora';
     btn.disabled = false;
+    syncScheduledPublishButton();
   }
   if (res.error) {
     showNotif('❌ ' + res.error);
@@ -4001,6 +4018,7 @@ async function publishTextContent(evt) {
   document.getElementById('upload-text-body').value = '';
   const sf = document.getElementById('scheduled_for');
   if (sf) sf.value = '';
+  syncScheduledPublishButton();
   await loadMyContent();
 }
 
@@ -4016,7 +4034,14 @@ async function publishContent(evt) {
   const title = document.getElementById('upload-title')?.value;
   const description = document.getElementById('upload-description')?.value;
   const is_exclusive = document.getElementById('upload-access')?.value === 'exclusive' ? 'true' : 'false';
-  const scheduled_for = document.getElementById('scheduled_for')?.value || '';
+  const scheduled_for = document.getElementById('scheduled_for')?.value || null;
+  if (scheduled_for) {
+    const selectedDate = new Date(scheduled_for);
+    if (isNaN(selectedDate.getTime())) {
+      showNotif('❌ Fecha inválida. Usa el selector.');
+      return;
+    }
+  }
   const formData = new FormData();
   formData.append('file', window._pendingFile);
   formData.append('title', title || window._pendingFile.name);
@@ -4036,11 +4061,11 @@ async function publishContent(evt) {
     res = await api.upload('/content/upload', formData);
   } catch (err) {
     console.error('[publishContent] upload fetch error', err);
-    if (btn) { btn.textContent = 'Publicar ahora'; btn.disabled = false; }
+    if (btn) { btn.disabled = false; syncScheduledPublishButton(); }
     showNotif('❌ Error de red al subir archivo');
     return;
   }
-  if (btn) { btn.textContent = 'Publicar ahora'; btn.disabled = false; }
+  if (btn) { btn.disabled = false; syncScheduledPublishButton(); }
   console.log('[publishContent] upload response', res);
   if (res.error) { showNotif('❌ ' + res.error); return; }
   if (res.status === 'scheduled') {
@@ -4052,6 +4077,7 @@ async function publishContent(evt) {
   document.getElementById('upload-preview').style.display = 'none';
   const sf = document.getElementById('scheduled_for');
   if (sf) sf.value = '';
+  syncScheduledPublishButton();
   await loadMyContent();
 }
 
@@ -4419,6 +4445,11 @@ if (TOKEN && CURRENT_USER) {
   // Wire up publish button properly
   const publishBtn = document.querySelector('#dash-upload .btn-primary');
   if (publishBtn) publishBtn.setAttribute('onclick', 'publishContent(event)');
+  const scheduledInput = document.getElementById('scheduled_for');
+  if (scheduledInput && publishBtn) {
+    scheduledInput.addEventListener('change', syncScheduledPublishButton);
+    syncScheduledPublishButton();
+  }
   const saveProfileBtn = document.getElementById('save-profile-btn');
   if (saveProfileBtn) saveProfileBtn.setAttribute('onclick', 'saveProfileSettings()');
   // Check if already logged in
