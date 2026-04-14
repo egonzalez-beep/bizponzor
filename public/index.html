@@ -9,6 +9,12 @@
 <style>
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
+  html {
+    font-size: 16px;
+    -webkit-text-size-adjust: 100%;
+    text-size-adjust: 100%;
+  }
+
   :root {
     --brand: #8B5CF6;
     --brand-hover: #7C3AED;
@@ -1636,6 +1642,10 @@
 
   /* ─── RESPONSIVE (mobile) ─── */
   @media (max-width: 768px) {
+    html {
+      font-size: 18px;
+    }
+
     .navbar { padding: 0 14px; flex-wrap: wrap; }
     .hero { padding: 60px 20px 40px; }
     .hero-badge { padding: 14px 20px; margin-bottom: 28px; }
@@ -1789,11 +1799,6 @@
   ::-webkit-scrollbar-thumb:hover { background: var(--gray-400); }
 
   @media (max-width: 768px) {
-    /* Base más grande */
-    html {
-      font-size: 17px;
-    }
-
     /* Nombres de creador (perfil público) */
     .profile-name,
     .page-header h2 {
