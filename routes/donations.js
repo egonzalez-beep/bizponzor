@@ -63,14 +63,9 @@ router.post('/checkout', auth, async (req, res) => {
         : null
     } : null);
 
-    const collectorId = Number(account?.mp_user_id);
+    const collectorId = account?.mp_user_id;
 
-    if (
-      !account ||
-      !account.mp_user_id ||
-      isNaN(collectorId) ||
-      !Number.isInteger(collectorId)
-    ) {
+    if (!account || !collectorId || !/^\d+$/.test(String(collectorId))) {
       return res.status(400).json({
         error: 'El creador no tiene una cuenta de Mercado Pago configurada correctamente'
       });
@@ -107,13 +102,13 @@ router.post('/checkout', auth, async (req, res) => {
       },
       notification_url: `${APP_URL}/api/webhook/mp`,
       statement_descriptor: 'BIZPONZOR',
-      collector_id: collectorId,
+      collector_id: String(collectorId),
       marketplace_fee: marketplaceFee
     });
 
     console.log('[MP] Donación marketplace:', {
       creator_id,
-      collector_id: collectorId,
+      collector_id: String(collectorId),
       fee: marketplaceFee
     });
     console.log('[donations] Creando preferencia', { donationId, amount: amt });
