@@ -66,6 +66,38 @@ const storage = multer.diskStorage({
 });
 const upload = multer({ storage, limits: { fileSize: 50 * 1024 * 1024 } });
 
+/**
+ * Resuelve programación: fecha futura → scheduled; pasada o sin fecha → published.
+ * @returns {{ status: string, scheduledFor: string|null, error?: string }}
+ */
+function resolveSchedule(scheduled_for) {
+  let status = 'published';
+  let scheduledFor = null;
+  const raw =
+    scheduled_for != null && scheduled_for !== undefined ? String(scheduled_for).trim() : '';
+  if (!raw) {
+    return { status, scheduledFor };
+  }
+  const scheduledDate = new Date(raw);
+  const now = new Date();
+  const maxFuture = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000);
+  if (isNaN(scheduledDate.getTime())) {
+    return { status, scheduledFor, error: 'Fecha inválida' };
+  }
+  if (scheduledDate > maxFuture) {
+    return {
+      status,
+      scheduledFor,
+      error: 'No se puede programar más de 30 días en el futuro'
+    };
+  }
+  if (scheduledDate > now) {
+    status = 'scheduled';
+    scheduledFor = scheduledDate.toISOString();
+  }
+  return { status, scheduledFor };
+}
+
 function uploadSingleFile(req, res, next) {
   upload.single('file')(req, res, (err) => {
     if (err) {
@@ -80,17 +112,24 @@ function uploadSingleFile(req, res, next) {
 
 router.post('/text', authMiddleware, requireCreator, ensureAuthedUserInDb, (req, res) => {
   try {
-    const { title, description, text_body, is_exclusive } = req.body;
+    const { title, description, text_body, is_exclusive, scheduled_for } = req.body;
     const body = String(text_body || '').trim();
     if (!body) return res.status(400).json({ error: 'El texto es obligatorio' });
     const userExists = db.prepare('SELECT id FROM users WHERE id = ?').get(req.user.id);
     if (!userExists) return res.status(400).json({ error: 'Usuario no encontrado' });
+
+    const sched = resolveSchedule(scheduled_for);
+    if (sched.error) {
+      return res.status(400).json({ error: sched.error });
+    }
+    const { status, scheduledFor } = sched;
+
     const id = uuidv4();
     const file_url = 'text://' + id;
     const excl = is_exclusive === false || is_exclusive === 'false' ? 0 : 1;
     db.prepare(
-      `INSERT INTO content (id, creator_id, title, description, type, file_url, is_exclusive, text_body)
-       VALUES (?,?,?,?,?,?,?,?)`
+      `INSERT INTO content (id, creator_id, title, description, type, file_url, is_exclusive, text_body, scheduled_for, status)
+       VALUES (?,?,?,?,?,?,?,?,?,?)`
     ).run(
       id,
       req.user.id,
@@ -99,9 +138,24 @@ router.post('/text', authMiddleware, requireCreator, ensureAuthedUserInDb, (req,
       'text',
       file_url,
       excl,
-      body
+      body,
+      scheduledFor,
+      status
     );
-    res.json({ id, title: title || 'Publicación', type: 'text', is_exclusive: !!excl });
+    console.log('[POST] Creado:', {
+      id,
+      title: title || 'Publicación',
+      status,
+      scheduled_for: scheduledFor
+    });
+    res.json({
+      id,
+      title: title || 'Publicación',
+      type: 'text',
+      is_exclusive: !!excl,
+      status,
+      scheduled_for: scheduledFor
+    });
   } catch (e) {
     console.error('[content/text]', e);
     res.status(500).json({ error: e.message });
@@ -126,14 +180,46 @@ router.post('/upload', authMiddleware, requireCreator, ensureAuthedUserInDb, (re
     const userExists = db.prepare('SELECT id FROM users WHERE id = ?').get(req.user.id);
     if (!userExists) return res.status(400).json({ error: 'Usuario creador no encontrado en la base de datos' });
     if (!req.file) return res.status(400).json({ error: 'Archivo requerido' });
-    const { title, description, is_exclusive } = req.body;
+    const { title, description, is_exclusive, scheduled_for } = req.body;
+    const sched = resolveSchedule(scheduled_for);
+    if (sched.error) {
+      return res.status(400).json({ error: sched.error });
+    }
+    const { status, scheduledFor } = sched;
+
     const ext = path.extname(req.file.filename).toLowerCase();
     const type = ['.mp4','.mov','.avi','.mkv','.webm'].includes(ext) ? 'video' : 'photo';
     const file_url = '/uploads/' + req.file.filename;
     const id = uuidv4();
-    db.prepare('INSERT INTO content (id, creator_id, title, description, type, file_url, is_exclusive) VALUES (?,?,?,?,?,?,?)')
-      .run(id, req.user.id, title || 'Sin titulo', description || '', type, file_url, is_exclusive === 'true' ? 1 : 0);
-    res.json({ id, title, type, file_url, is_exclusive: is_exclusive === 'true' });
+    db.prepare(
+      `INSERT INTO content (id, creator_id, title, description, type, file_url, is_exclusive, scheduled_for, status)
+       VALUES (?,?,?,?,?,?,?,?,?)`
+    ).run(
+      id,
+      req.user.id,
+      title || 'Sin titulo',
+      description || '',
+      type,
+      file_url,
+      is_exclusive === 'true' ? 1 : 0,
+      scheduledFor,
+      status
+    );
+    console.log('[POST] Creado:', {
+      id,
+      title: title || 'Sin titulo',
+      status,
+      scheduled_for: scheduledFor
+    });
+    res.json({
+      id,
+      title,
+      type,
+      file_url,
+      is_exclusive: is_exclusive === 'true',
+      status,
+      scheduled_for: scheduledFor
+    });
   } catch (e) {
     console.error('[content/upload] Handler error:', e);
     res.status(500).json({ error: e.message });
@@ -154,7 +240,7 @@ router.get('/feed/:creatorId', (req, res) => {
         (SELECT COUNT(*) FROM stars WHERE content_id = c.id) as stars_count,
         EXISTS(SELECT 1 FROM stars WHERE content_id = c.id AND user_id = ?) as starred
        FROM content c
-       WHERE c.creator_id = ?
+       WHERE c.creator_id = ? AND (c.status IS NULL OR c.status = 'published')
        ORDER BY c.created_at DESC`
     )
     .all(userId || '', creatorId);
@@ -188,7 +274,7 @@ router.get('/feed/:creatorId', (req, res) => {
   );
 });
 
-router.get('/my', authMiddleware, (req, res) => {
+router.get('/my', authMiddleware, requireCreator, (req, res) => {
   res.json(
     db
       .prepare(
@@ -196,8 +282,15 @@ router.get('/my', authMiddleware, (req, res) => {
           (SELECT COUNT(*) FROM stars WHERE content_id = c.id) as stars_count,
           EXISTS(SELECT 1 FROM stars WHERE content_id = c.id AND user_id = ?) as starred
          FROM content c
-         WHERE c.creator_id = ?
-         ORDER BY c.created_at DESC`
+         WHERE c.creator_id = ? AND (c.status IS NULL OR c.status IN ('published','scheduled'))
+         ORDER BY
+           CASE c.status
+             WHEN 'scheduled' THEN 1
+             WHEN 'published' THEN 2
+             ELSE 3
+           END,
+           c.scheduled_for ASC,
+           c.created_at DESC`
       )
       .all(req.user.id, req.user.id)
   );

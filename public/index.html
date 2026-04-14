@@ -2380,6 +2380,13 @@
               <option value="public">🔓 Público — visible para todos</option>
             </select>
           </div>
+          <div class="form-group">
+            <label class="form-label">📅 Programar publicación (opcional)</label>
+            <input type="datetime-local" class="form-input" id="scheduled_for" />
+            <div style="font-size:0.7rem;color:var(--gray-500);margin-top:4px;">
+              Deja vacío para publicar ahora. Máximo 30 días en el futuro.
+            </div>
+          </div>
           <button class="btn btn-primary" onclick="publishContent(event)">Publicar ahora</button>
         </div>
       </div>
@@ -3904,11 +3911,22 @@ function renderContentGrid(container, items) {
     } else {
       thumb = `<div class="content-thumb ${aspect}">${isVid ? '🎬' : '📸'}<span class="content-type-badge">${isVid ? 'VIDEO' : 'FOTO'}</span></div>`;
     }
+    const isScheduled = c.status === 'scheduled';
+    const scheduledBadge = isScheduled
+      ? '<span class="tag-pill" style="background:#F59E0B;color:white;margin-left:8px;">📅 Programado</span>'
+      : '';
+    const scheduledInfo =
+      isScheduled && c.scheduled_for
+        ? `<div style="font-size:0.7rem;color:var(--gray-500);margin-top:4px;">
+    📅 Publicará: ${new Date(c.scheduled_for).toLocaleString('es')}
+  </div>`
+        : '';
     return `<div class="content-item">
       ${thumb}
       <div class="content-info">
-        <h4>${c.title}</h4>
+        <h4>${c.title}${scheduledBadge}</h4>
         <p>${new Date(c.created_at).toLocaleDateString('es')}</p>
+        ${scheduledInfo}
         ${c.is_exclusive ? '<span class="exclusive-badge">Exclusivo</span>' : ''}
         ${starRow}
         ${!isText && c.file_url ? `<div style="display:flex;gap:10px;align-items:center;margin-top:6px;">
@@ -3954,6 +3972,7 @@ async function publishTextContent(evt) {
   const title = document.getElementById('upload-title')?.value;
   const description = document.getElementById('upload-description')?.value;
   const is_exclusive = document.getElementById('upload-access')?.value === 'exclusive';
+  const scheduled_for = document.getElementById('scheduled_for')?.value || null;
   const btn = evt?.target || document.querySelector('#dash-upload .btn-primary');
   if (btn) {
     btn.textContent = 'Publicando...';
@@ -3963,7 +3982,8 @@ async function publishTextContent(evt) {
     title: title || 'Publicación',
     description: description || '',
     text_body: body,
-    is_exclusive
+    is_exclusive,
+    scheduled_for
   });
   if (btn) {
     btn.textContent = 'Publicar ahora';
@@ -3973,8 +3993,14 @@ async function publishTextContent(evt) {
     showNotif('❌ ' + res.error);
     return;
   }
-  showNotif('🎉 ¡Publicación de texto lista!');
+  if (res.status === 'scheduled') {
+    showNotif('📅 Publicación programada correctamente');
+  } else {
+    showNotif('🎉 ¡Publicación de texto lista!');
+  }
   document.getElementById('upload-text-body').value = '';
+  const sf = document.getElementById('scheduled_for');
+  if (sf) sf.value = '';
   await loadMyContent();
 }
 
@@ -3990,11 +4016,13 @@ async function publishContent(evt) {
   const title = document.getElementById('upload-title')?.value;
   const description = document.getElementById('upload-description')?.value;
   const is_exclusive = document.getElementById('upload-access')?.value === 'exclusive' ? 'true' : 'false';
+  const scheduled_for = document.getElementById('scheduled_for')?.value || '';
   const formData = new FormData();
   formData.append('file', window._pendingFile);
   formData.append('title', title || window._pendingFile.name);
   formData.append('description', description || '');
   formData.append('is_exclusive', is_exclusive);
+  if (scheduled_for) formData.append('scheduled_for', scheduled_for);
   console.log('[publishContent] sending file', {
     name: window._pendingFile.name,
     size: window._pendingFile.size,
@@ -4015,9 +4043,15 @@ async function publishContent(evt) {
   if (btn) { btn.textContent = 'Publicar ahora'; btn.disabled = false; }
   console.log('[publishContent] upload response', res);
   if (res.error) { showNotif('❌ ' + res.error); return; }
-  showNotif('🎉 ¡Contenido publicado exitosamente!');
+  if (res.status === 'scheduled') {
+    showNotif('📅 Contenido programado correctamente');
+  } else {
+    showNotif('🎉 ¡Contenido publicado exitosamente!');
+  }
   window._pendingFile = null;
   document.getElementById('upload-preview').style.display = 'none';
+  const sf = document.getElementById('scheduled_for');
+  if (sf) sf.value = '';
   await loadMyContent();
 }
 

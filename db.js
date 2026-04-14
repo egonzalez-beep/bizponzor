@@ -205,4 +205,22 @@ db.exec(`
   }
 })();
 
+(function migrateContentScheduling() {
+  try {
+    db.exec('ALTER TABLE content ADD COLUMN scheduled_for TEXT;');
+  } catch (e) {
+    /* exists */
+  }
+  try {
+    db.exec("ALTER TABLE content ADD COLUMN status TEXT DEFAULT 'published';");
+  } catch (e) {
+    /* exists */
+  }
+  try {
+    db.prepare("UPDATE content SET status = 'published' WHERE status IS NULL").run();
+  } catch (e) {
+    /* ignore */
+  }
+})();
+
 module.exports = db;

@@ -212,4 +212,41 @@ app.post('/create-payment', async (req, res) => {
 
 app.get('*', (req, res) => res.sendFile(path.join(__dirname, 'public', 'index.html')));
 
+function publishScheduledPosts() {
+  try {
+    const now = new Date().toISOString();
+
+    const toPublish = db.prepare(`
+      SELECT id, title FROM content
+      WHERE status = 'scheduled'
+      AND scheduled_for IS NOT NULL
+      AND scheduled_for <= ?
+    `).all(now);
+
+    if (toPublish.length === 0) return;
+
+    const updateStmt = db.prepare(`
+      UPDATE content
+      SET status = 'published', scheduled_for = NULL
+      WHERE status = 'scheduled'
+      AND scheduled_for IS NOT NULL
+      AND scheduled_for <= ?
+    `);
+
+    const result = updateStmt.run(now);
+
+    console.log(`[SCHEDULER] Publicadas ${result.changes} publicaciones programadas`);
+
+    toPublish.forEach((post) => {
+      console.log(`[SCHEDULER] Publicado: "${post.title}" (ID: ${post.id})`);
+    });
+  } catch (error) {
+    console.error('[SCHEDULER] Error:', error.message);
+  }
+}
+
+setInterval(publishScheduledPosts, 5 * 60 * 1000);
+
+publishScheduledPosts();
+
 app.listen(PORT, () => console.log('BizPonzor corriendo en http://localhost:' + PORT));
