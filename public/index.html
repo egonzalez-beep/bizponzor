@@ -48,6 +48,11 @@
     --radius-md: 10px;
     --text-secondary: #a3a3a3;
     --accent-cyan: #38bdf8;
+    --surface-hover: rgba(255, 255, 255, 0.06);
+  }
+
+  .hidden {
+    display: none !important;
   }
 
   body {
@@ -1856,6 +1861,7 @@
     opacity: 0.9;
   }
   #fan-dashboard .fan-chat-input-wrap.chat-input-container {
+    position: relative;
     display: flex;
     align-items: flex-end;
     gap: 10px;
@@ -1863,6 +1869,92 @@
     border-top: 1px solid var(--border-light);
     background: var(--bg-secondary);
     flex-shrink: 0;
+  }
+  #fan-dashboard .emoji-btn {
+    flex-shrink: 0;
+    align-self: center;
+    background: transparent;
+    border: none;
+    color: var(--text-secondary);
+    cursor: pointer;
+    padding: 8px;
+    border-radius: var(--radius-full);
+    transition: background 0.2s ease, color 0.2s ease;
+    line-height: 0;
+  }
+  #fan-dashboard .emoji-btn:hover {
+    background: var(--surface-hover);
+    color: var(--text-primary);
+  }
+  #fan-dashboard .emoji-btn svg {
+    display: block;
+  }
+  #fan-dashboard #fan-emoji-picker.emoji-picker {
+    position: absolute;
+    bottom: 70px;
+    left: 20px;
+    background: var(--bg-secondary);
+    border: 1px solid var(--border-light);
+    border-radius: var(--radius-lg);
+    padding: 10px;
+    width: 280px;
+    box-shadow: var(--shadow-lg);
+    z-index: 100;
+  }
+  #fan-dashboard .emoji-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 6px;
+  }
+  #fan-dashboard .emoji-item {
+    font-size: 20px;
+    padding: 8px;
+    text-align: center;
+    cursor: pointer;
+    border-radius: var(--radius-md);
+    transition: background 0.15s ease, transform 0.15s ease;
+    border: none;
+    background: transparent;
+    line-height: 1;
+  }
+  #fan-dashboard .emoji-item:hover {
+    background: var(--surface-hover);
+    transform: scale(1.15);
+  }
+  .unlock-animation {
+    position: fixed;
+    inset: 0;
+    background: rgba(10, 10, 10, 0.8);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 10000;
+  }
+  .unlock-box {
+    background: var(--bg-secondary);
+    border-radius: var(--radius-lg);
+    padding: 30px;
+    text-align: center;
+    animation: popIn 0.4s ease;
+  }
+  .unlock-box .checkmark {
+    font-size: 40px;
+    color: var(--accent-cyan);
+    margin-bottom: 10px;
+  }
+  .unlock-text {
+    color: var(--text-primary);
+    font-weight: 600;
+  }
+  @keyframes popIn {
+    from {
+      transform: scale(0.8);
+      opacity: 0;
+    }
+    to {
+      transform: scale(1);
+      opacity: 1;
+    }
   }
   #fan-dashboard #fan-chat-input.creator-chat-textarea {
     flex: 1;
@@ -3698,13 +3790,17 @@
               </div>
               <div id="fan-chat-messages" class="chat-messages"></div>
               <div class="chat-input-container fan-chat-input-wrap">
-                <textarea id="fan-chat-input" class="creator-chat-textarea" rows="2" placeholder="Escribe un mensaje..." maxlength="8000" autocomplete="off"></textarea>
-                <button type="button" class="send-message-btn" onclick="sendFanMessage()" aria-label="Enviar">
+                <button type="button" class="emoji-btn" id="fan-emoji-btn" onclick="toggleFanEmojiPicker()" aria-label="Insertar emoji" aria-expanded="false" aria-haspopup="dialog">
                   <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
-                    <path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z"/>
+                    <circle cx="12" cy="12" r="10"/>
+                    <path d="M8 14s1.5 2 4 2 4-2 4-2"/>
+                    <line x1="9" y1="9" x2="9.01" y2="9"/>
+                    <line x1="15" y1="9" x2="15.01" y2="9"/>
                   </svg>
-                  <span>Enviar</span>
                 </button>
+                <textarea id="fan-chat-input" class="creator-chat-textarea chat-input" rows="1" placeholder="Escribe un mensaje..." maxlength="8000" autocomplete="off"></textarea>
+                <button type="button" class="send-message-btn" onclick="sendFanMessage()" aria-label="Enviar">Enviar</button>
+                <div id="fan-emoji-picker" class="emoji-picker hidden" role="dialog" aria-label="Selector de emoji"></div>
               </div>
             </div>
           </div>
@@ -4310,6 +4406,11 @@ function closeMediaModal() {
 
 document.addEventListener('keydown', (e) => {
   if (e.key === 'Escape') {
+    var fanEmojiPicker = document.getElementById('fan-emoji-picker');
+    if (fanEmojiPicker && !fanEmojiPicker.classList.contains('hidden') && typeof closeFanEmojiPicker === 'function') {
+      closeFanEmojiPicker();
+      return;
+    }
     if (typeof closeMobileSidebar === 'function') closeMobileSidebar();
     closeMediaModal();
     closeTextModal();
@@ -4708,6 +4809,7 @@ function closeFanChat() {
   window.ACTIVE_FAN_CHAT = null;
   fanLastMessageCount = 0;
   stopFanChatPolling();
+  if (typeof closeFanEmojiPicker === 'function') closeFanEmojiPicker();
   const panel = document.getElementById('fan-chat-panel');
   const empty = document.getElementById('fan-empty-state');
   if (panel) panel.classList.remove('fan-chat-panel--open');
@@ -4877,6 +4979,14 @@ async function openFanChat(creatorId, handle) {
   await loadFanConversation();
   await markFanMessagesRead(creatorId);
   fanChatPollInterval = setInterval(loadFanConversation, 5000);
+  try {
+    if (!sessionStorage.getItem('bp_fan_chat_first')) {
+      sessionStorage.setItem('bp_fan_chat_first', '1');
+      if (typeof showUnlockAnimation === 'function') showUnlockAnimation();
+    }
+  } catch (err) {
+    /* ignore */
+  }
 }
 
 async function loadFanConversation() {
@@ -4936,6 +5046,85 @@ async function sendFanMessage() {
   fanLastMessageCount = 0;
   await loadFanConversation();
   await loadFanConversations();
+}
+
+var FAN_CHAT_EMOJIS = ['🔥', '😂', '😍', '😎', '👏', '🤝', '💰', '🚀', '❤️', '🎉', '✨', '💯'];
+
+function renderFanEmojis() {
+  var picker = document.getElementById('fan-emoji-picker');
+  if (!picker) return;
+  picker.innerHTML =
+    '<div class="emoji-grid">' +
+    FAN_CHAT_EMOJIS.map(function (_, i) {
+      return (
+        '<button type="button" class="emoji-item" data-emoji-idx="' +
+        i +
+        '" aria-label="Emoji">' +
+        FAN_CHAT_EMOJIS[i] +
+        '</button>'
+      );
+    }).join('') +
+    '</div>';
+}
+
+function selectFanEmoji(emoji) {
+  var input = document.getElementById('fan-chat-input');
+  if (input) {
+    input.value += emoji;
+    input.focus();
+  }
+  closeFanEmojiPicker();
+}
+
+function removeFanEmojiOverlay() {
+  var overlay = document.getElementById('fan-emoji-overlay');
+  if (overlay) overlay.remove();
+}
+
+function addFanEmojiOverlay() {
+  removeFanEmojiOverlay();
+  var overlay = document.createElement('div');
+  overlay.id = 'fan-emoji-overlay';
+  overlay.setAttribute('aria-hidden', 'true');
+  overlay.style.cssText = 'position:fixed;inset:0;z-index:99;';
+  overlay.addEventListener('click', function () {
+    closeFanEmojiPicker();
+  });
+  document.body.appendChild(overlay);
+}
+
+function closeFanEmojiPicker() {
+  var picker = document.getElementById('fan-emoji-picker');
+  if (picker) picker.classList.add('hidden');
+  removeFanEmojiOverlay();
+  var btn = document.getElementById('fan-emoji-btn');
+  if (btn) btn.setAttribute('aria-expanded', 'false');
+}
+
+function openFanEmojiPicker() {
+  renderFanEmojis();
+  var picker = document.getElementById('fan-emoji-picker');
+  if (picker) picker.classList.remove('hidden');
+  addFanEmojiOverlay();
+  var btn = document.getElementById('fan-emoji-btn');
+  if (btn) btn.setAttribute('aria-expanded', 'true');
+}
+
+function toggleFanEmojiPicker() {
+  var picker = document.getElementById('fan-emoji-picker');
+  if (!picker) return;
+  if (picker.classList.contains('hidden')) openFanEmojiPicker();
+  else closeFanEmojiPicker();
+}
+
+function showUnlockAnimation() {
+  var el = document.getElementById('unlock-animation');
+  if (!el) return;
+  el.classList.remove('hidden');
+  window.clearTimeout(showUnlockAnimation._t);
+  showUnlockAnimation._t = window.setTimeout(function () {
+    el.classList.add('hidden');
+  }, 1200);
 }
 
 async function updateProfileMessageSection(creatorId) {
@@ -6190,6 +6379,7 @@ async function simulatePayment() {
     if (activate.success) {
       closeModal();
       showNotif('🎉 ¡Suscripción activada! Bienvenido/a al plan ' + selectedPlan.planName);
+      if (typeof showUnlockAnimation === 'function') showUnlockAnimation();
       btn.textContent = 'Pagar →'; btn.disabled = false;
       setTimeout(() => loadFanDashboard(), 1000);
     }
@@ -6246,6 +6436,7 @@ async function redeemPromo(context) {
       '✅ Acceso activado\n\nPodrás ver contenido exclusivo y enviar mensajes hasta:\n' +
         (untilStr || '—')
     );
+    if (typeof showUnlockAnimation === 'function') showUnlockAnimation();
     input.value = '';
     await refreshCreatorProfileAccess();
     if (context === 'modal' && typeof closeModal === 'function') {
@@ -6492,6 +6683,13 @@ document.addEventListener('DOMContentLoaded', () => {
       sendFanMessage();
     }
   });
+  document.getElementById('fan-emoji-picker')?.addEventListener('click', function (e) {
+    var btn = e.target.closest('.emoji-item');
+    if (!btn || !this.contains(btn)) return;
+    var idx = parseInt(btn.getAttribute('data-emoji-idx'), 10);
+    if (idx >= 0 && idx < FAN_CHAT_EMOJIS.length) selectFanEmoji(FAN_CHAT_EMOJIS[idx]);
+  });
+  renderFanEmojis();
   document.getElementById('donate-modal')?.addEventListener('click', function (e) {
     if (e.target === this) closeDonateModal();
   });
@@ -6603,5 +6801,11 @@ function initFeaturesCarousel() {
 }
 
 </script>
+<div id="unlock-animation" class="unlock-animation hidden" aria-hidden="true">
+  <div class="unlock-box">
+    <div class="checkmark">✓</div>
+    <div class="unlock-text">Acceso desbloqueado</div>
+  </div>
+</div>
 </body>
 </html>
