@@ -924,6 +924,89 @@
   }
   .plan-feature::before { content: '✓'; font-weight: 800; color: var(--black); }
 
+  /* Creator onboarding (perfil) */
+  .onboarding-card {
+    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+    border-radius: 20px;
+    padding: 20px 24px;
+    margin-bottom: 28px;
+    border: 1px solid rgba(56, 189, 248, 0.25);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+  }
+  .onboarding-header {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin-bottom: 18px;
+  }
+  .onboarding-icon { font-size: 2.2rem; line-height: 1; }
+  .onboarding-info { flex: 1; min-width: 0; }
+  .onboarding-title { font-size: 1rem; font-weight: 700; color: #ffffff; margin-bottom: 2px; }
+  .onboarding-subtitle { font-size: 0.75rem; color: #a3a3a3; }
+  .onboarding-bar {
+    height: 8px;
+    background: #1e2a3a;
+    border-radius: 10px;
+    overflow: hidden;
+    margin-bottom: 20px;
+  }
+  .onboarding-fill {
+    height: 100%;
+    width: 0%;
+    border-radius: 10px;
+    transition: width 0.5s ease, background 0.35s ease;
+  }
+  .onboarding-steps {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    margin-bottom: 12px;
+  }
+  .onboarding-step {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 8px 12px;
+    font-size: 0.85rem;
+    color: #c4c4c4;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    border-radius: 10px;
+  }
+  .onboarding-step:hover {
+    background: rgba(56, 189, 248, 0.1);
+    transform: translateX(4px);
+  }
+  .onboarding-step.next {
+    background: rgba(56, 189, 248, 0.12);
+    border: 1px solid rgba(56, 189, 248, 0.3);
+    border-radius: 10px;
+    margin: 2px 0;
+    padding-left: 8px;
+  }
+  .onboarding-step-icon { width: 28px; font-size: 1rem; text-align: center; flex-shrink: 0; }
+  .onboarding-step-name { flex: 1; min-width: 0; }
+  .onboarding-step-status { font-size: 1rem; flex-shrink: 0; }
+  .onboarding-step-status.done { color: #38bdf8; }
+  .onboarding-step-status.pending { color: #475569; }
+  .onboarding-footer {
+    text-align: right;
+    padding-top: 8px;
+  }
+  .onboarding-link {
+    color: #38bdf8;
+    font-size: 0.8rem;
+    font-weight: 600;
+    text-decoration: none;
+  }
+  .onboarding-link:hover {
+    text-decoration: underline;
+    opacity: 0.85;
+  }
+  .onboarding-card.complete {
+    display: none !important;
+  }
+
   #creator-dashboard .page-header h2,
   #fan-dashboard .page-header h2 { color: #FFFFFF; }
   #creator-dashboard .page-header p,
@@ -2275,13 +2358,13 @@
       <div class="sidebar-section">
         <div class="sidebar-label">PRINCIPAL</div>
         <div class="sidebar-item active" id="sidebar-tab-content" onclick="setDashTab('content', this)"><span class="icon">🎬</span> Mi Contenido</div>
-        <div class="sidebar-item" onclick="setDashTab('upload', this)"><span class="icon">⬆️</span> Subir</div>
-        <div class="sidebar-item" onclick="setDashTab('plans', this)"><span class="icon">💳</span> Mis Planes</div>
+        <div class="sidebar-item" id="sidebar-tab-upload" onclick="setDashTab('upload', this)"><span class="icon">⬆️</span> Subir</div>
+        <div class="sidebar-item" id="sidebar-tab-plans" onclick="setDashTab('plans', this)"><span class="icon">💳</span> Mis Planes</div>
         <div class="sidebar-item" id="sidebar-tab-messages" onclick="setDashTab('messages', this)"><span class="icon">📬</span> Mensajes</div>
       </div>
       <div class="sidebar-section">
         <div class="sidebar-label">CUENTA</div>
-        <div class="sidebar-item" onclick="setDashTab('settings', this)"><span class="icon">⚙️</span> Configuración</div>
+        <div class="sidebar-item" id="sidebar-tab-settings" onclick="setDashTab('settings', this)"><span class="icon">⚙️</span> Configuración</div>
         <div class="sidebar-item" onclick="setDashTab('earnings', this)"><span class="icon">💰</span> Ganancias</div>
         <div class="sidebar-item" onclick="logout()"><span class="icon">🚪</span> Salir</div>
       </div>
@@ -2296,6 +2379,22 @@
         <div class="page-header">
           <h2>Mi Contenido</h2>
           <p>Gestiona tus fotos y videos publicados</p>
+        </div>
+        <div id="onboarding-card" class="onboarding-card" style="display:none;">
+          <div class="onboarding-header">
+            <span class="onboarding-icon" aria-hidden="true">🎯</span>
+            <div class="onboarding-info">
+              <div id="onboarding-title" class="onboarding-title">Configura tu perfil</div>
+              <div id="onboarding-subtitle" class="onboarding-subtitle"></div>
+            </div>
+          </div>
+          <div class="onboarding-bar" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-labelledby="onboarding-title">
+            <div id="onboarding-fill" class="onboarding-fill"></div>
+          </div>
+          <div id="onboarding-steps" class="onboarding-steps"></div>
+          <div class="onboarding-footer">
+            <a href="#" class="onboarding-link" onclick="showCreatorProfile(); return false;">Ver mi perfil público</a>
+          </div>
         </div>
         <div id="dash-content-filters" style="display:flex;gap:12px;margin-bottom:24px;flex-wrap:wrap;">
           <button type="button" class="tag-pill filter-pill filter-pill-active" data-filter="all" onclick="applyContentFilter('all')">Todos (<span id="filter-count-all">0</span>)</button>
@@ -3723,6 +3822,154 @@ function logout() {
 }
 
 // ─── CREATOR DASHBOARD ──────────────────────────────────
+var completionTimeout = null;
+
+function getBarGradient(percent) {
+  return 'linear-gradient(90deg, #1E3A5F 0%, #2563EB 25%, #3B82F6 50%, #60A5FA 75%, #06B6D4 100%)';
+}
+
+function goToStep(stepId, tabName) {
+  if (!tabName) return;
+  const tabMap = {
+    settings: 'sidebar-tab-settings',
+    plans: 'sidebar-tab-plans',
+    upload: 'sidebar-tab-upload'
+  };
+  if (tabMap[tabName]) {
+    const el = document.getElementById(tabMap[tabName]);
+    if (el && typeof setDashTab === 'function') {
+      setDashTab(tabName, el);
+    }
+  } else if (tabName === 'profile' && typeof showCreatorProfile === 'function') {
+    showCreatorProfile();
+  }
+}
+
+function renderOnboardingCard(onboardingData) {
+  const container = document.getElementById('onboarding-card');
+  const stepsContainer = document.getElementById('onboarding-steps');
+  const titleEl = document.getElementById('onboarding-title');
+  const subtitleEl = document.getElementById('onboarding-subtitle');
+  const fillEl = document.getElementById('onboarding-fill');
+  const barEl = container && container.querySelector('.onboarding-bar');
+
+  if (!container || !onboardingData || !stepsContainer || !titleEl || !subtitleEl || !fillEl) return;
+
+  const { percent, completedEffective, totalEffective, steps, allCompleted } = onboardingData;
+  const remaining = totalEffective - completedEffective;
+  const effectiveComplete = percent >= 100;
+
+  if (completionTimeout) clearTimeout(completionTimeout);
+
+  if (allCompleted || effectiveComplete) {
+    titleEl.textContent = '🎉 Sin tareas pendientes ✅';
+    subtitleEl.innerHTML = '✨ ¡Tu perfil está listo! 🔥';
+
+    fillEl.style.width = '100%';
+    fillEl.style.background = getBarGradient(100);
+    if (barEl) barEl.setAttribute('aria-valuenow', '100');
+
+    container.style.display = 'block';
+    container.classList.remove('complete');
+    stepsContainer.innerHTML = (steps || [])
+      .map(function (step) {
+        const done = step.done ? 'done' : 'pending';
+        const mark = step.done ? '✓' : '○';
+        return (
+          '<div class="onboarding-step">' +
+          '<span class="onboarding-step-icon">' +
+          escapeHtml(step.icon) +
+          '</span>' +
+          '<span class="onboarding-step-name">' +
+          escapeHtml(step.name) +
+          '</span>' +
+          '<span class="onboarding-step-status ' +
+          done +
+          '">' +
+          mark +
+          '</span></div>'
+        );
+      })
+      .join('');
+
+    completionTimeout = setTimeout(function () {
+      container.style.display = 'none';
+      container.classList.add('complete');
+    }, 4000);
+    return;
+  }
+
+  if (completedEffective === 0) titleEl.textContent = '🎯 Configura tu perfil';
+  else if (completedEffective < 3) titleEl.textContent = '🔥 ¡Vas bien! Sigue así';
+  else if (completedEffective < 5) titleEl.textContent = '🚀 Ya casi está listo';
+  else titleEl.textContent = '✨ Último paso para destacar';
+
+  if (remaining === 0) {
+    subtitleEl.innerHTML = '⭐ Bonus: consigue tu primer suscriptor';
+  } else {
+    subtitleEl.innerHTML =
+      'Completa <span id="remaining-steps">' +
+      remaining +
+      '</span> paso' +
+      (remaining !== 1 ? 's' : '') +
+      ' más';
+  }
+
+  fillEl.style.width = percent + '%';
+  fillEl.style.background = getBarGradient(percent);
+  fillEl.style.backgroundSize = '200% 100%';
+  fillEl.style.backgroundPosition = percent + '% 0%';
+  if (barEl) barEl.setAttribute('aria-valuenow', String(percent));
+
+  container.style.display = 'block';
+  container.classList.remove('complete');
+
+  const nextStep = (steps || []).find(function (s) {
+    return !s.done && !s.isBonus;
+  });
+
+  stepsContainer.innerHTML = (steps || [])
+    .map(function (step) {
+      const isNext = !step.done && nextStep && step.id === nextStep.id;
+      const done = step.done ? 'done' : 'pending';
+      const mark = step.done ? '✓' : '○';
+      const tab = step.tab != null ? step.tab : '';
+      return (
+        '<div class="onboarding-step ' +
+        (isNext ? 'next' : '') +
+        '" role="button" tabindex="0" onclick="goToStep(' +
+        JSON.stringify(step.id) +
+        ', ' +
+        JSON.stringify(tab) +
+        ')">' +
+        '<span class="onboarding-step-icon">' +
+        escapeHtml(step.icon) +
+        '</span>' +
+        '<span class="onboarding-step-name">' +
+        escapeHtml(step.name) +
+        '</span>' +
+        '<span class="onboarding-step-status ' +
+        done +
+        '">' +
+        mark +
+        '</span></div>'
+      );
+    })
+    .join('');
+}
+
+async function refreshOnboarding() {
+  if (!CURRENT_USER || CURRENT_USER.role !== 'creator') return;
+  const userData = await api.get('/auth/me');
+  if (!userData || userData.error || !userData.onboarding) return;
+  const onboarding = userData.onboarding;
+  const rest = Object.assign({}, userData);
+  delete rest.onboarding;
+  CURRENT_USER = Object.assign({}, CURRENT_USER, rest);
+  localStorage.setItem('bp_user', JSON.stringify(CURRENT_USER));
+  renderOnboardingCard(onboarding);
+}
+
 async function loadCreatorDashboard() {
   if (!CURRENT_USER) return;
   const name = (CURRENT_USER.name && String(CURRENT_USER.name).trim()) || 'Creador';
@@ -3734,6 +3981,18 @@ async function loadCreatorDashboard() {
   if (sidebarAvatar) sidebarAvatar.textContent = initial;
   if (sidebarName) sidebarName.textContent = name;
   if (sidebarHandle) sidebarHandle.textContent = CURRENT_USER.handle || '@' + name.toLowerCase().replace(/\s+/g, '');
+
+  if (CURRENT_USER.role === 'creator') {
+    const userData = await api.get('/auth/me');
+    if (userData && !userData.error && userData.onboarding) {
+      const onboarding = userData.onboarding;
+      const rest = Object.assign({}, userData);
+      delete rest.onboarding;
+      CURRENT_USER = Object.assign({}, CURRENT_USER, rest);
+      localStorage.setItem('bp_user', JSON.stringify(CURRENT_USER));
+      renderOnboardingCard(onboarding);
+    }
+  }
 
   await loadMyContent();
 }
@@ -3826,6 +4085,7 @@ async function saveProfileSettings() {
       formData.append('banner', bannerFile);
       await api.upload('/auth/banner', formData);
     }
+    await refreshOnboarding();
     await openCreatorProfile(CURRENT_USER.handle);
   }
   
@@ -4020,6 +4280,7 @@ async function publishTextContent(evt) {
   if (sf) sf.value = '';
   syncScheduledPublishButton();
   await loadMyContent();
+  await refreshOnboarding();
 }
 
 async function publishContent(evt) {
@@ -4079,6 +4340,7 @@ async function publishContent(evt) {
   if (sf) sf.value = '';
   syncScheduledPublishButton();
   await loadMyContent();
+  await refreshOnboarding();
 }
 
 // PLANS (dashboard creador)
@@ -4123,6 +4385,7 @@ async function updatePlanPrice(evt) {
       setTimeout(() => { msgDiv.style.display = 'none'; }, 3000);
     }
     showNotif('✅ Precio guardado');
+    await refreshOnboarding();
   } else {
     showNotif('❌ ' + (res.error || 'Error al guardar'));
   }
@@ -4137,6 +4400,7 @@ async function activateFreePlan() {
   if (res.success) {
     showNotif('✅ Plan gratuito activado. Puedes cobrar más tarde cuando quieras.');
     await loadPlanPrice();
+    await refreshOnboarding();
   } else {
     showNotif('❌ ' + (res.error || 'Error'));
   }
@@ -4452,11 +4716,6 @@ if (TOKEN && CURRENT_USER) {
   }
   const saveProfileBtn = document.getElementById('save-profile-btn');
   if (saveProfileBtn) saveProfileBtn.setAttribute('onclick', 'saveProfileSettings()');
-  // Check if already logged in
-  if (TOKEN && CURRENT_USER) {
-    if (CURRENT_USER.role === 'creator') loadCreatorDashboard();
-    else loadFanDashboard();
-  }
   // Profile logout
   const logoutItems = document.querySelectorAll('.sidebar-item');
   logoutItems.forEach(el => { if (el.textContent.includes('Salir')) el.setAttribute('onclick', 'logout()'); });

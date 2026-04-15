@@ -7,6 +7,80 @@ const { v4: uuidv4 } = require('uuid');
 const db = require('../db');
 const upload = multer({ dest: 'uploads/' });
 
+function getOnboardingStatus(user, stats) {
+  const effectiveSteps = [
+    { id: 'banner', done: !!user.banner_url },
+    { id: 'bio', done: !!(user.bio && user.bio.trim().length >= 20) },
+    { id: 'mercadopago', done: !!user.mp_user_id },
+    { id: 'plan', done: user.has_plan === true },
+    { id: 'first_post', done: (stats.total_posts || 0) > 0 }
+  ];
+
+  const allSteps = [
+    {
+      id: 'banner',
+      name: 'Banner',
+      icon: '🖼️',
+      done: !!user.banner_url,
+      action: 'Sube una imagen de portada',
+      tab: 'settings'
+    },
+    {
+      id: 'bio',
+      name: 'Biografía',
+      icon: '✏️',
+      done: !!(user.bio && user.bio.trim().length >= 20),
+      action: 'Cuéntales quién eres',
+      tab: 'settings'
+    },
+    {
+      id: 'mercadopago',
+      name: 'Mercado Pago',
+      icon: '💳',
+      done: !!user.mp_user_id,
+      action: 'Vincula tu cuenta para cobrar',
+      tab: 'settings'
+    },
+    {
+      id: 'plan',
+      name: 'Plan de suscripción',
+      icon: '💎',
+      done: user.has_plan === true,
+      action: 'Define cuánto quieres ganar',
+      tab: 'plans'
+    },
+    {
+      id: 'first_post',
+      name: 'Primer contenido',
+      icon: '📷',
+      done: (stats.total_posts || 0) > 0,
+      action: 'Comparte tu primer contenido',
+      tab: 'upload'
+    },
+    {
+      id: 'first_subscriber',
+      name: 'Primer suscriptor',
+      icon: '⭐',
+      done: (stats.total_subscribers || 0) > 0,
+      action: 'Comparte tu perfil para conseguir fans',
+      tab: 'profile',
+      isBonus: true
+    }
+  ];
+
+  const completedEffective = effectiveSteps.filter((s) => s.done).length;
+  const totalEffective = effectiveSteps.length;
+  const percent = Math.round((completedEffective / totalEffective) * 100);
+
+  return {
+    percent,
+    completedEffective,
+    totalEffective,
+    steps: allSteps,
+    allCompleted: allSteps.filter((s) => s.done).length === allSteps.length
+  };
+}
+
 router.post('/register', async (req, res) => {
   try {
     const { name, email, password, role, handle } = req.body;
@@ -50,7 +124,37 @@ router.get('/me', require('../middleware/auth'), (req, res) => {
       'SELECT id, name, email, role, handle, bio, category, location, avatar_url, banner_url, avatar_color, social_instagram, social_facebook, social_tiktok, social_other FROM users WHERE id = ?'
     )
     .get(req.user.id);
-  res.json(user);
+  if (!user) return res.status(404).json({ error: 'Usuario no encontrado' });
+
+  if (user.role !== 'creator') {
+    return res.json(user);
+  }
+
+  const mpRow = db.prepare('SELECT mp_user_id FROM mercado_pago_accounts WHERE user_id = ?').get(user.id);
+  const mp_user_id =
+    mpRow && mpRow.mp_user_id != null && String(mpRow.mp_user_id).trim() !== ''
+      ? String(mpRow.mp_user_id)
+      : null;
+
+  const hasPlan = !!db
+    .prepare('SELECT 1 FROM plans WHERE creator_id = ? AND active = 1 AND price > 0 LIMIT 1')
+    .get(user.id);
+
+  const total_posts = db.prepare('SELECT COUNT(*) AS n FROM content WHERE creator_id = ?').get(user.id).n;
+  const total_subscribers = db
+    .prepare("SELECT COUNT(*) AS n FROM subscriptions WHERE creator_id = ? AND status = 'active'")
+    .get(user.id).n;
+
+  const stats = { total_posts, total_subscribers };
+  const userForOnboarding = { ...user, mp_user_id, has_plan: hasPlan };
+  const onboarding = getOnboardingStatus(userForOnboarding, stats);
+
+  res.json({
+    ...user,
+    mp_user_id,
+    has_plan: hasPlan,
+    onboarding
+  });
 });
 
 router.put('/profile', require('../middleware/auth'), (req, res) => {
