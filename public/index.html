@@ -20,6 +20,16 @@
     --brand-hover: #7C3AED;
     --black: #0A0A0A;
     --white: #FFFFFF;
+    /* Chat / premium UI tokens */
+    --bg-primary: #1a1a1a;
+    --bg-secondary: #222222;
+    --bg-tertiary: #2a2a2a;
+    --border-light: rgba(255, 255, 255, 0.1);
+    --text-primary: #ffffff;
+    --text-tertiary: #9e9e9e;
+    --gradient-primary: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 55%, #6d28d9 100%);
+    --radius-lg: 14px;
+    --shadow-glow: 0 0 0 2px rgba(139, 92, 246, 0.28);
     --gray-100: #F7F7F7;
     --gray-200: #EFEFEF;
     --gray-300: #E0E0E0;
@@ -33,6 +43,8 @@
     --shadow: 0 2px 12px rgba(0,0,0,0.07);
     --shadow-md: 0 4px 24px rgba(0,0,0,0.10);
     --shadow-lg: 0 8px 40px rgba(0,0,0,0.13);
+    --error: #EF4444;
+    --radius-full: 999px;
   }
 
   body {
@@ -724,6 +736,22 @@
   #fan-dashboard .sidebar-item.active { background: var(--brand); color: #FFFFFF; font-weight: 600; }
   #creator-dashboard .sidebar-item .icon,
   #fan-dashboard .sidebar-item .icon { font-size: 1rem; width: 20px; text-align: center; }
+
+  #creator-dashboard #messages-badge {
+    background: var(--error);
+    color: white;
+    font-size: 0.7rem;
+    font-weight: 700;
+    padding: 2px 6px;
+    border-radius: var(--radius-full);
+    margin-left: 6px;
+    min-width: 18px;
+    text-align: center;
+    line-height: 1.2;
+  }
+  .badge-hidden {
+    display: none;
+  }
 
   /* Main content */
   .main-content { flex: 1; padding: 36px; overflow-y: auto; }
@@ -1736,6 +1764,143 @@
     margin-left: 8px;
     vertical-align: middle;
   }
+  #creator-dashboard .creator-inbox .unread-badge {
+    display: inline-block;
+    background: var(--error);
+    color: white;
+    font-size: 0.7rem;
+    font-weight: 700;
+    padding: 2px 6px;
+    border-radius: var(--radius-full);
+    margin-left: 8px;
+    min-width: 18px;
+    text-align: center;
+    line-height: 1.2;
+    vertical-align: middle;
+  }
+
+  /* Chat bidireccional (creador ↔ fan) */
+  #creator-dashboard .chat-wrapper {
+    background: var(--bg-primary);
+    border: 1px solid var(--border-light);
+    border-radius: var(--radius-lg);
+    display: flex;
+    flex-direction: column;
+    height: 500px;
+    flex: 1;
+    min-width: 280px;
+    max-width: 560px;
+  }
+  #creator-dashboard .chat-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 14px;
+    background: var(--bg-secondary);
+    border-bottom: 1px solid var(--border-light);
+    color: var(--text-primary);
+    font-weight: 600;
+    font-size: 0.95rem;
+  }
+  #creator-dashboard .chat-header #chat-user-name {
+    flex: 1;
+    min-width: 0;
+  }
+  #creator-dashboard .chat-close {
+    background: transparent;
+    border: none;
+    color: var(--text-tertiary);
+    cursor: pointer;
+    font-size: 1.05rem;
+    line-height: 1;
+    padding: 4px 8px;
+    border-radius: 8px;
+  }
+  #creator-dashboard .chat-close:hover {
+    color: var(--text-primary);
+    background: rgba(255, 255, 255, 0.06);
+  }
+  #creator-dashboard .chat-messages {
+    flex: 1;
+    overflow-y: auto;
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    background: var(--bg-primary);
+  }
+  #creator-dashboard .chat-empty-state {
+    text-align: center;
+    margin-top: 40px;
+    color: var(--text-tertiary);
+    font-size: 0.85rem;
+    line-height: 1.5;
+  }
+  #creator-dashboard .chat-empty-state .chat-empty-sub {
+    display: block;
+    font-size: 0.75rem;
+    margin-top: 8px;
+    opacity: 0.9;
+  }
+  #creator-dashboard .chat-bubble {
+    padding: 10px 14px;
+    border-radius: var(--radius-lg);
+    max-width: 70%;
+    font-size: 0.85rem;
+    line-height: 1.4;
+  }
+  #creator-dashboard .chat-bubble.me {
+    align-self: flex-end;
+    background: var(--gradient-primary);
+    color: var(--white);
+    border-bottom-right-radius: 4px;
+  }
+  #creator-dashboard .chat-bubble.other {
+    align-self: flex-start;
+    background: var(--bg-tertiary);
+    color: var(--text-primary);
+    border: 1px solid var(--border-light);
+    border-bottom-left-radius: 4px;
+  }
+  #creator-dashboard .chat-time {
+    font-size: 10px;
+    color: rgba(255, 255, 255, 0.55);
+    margin-top: 4px;
+  }
+  #creator-dashboard .chat-bubble.other .chat-time {
+    color: var(--text-tertiary);
+  }
+  #creator-dashboard .chat-input {
+    display: flex;
+    border-top: 1px solid var(--border-light);
+    background: var(--bg-secondary);
+  }
+  #creator-dashboard .chat-input input {
+    flex: 1;
+    background: var(--bg-tertiary);
+    border: none;
+    padding: 12px;
+    color: var(--text-primary);
+    outline: none;
+    font-family: inherit;
+    font-size: 0.875rem;
+  }
+  #creator-dashboard .chat-input input:focus {
+    box-shadow: var(--shadow-glow);
+  }
+  #creator-dashboard .chat-input button {
+    background: var(--gradient-primary);
+    border: none;
+    color: white;
+    padding: 0 16px;
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 0.85rem;
+    font-family: inherit;
+  }
+  #creator-dashboard .chat-input button:hover {
+    filter: brightness(1.05);
+  }
 
   /* Subscription modal */
   .modal-overlay {
@@ -2434,7 +2599,7 @@
         <div class="sidebar-item active" id="sidebar-tab-content" onclick="setDashTab('content', this)"><span class="icon">🎬</span> Mi Contenido</div>
         <div class="sidebar-item" id="sidebar-tab-upload" onclick="setDashTab('upload', this)"><span class="icon">⬆️</span> Subir</div>
         <div class="sidebar-item" id="sidebar-tab-plans" onclick="setDashTab('plans', this)"><span class="icon">💳</span> Mis Planes</div>
-        <div class="sidebar-item" id="sidebar-tab-messages" onclick="setDashTab('messages', this)"><span class="icon">📬</span> Mensajes</div>
+        <div class="sidebar-item" id="sidebar-tab-messages" onclick="setDashTab('messages', this)"><span class="icon">💬</span> <span>Mensajes</span> <span id="messages-badge" class="badge-hidden">0</span></div>
         <div class="sidebar-item" id="sidebar-tab-calendar" onclick="setDashTab('calendar', this)"><span class="icon">📅</span> Calendario</div>
       </div>
       <div class="sidebar-section">
@@ -2787,9 +2952,22 @@
       <div id="dash-messages" style="display:none;">
         <div class="page-header">
           <h2>📬 Mensajes de suscriptores</h2>
-          <p>Solo fans con suscripción activa pueden escribirte</p>
+          <p>Chats con fans con suscripción activa</p>
         </div>
-        <div id="creator-messages-list" class="creator-inbox" style="display:flex;flex-direction:column;gap:12px;max-width:720px;"></div>
+        <div class="creator-messages-layout" style="display:flex;flex-wrap:wrap;gap:20px;align-items:flex-start;max-width:1100px;">
+          <div id="creator-messages-list" class="creator-inbox" style="display:flex;flex-direction:column;gap:12px;flex:1;min-width:260px;max-width:420px;"></div>
+          <div id="chat-panel" class="chat-wrapper" style="display:none;">
+            <div class="chat-header">
+              <button type="button" class="chat-close" onclick="closeChat()" aria-label="Cerrar chat">✕</button>
+              <span id="chat-user-name">Conversación</span>
+            </div>
+            <div id="chat-messages" class="chat-messages"></div>
+            <div class="chat-input">
+              <input type="text" id="chat-input-field" placeholder="Escribe un mensaje..." maxlength="8000" autocomplete="off" />
+              <button type="button" onclick="sendMessage()">Enviar</button>
+            </div>
+          </div>
+        </div>
       </div>
 
       <div id="dash-calendar" style="display:none;">
@@ -3269,6 +3447,7 @@
 
   function setDashTab(tab, el) {
     unmountCreatorProfileFromEmbed();
+    if (tab !== 'messages' && typeof closeChat === 'function') closeChat();
     const tabs = ['content','upload','plans','messages','calendar','settings','earnings'];
     tabs.forEach(t => {
       const el = document.getElementById('dash-' + t);
@@ -3858,10 +4037,157 @@ async function sendProfileMessage(e) {
   if (ta) ta.value = '';
 }
 
-async function loadCreatorInbox() {
+var activeChatUser = null;
+var lastMessageCount = 0;
+var chatPollInterval = null;
+var globalMessagesBadgeInterval = null;
+
+function stopGlobalMessagesBadgePolling() {
+  if (globalMessagesBadgeInterval) {
+    clearInterval(globalMessagesBadgeInterval);
+    globalMessagesBadgeInterval = null;
+  }
+}
+
+async function updateGlobalMessagesBadge() {
+  if (!CURRENT_USER || CURRENT_USER.role !== 'creator') return;
+  const res = await api.get('/messages/' + encodeURIComponent(CURRENT_USER.id));
+  if (!res || res.error || !Array.isArray(res)) return;
+
+  const unreadCount = res.filter(function (m) {
+    return !m.read_at;
+  }).length;
+
+  const badge = document.getElementById('messages-badge');
+  if (!badge) return;
+
+  if (unreadCount > 0) {
+    badge.textContent = unreadCount > 99 ? '99+' : String(unreadCount);
+    badge.classList.remove('badge-hidden');
+  } else {
+    badge.classList.add('badge-hidden');
+  }
+}
+
+function stopChatPolling() {
+  if (chatPollInterval) {
+    clearInterval(chatPollInterval);
+    chatPollInterval = null;
+  }
+}
+
+function startChatPolling() {
+  stopChatPolling();
+  chatPollInterval = setInterval(loadConversation, 5000);
+}
+
+function closeChat() {
+  activeChatUser = null;
+  lastMessageCount = 0;
+  stopChatPolling();
+  const panel = document.getElementById('chat-panel');
+  if (panel) panel.style.display = 'none';
+  const inp = document.getElementById('chat-input-field');
+  if (inp) inp.value = '';
+}
+
+async function openChat(userId, name) {
+  activeChatUser = userId;
+  lastMessageCount = -1;
+  const nameEl = document.getElementById('chat-user-name');
+  const panel = document.getElementById('chat-panel');
+  if (nameEl) nameEl.textContent = name || 'Conversación';
+  if (panel) panel.style.display = 'flex';
+  const msgs = await loadConversation();
+  await markMessagesAsRead(msgs);
+  startChatPolling();
+}
+
+async function loadConversation() {
+  if (!activeChatUser) return null;
+  const messages = await api.get('/messages/conversation/' + encodeURIComponent(activeChatUser));
+  if (!messages || messages.error) return null;
+  if (!Array.isArray(messages)) return null;
+  if (messages.length !== lastMessageCount) {
+    renderChatMessages(messages);
+    lastMessageCount = messages.length;
+    if (CURRENT_USER && CURRENT_USER.role === 'creator') updateGlobalMessagesBadge();
+  }
+  return messages;
+}
+
+async function markMessagesAsRead(cachedMessages) {
+  if (!activeChatUser || !CURRENT_USER) return;
+  var messages = cachedMessages;
+  if (!messages || !Array.isArray(messages)) {
+    messages = await api.get('/messages/conversation/' + encodeURIComponent(activeChatUser));
+  }
+  if (!messages || !Array.isArray(messages)) return;
+
+  const unread = messages.filter(function (m) {
+    return m.receiver_id === CURRENT_USER.id && !m.read_at;
+  });
+
+  for (var i = 0; i < unread.length; i++) {
+    await api.post('/messages/' + encodeURIComponent(unread[i].id) + '/read', {});
+  }
+
+  if (typeof updateGlobalMessagesBadge === 'function') updateGlobalMessagesBadge();
+  if (typeof loadCreatorInbox === 'function') loadCreatorInbox(true);
+}
+
+function renderChatMessages(messages) {
+  const container = document.getElementById('chat-messages');
+  if (!container || !CURRENT_USER) return;
+  if (!messages || !messages.length) {
+    container.innerHTML =
+      '<div class="chat-empty-state">💬 Aún no hay mensajes<span class="chat-empty-sub">Inicia la conversación</span></div>';
+    return;
+  }
+  container.innerHTML = messages
+    .map(function (m) {
+      const isMe = m.sender_id === CURRENT_USER.id;
+      const date = m.created_at ? new Date(m.created_at) : null;
+      const timeStr = date
+        ? date.toLocaleTimeString('es-MX', { hour: '2-digit', minute: '2-digit' })
+        : '';
+      return (
+        '<div class="chat-bubble ' +
+        (isMe ? 'me' : 'other') +
+        '">' +
+        escapeHtml(m.content || '') +
+        '<div class="chat-time">' +
+        escapeHtml(timeStr) +
+        '</div></div>'
+      );
+    })
+    .join('');
+  container.scrollTop = container.scrollHeight;
+}
+
+async function sendMessage() {
+  const input = document.getElementById('chat-input-field');
+  const text = input && input.value ? input.value.trim() : '';
+  if (!text || !activeChatUser) return;
+  const res = await api.post('/messages', {
+    receiverId: activeChatUser,
+    content: text
+  });
+  if (res && res.error) {
+    showNotif('❌ ' + res.error);
+    return;
+  }
+  if (input) input.value = '';
+  lastMessageCount = 0;
+  await loadConversation();
+}
+
+async function loadCreatorInbox(silentRefresh) {
   const list = document.getElementById('creator-messages-list');
   if (!list || !CURRENT_USER || CURRENT_USER.role !== 'creator') return;
-  list.innerHTML = '<div style="color:var(--gray-500);padding:20px;">Cargando…</div>';
+  if (!silentRefresh) {
+    list.innerHTML = '<div style="color:var(--gray-500);padding:20px;">Cargando…</div>';
+  }
   const msgs = await api.get('/messages/' + encodeURIComponent(CURRENT_USER.id));
   if (msgs && msgs.error) {
     list.innerHTML = '<div style="color:#b91c1c;padding:20px;">' + escapeHtml(msgs.error) + '</div>';
@@ -3872,24 +4198,55 @@ async function loadCreatorInbox() {
       '<div style="padding:32px;text-align:center;color:var(--gray-500);">No hay mensajes aún.</div>';
     return;
   }
-  list.innerHTML = msgs
+
+  const byFan = {};
+  msgs.forEach(function (m) {
+    const sid = m.sender_id;
+    const prev = byFan[sid];
+    if (!prev || new Date(m.created_at) > new Date(prev.created_at)) {
+      byFan[sid] = m;
+    }
+  });
+  const unreadCountByFan = {};
+  msgs.forEach(function (m) {
+    if (!m.read_at) {
+      const sid = m.sender_id;
+      unreadCountByFan[sid] = (unreadCountByFan[sid] || 0) + 1;
+    }
+  });
+  const threads = Object.keys(byFan).map(function (k) {
+    return byFan[k];
+  });
+  threads.sort(function (a, b) {
+    return new Date(b.created_at) - new Date(a.created_at);
+  });
+
+  list.innerHTML = threads
     .map(function (m) {
-      const unread = !m.read_at;
+      const fanId = m.sender_id;
+      const unreadCount = unreadCountByFan[fanId] || 0;
+      const unread = unreadCount > 0;
+      const displayName = (m.sender_name || m.handle || 'Fan').trim();
       const h = escapeHtml((m.handle || '').replace(/^@/, '') || m.sender_name || 'fan');
-      const body = escapeHtml(m.content || '');
+      const body = escapeHtml((m.content || '').slice(0, 160));
       const dt = m.created_at ? new Date(m.created_at).toLocaleString('es') : '';
       return (
         '<div class="creator-inbox-msg ' +
         (unread ? 'unread' : 'read') +
-        '" data-msg-id="' +
-        escapeHtml(m.id) +
-        '" onclick="markCreatorMessageRead(this)">' +
+        '" data-fan-id="' +
+        escapeHtml(fanId) +
+        '" onclick="openChat(' +
+        JSON.stringify(fanId) +
+        ', ' +
+        JSON.stringify(displayName) +
+        ')">' +
         '<div class="inbox-sender">@' +
         h +
-        (unread ? '<span class="inbox-badge">Nuevo</span>' : '') +
+        (unreadCount > 0 ? '<span class="unread-badge">' + unreadCount + '</span>' : '') +
         '</div>' +
         '<div class="inbox-body">' +
         body +
+        (m.content && m.content.length > 160 ? '…' : '') +
         '</div>' +
         '<div class="inbox-meta">' +
         escapeHtml(dt) +
@@ -3961,6 +4318,7 @@ function setSession(res) {
 
 function logout() {
   if (typeof unmountCreatorProfileFromEmbed === 'function') unmountCreatorProfileFromEmbed();
+  stopGlobalMessagesBadgePolling();
   TOKEN = null; CURRENT_USER = null;
   localStorage.removeItem('bp_token');
   localStorage.removeItem('bp_user');
@@ -4106,6 +4464,12 @@ async function loadCreatorDashboard() {
   }
 
   await loadMyContent();
+
+  if (CURRENT_USER.role === 'creator') {
+    updateGlobalMessagesBadge();
+    stopGlobalMessagesBadgePolling();
+    globalMessagesBadgeInterval = setInterval(updateGlobalMessagesBadge, 10000);
+  }
 }
 
 var currentCalendarDate = new Date();
@@ -5079,6 +5443,12 @@ async function loadEarnings() {
 // Override publish button
 document.addEventListener('DOMContentLoaded', () => {
   initEmojiPickerPanels();
+  document.getElementById('chat-input-field')?.addEventListener('keydown', function (e) {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      sendMessage();
+    }
+  });
   document.getElementById('donate-modal')?.addEventListener('click', function (e) {
     if (e.target === this) closeDonateModal();
   });

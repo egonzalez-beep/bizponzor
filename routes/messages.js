@@ -45,12 +45,21 @@ router.post('/', auth, (req, res) => {
       return res.status(400).json({ error: 'No puedes enviarte mensajes a ti mismo' });
     }
 
-    const creator = db
-      .prepare('SELECT id FROM users WHERE id = ? AND role = ?')
-      .get(receiverId, 'creator');
+    const receiver = db.prepare('SELECT id, role FROM users WHERE id = ?').get(receiverId);
+    if (!receiver) {
+      return res.status(404).json({ error: 'Destinatario no existe' });
+    }
 
-    if (!creator) {
-      return res.status(404).json({ error: 'Creador no existe' });
+    let fanId;
+    let creatorId;
+    if (req.user.role === 'fan' && receiver.role === 'creator') {
+      fanId = senderId;
+      creatorId = receiverId;
+    } else if (req.user.role === 'creator' && receiver.role === 'fan') {
+      creatorId = senderId;
+      fanId = receiverId;
+    } else {
+      return res.status(400).json({ error: 'Solo mensajes entre fan y creador' });
     }
 
     const subscription = db
@@ -58,7 +67,7 @@ router.post('/', auth, (req, res) => {
         `SELECT id FROM subscriptions
          WHERE fan_id = ? AND creator_id = ? AND status = 'active'`
       )
-      .get(senderId, receiverId);
+      .get(fanId, creatorId);
 
     if (!subscription) {
       return res.status(403).json({ error: 'Debes estar suscrito para enviar mensajes' });
@@ -73,6 +82,57 @@ router.post('/', auth, (req, res) => {
   } catch (error) {
     console.error('Error al enviar mensaje:', error);
     res.status(500).json({ error: 'Error interno al enviar mensaje' });
+  }
+});
+
+router.get('/conversation/:userId', auth, (req, res) => {
+  try {
+    const otherUserId = req.params.userId;
+    const myId = req.user.id;
+
+    const other = db.prepare('SELECT id, role FROM users WHERE id = ?').get(otherUserId);
+    if (!other) {
+      return res.status(404).json({ error: 'Usuario no encontrado' });
+    }
+
+    let fanId;
+    let creatorId;
+    if (req.user.role === 'creator' && other.role === 'fan') {
+      creatorId = myId;
+      fanId = otherUserId;
+    } else if (req.user.role === 'fan' && other.role === 'creator') {
+      fanId = myId;
+      creatorId = otherUserId;
+    } else {
+      return res.status(403).json({ error: 'Conversación no permitida' });
+    }
+
+    const sub = db
+      .prepare(
+        `SELECT id FROM subscriptions WHERE fan_id = ? AND creator_id = ? AND status = 'active'`
+      )
+      .get(fanId, creatorId);
+    if (!sub) {
+      return res.status(403).json({ error: 'No hay suscripción activa' });
+    }
+
+    const messages = db
+      .prepare(
+        `SELECT m.*, u.handle, u.name as sender_name
+         FROM messages m
+         JOIN users u ON u.id = m.sender_id
+         WHERE
+           (m.sender_id = ? AND m.receiver_id = ?)
+           OR
+           (m.sender_id = ? AND m.receiver_id = ?)
+         ORDER BY datetime(m.created_at) ASC`
+      )
+      .all(myId, otherUserId, otherUserId, myId);
+
+    res.json(messages);
+  } catch (error) {
+    console.error('Error conversación:', error);
+    res.status(500).json({ error: 'Error al obtener conversación' });
   }
 });
 
