@@ -1753,9 +1753,12 @@
     display: flex;
     align-items: center;
     gap: 10px;
-    padding: 14px 16px;
+    position: relative;
+    z-index: 2;
+    padding: 18px 20px;
     background: var(--bg-secondary);
     border-bottom: 1px solid var(--border-light);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
     flex-shrink: 0;
   }
   #fan-dashboard .fan-chat-header .chat-close {
@@ -1817,12 +1820,14 @@
     line-height: 1.4;
     word-break: break-word;
     white-space: pre-wrap;
+    transition: transform 0.12s ease, background 0.2s ease, box-shadow 0.2s ease;
   }
   #fan-dashboard #fan-chat-messages .chat-bubble.me {
     align-self: flex-end;
     background: var(--gradient-primary);
     color: var(--white);
     border-bottom-right-radius: 4px;
+    box-shadow: 0 2px 6px rgba(37, 99, 235, 0.2);
   }
   #fan-dashboard #fan-chat-messages .chat-bubble.other {
     align-self: flex-start;
@@ -1830,15 +1835,19 @@
     color: var(--text-primary);
     border: 1px solid var(--border-light);
     border-bottom-left-radius: 4px;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
   }
   #fan-dashboard #fan-chat-messages .chat-time {
     font-size: 10px;
-    margin-top: 4px;
-    opacity: 0.85;
+    margin-top: 6px;
+    letter-spacing: 0.3px;
+    opacity: 0.55;
+    color: rgba(255, 255, 255, 0.65);
+    transition: opacity 0.2s ease;
   }
   #fan-dashboard #fan-chat-messages .chat-bubble.other .chat-time {
     color: var(--text-tertiary);
-    opacity: 1;
+    opacity: 0.55;
   }
   #fan-dashboard #fan-chat-messages .chat-empty-sub {
     display: block;
@@ -1869,10 +1878,13 @@
     font-family: inherit;
     font-size: 0.875rem;
     line-height: 1.4;
+    transition: border-color 0.15s ease, box-shadow 0.15s ease, padding-left 0.15s ease;
   }
   #fan-dashboard #fan-chat-input:focus {
+    outline: none;
     border-color: var(--accent-cyan);
-    box-shadow: var(--shadow-glow);
+    box-shadow: 0 0 0 3px rgba(6, 182, 212, 0.15);
+    padding-left: 18px;
   }
   #fan-dashboard .send-message-btn {
     display: flex;
@@ -1978,6 +1990,17 @@
   @media (max-width: 640px) {
     #fan-dashboard .send-message-btn span {
       display: none;
+    }
+  }
+
+  @media (min-width: 769px) {
+    #creator-dashboard .chat-messages .chat-bubble:hover,
+    #fan-dashboard #fan-chat-messages .chat-bubble:hover {
+      transform: scale(1.01);
+    }
+    #creator-dashboard .chat-messages .chat-bubble:hover .chat-time,
+    #fan-dashboard #fan-chat-messages .chat-bubble:hover .chat-time {
+      opacity: 0.9;
     }
   }
 
@@ -2300,9 +2323,12 @@
     display: flex;
     align-items: center;
     gap: 10px;
-    padding: 14px 16px;
+    position: relative;
+    z-index: 2;
+    padding: 18px 20px;
     background: var(--bg-secondary);
     border-bottom: 1px solid var(--border-light);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
     flex-shrink: 0;
   }
   #creator-dashboard .chat-user-info {
@@ -2377,12 +2403,14 @@
     max-width: 70%;
     font-size: 0.85rem;
     line-height: 1.4;
+    transition: transform 0.12s ease, background 0.2s ease, box-shadow 0.2s ease;
   }
   #creator-dashboard .chat-bubble.me {
     align-self: flex-end;
     background: var(--gradient-primary);
     color: var(--white);
     border-bottom-right-radius: 4px;
+    box-shadow: 0 2px 6px rgba(37, 99, 235, 0.2);
   }
   #creator-dashboard .chat-bubble.other {
     align-self: flex-start;
@@ -2390,14 +2418,19 @@
     color: var(--text-primary);
     border: 1px solid var(--border-light);
     border-bottom-left-radius: 4px;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
   }
   #creator-dashboard .chat-time {
     font-size: 10px;
-    color: rgba(255, 255, 255, 0.55);
-    margin-top: 4px;
+    margin-top: 6px;
+    letter-spacing: 0.3px;
+    opacity: 0.55;
+    color: rgba(255, 255, 255, 0.65);
+    transition: opacity 0.2s ease;
   }
   #creator-dashboard .chat-bubble.other .chat-time {
     color: var(--text-tertiary);
+    opacity: 0.55;
   }
   #creator-dashboard .chat-input-container {
     display: flex;
@@ -2422,10 +2455,13 @@
     font-family: inherit;
     font-size: 0.875rem;
     line-height: 1.4;
+    transition: border-color 0.15s ease, box-shadow 0.15s ease, padding-left 0.15s ease;
   }
   #creator-dashboard .creator-chat-textarea:focus {
+    outline: none;
     border-color: var(--accent-cyan);
-    box-shadow: var(--shadow-glow);
+    box-shadow: 0 0 0 3px rgba(6, 182, 212, 0.15);
+    padding-left: 18px;
   }
   #creator-dashboard .send-button {
     background: var(--gradient-primary);
