@@ -45,6 +45,9 @@
     --shadow-lg: 0 8px 40px rgba(0,0,0,0.13);
     --error: #EF4444;
     --radius-full: 999px;
+    --radius-md: 10px;
+    --text-secondary: #a3a3a3;
+    --accent-cyan: #38bdf8;
   }
 
   body {
@@ -1831,32 +1834,223 @@
     vertical-align: middle;
   }
 
-  /* Chat bidireccional (creador ↔ fan) */
-  #creator-dashboard .chat-wrapper {
+  /* Mensajes: layout sidebar + chat (creador) */
+  #creator-dashboard .creator-messages-layout.messages-layout {
+    display: flex;
+    align-items: stretch;
+    width: 100%;
+    max-width: 1200px;
+    min-height: calc(100vh - 220px);
+    max-height: calc(100vh - 140px);
     background: var(--bg-primary);
-    border: 1px solid var(--border-light);
     border-radius: var(--radius-lg);
+    overflow: hidden;
+    border: 1px solid var(--border-light);
+  }
+  #creator-dashboard .conversations-sidebar {
+    width: 320px;
+    flex-shrink: 0;
+    border-right: 1px solid var(--border-light);
     display: flex;
     flex-direction: column;
-    height: 500px;
+    background: var(--bg-secondary);
+    min-height: 0;
+  }
+  #creator-dashboard .conversations-sidebar .sidebar-header {
+    padding: 16px;
+    border-bottom: 1px solid var(--border-light);
+    flex-shrink: 0;
+  }
+  #creator-dashboard .conversations-sidebar .sidebar-header h3 {
+    margin: 0 0 12px 0;
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--text-primary);
+  }
+  #creator-dashboard .search-box input {
+    width: 100%;
+    box-sizing: border-box;
+    background: var(--bg-tertiary);
+    border: 1px solid var(--border-light);
+    border-radius: var(--radius-md);
+    padding: 8px 12px;
+    color: var(--text-primary);
+    font-size: 0.875rem;
+    font-family: inherit;
+    outline: none;
+  }
+  #creator-dashboard .search-box input:focus {
+    border-color: var(--accent-cyan);
+    box-shadow: 0 0 0 1px rgba(56, 189, 248, 0.25);
+  }
+  #creator-dashboard .conversations-list {
     flex: 1;
-    min-width: 280px;
-    max-width: 560px;
+    overflow-y: auto;
+    min-height: 0;
+  }
+  #creator-dashboard .conversation-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 12px 16px;
+    cursor: pointer;
+    transition: background 0.15s;
+    border-bottom: 1px solid var(--border-light);
+  }
+  #creator-dashboard .conversation-item:hover {
+    background: rgba(255, 255, 255, 0.05);
+  }
+  #creator-dashboard .conversation-item.active {
+    background: rgba(139, 92, 246, 0.12);
+    border-left: 3px solid var(--accent-cyan);
+    padding-left: 13px;
+  }
+  #creator-dashboard .conversation-avatar {
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    background: var(--gradient-primary);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 800;
+    font-size: 1rem;
+    color: white;
+    flex-shrink: 0;
+  }
+  #creator-dashboard .conversation-info {
+    flex: 1;
+    min-width: 0;
+  }
+  #creator-dashboard .conversation-name {
+    font-weight: 700;
+    font-size: 0.88rem;
+    color: var(--text-primary);
+    margin-bottom: 4px;
+  }
+  #creator-dashboard .conversation-preview {
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  #creator-dashboard .conversation-meta {
+    text-align: right;
+    flex-shrink: 0;
+    max-width: 72px;
+  }
+  #creator-dashboard .conversation-time {
+    font-size: 0.65rem;
+    color: var(--text-tertiary);
+    margin-bottom: 4px;
+  }
+  #creator-dashboard .conversations-list .unread-badge {
+    display: inline-block;
+    background: var(--error);
+    color: white;
+    font-size: 0.65rem;
+    font-weight: 700;
+    padding: 2px 6px;
+    border-radius: var(--radius-full);
+    min-width: 18px;
+    text-align: center;
+  }
+  #creator-dashboard .conversations-empty {
+    padding: 28px 16px;
+    text-align: center;
+    color: var(--text-tertiary);
+    font-size: 0.85rem;
+  }
+  #creator-dashboard .creator-messages-main {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    min-height: 0;
+    position: relative;
+    background: var(--bg-primary);
+  }
+  #creator-dashboard #empty-chat-state.empty-chat-state {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 32px 24px;
+    min-height: 280px;
+  }
+  #creator-dashboard #empty-chat-state .empty-icon {
+    font-size: 3rem;
+    opacity: 0.45;
+    margin-bottom: 12px;
+  }
+  #creator-dashboard #empty-chat-state h3 {
+    color: var(--text-primary);
+    font-size: 1.05rem;
+    font-weight: 700;
+    margin-bottom: 8px;
+  }
+  #creator-dashboard #empty-chat-state .empty-subtitle {
+    color: var(--text-tertiary);
+    font-size: 0.875rem;
+    max-width: 280px;
+    line-height: 1.45;
+  }
+
+  /* Chat bidireccional (creador ↔ fan) */
+  #creator-dashboard #chat-panel.chat-wrapper {
+    flex: 1;
+    display: none;
+    flex-direction: column;
+    min-width: 0;
+    min-height: 0;
+    background: var(--bg-primary);
+    border: none;
+    border-radius: 0;
+    max-width: none;
+    height: auto;
+  }
+  #creator-dashboard #chat-panel.chat-wrapper.chat-panel--open {
+    display: flex;
   }
   #creator-dashboard .chat-header {
     display: flex;
     align-items: center;
     gap: 10px;
-    padding: 14px;
+    padding: 14px 16px;
     background: var(--bg-secondary);
     border-bottom: 1px solid var(--border-light);
-    color: var(--text-primary);
-    font-weight: 600;
-    font-size: 0.95rem;
+    flex-shrink: 0;
   }
-  #creator-dashboard .chat-header #chat-user-name {
+  #creator-dashboard .chat-user-info {
+    display: flex;
+    align-items: center;
+    gap: 12px;
     flex: 1;
     min-width: 0;
+  }
+  #creator-dashboard .chat-avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: var(--gradient-primary);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 800;
+    font-size: 1rem;
+    color: white;
+    flex-shrink: 0;
+  }
+  #creator-dashboard .chat-user-name {
+    font-weight: 700;
+    font-size: 0.95rem;
+    color: var(--text-primary);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
   }
   #creator-dashboard .chat-close {
     background: transparent;
@@ -1867,6 +2061,7 @@
     line-height: 1;
     padding: 4px 8px;
     border-radius: 8px;
+    flex-shrink: 0;
   }
   #creator-dashboard .chat-close:hover {
     color: var(--text-primary);
@@ -1880,15 +2075,16 @@
     flex-direction: column;
     gap: 10px;
     background: var(--bg-primary);
+    min-height: 0;
   }
-  #creator-dashboard .chat-empty-state {
+  #creator-dashboard .chat-messages .chat-empty-state {
     text-align: center;
     margin-top: 40px;
     color: var(--text-tertiary);
     font-size: 0.85rem;
     line-height: 1.5;
   }
-  #creator-dashboard .chat-empty-state .chat-empty-sub {
+  #creator-dashboard .chat-messages .chat-empty-state .chat-empty-sub {
     display: block;
     font-size: 0.75rem;
     margin-top: 8px;
@@ -1922,36 +2118,67 @@
   #creator-dashboard .chat-bubble.other .chat-time {
     color: var(--text-tertiary);
   }
-  #creator-dashboard .chat-input {
+  #creator-dashboard .chat-input-container {
     display: flex;
+    align-items: flex-end;
+    gap: 10px;
+    padding: 12px 16px;
     border-top: 1px solid var(--border-light);
     background: var(--bg-secondary);
+    flex-shrink: 0;
   }
-  #creator-dashboard .chat-input input {
+  #creator-dashboard .creator-chat-textarea {
     flex: 1;
+    min-height: 44px;
+    max-height: 160px;
+    resize: vertical;
     background: var(--bg-tertiary);
-    border: none;
-    padding: 12px;
+    border: 1px solid var(--border-light);
+    border-radius: var(--radius-md);
+    padding: 10px 14px;
     color: var(--text-primary);
     outline: none;
     font-family: inherit;
     font-size: 0.875rem;
+    line-height: 1.4;
   }
-  #creator-dashboard .chat-input input:focus {
+  #creator-dashboard .creator-chat-textarea:focus {
+    border-color: var(--accent-cyan);
     box-shadow: var(--shadow-glow);
   }
-  #creator-dashboard .chat-input button {
+  #creator-dashboard .send-button {
     background: var(--gradient-primary);
     border: none;
-    color: white;
-    padding: 0 16px;
+    border-radius: 50%;
+    width: 44px;
+    height: 44px;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     cursor: pointer;
-    font-weight: 600;
-    font-size: 0.85rem;
-    font-family: inherit;
+    color: white;
+    transition: transform 0.15s, filter 0.15s;
   }
-  #creator-dashboard .chat-input button:hover {
-    filter: brightness(1.05);
+  #creator-dashboard .send-button:hover {
+    transform: scale(1.05);
+    filter: brightness(1.06);
+  }
+  @media (max-width: 900px) {
+    #creator-dashboard .creator-messages-layout.messages-layout {
+      flex-direction: column;
+      max-height: none;
+      min-height: auto;
+    }
+    #creator-dashboard .conversations-sidebar {
+      width: 100%;
+      max-height: 280px;
+      border-right: none;
+      border-bottom: 1px solid var(--border-light);
+    }
+    #creator-dashboard .creator-messages-main {
+      min-height: 420px;
+    }
   }
 
   /* Subscription modal */
@@ -3006,17 +3233,39 @@
           <h2>📬 Mensajes de suscriptores</h2>
           <p>Chats con fans con suscripción activa</p>
         </div>
-        <div class="creator-messages-layout" style="display:flex;flex-wrap:wrap;gap:20px;align-items:flex-start;max-width:1100px;">
-          <div id="creator-messages-list" class="creator-inbox" style="display:flex;flex-direction:column;gap:12px;flex:1;min-width:260px;max-width:420px;"></div>
-          <div id="chat-panel" class="chat-wrapper" style="display:none;">
-            <div class="chat-header">
-              <button type="button" class="chat-close" onclick="closeChat()" aria-label="Cerrar chat">✕</button>
-              <span id="chat-user-name">Conversación</span>
+        <div class="creator-messages-layout messages-layout">
+          <aside class="conversations-sidebar">
+            <div class="sidebar-header">
+              <h3>💬 Conversaciones</h3>
+              <div class="search-box">
+                <input type="search" id="searchConversation" placeholder="Buscar fan..." autocomplete="off" />
+              </div>
             </div>
-            <div id="chat-messages" class="chat-messages"></div>
-            <div class="chat-input">
-              <input type="text" id="chat-input-field" placeholder="Escribe un mensaje..." maxlength="8000" autocomplete="off" />
-              <button type="button" onclick="sendMessage()">Enviar</button>
+            <div id="creator-messages-list" class="conversations-list"></div>
+          </aside>
+          <div class="creator-messages-main">
+            <div id="empty-chat-state" class="empty-chat-state">
+              <div class="empty-icon">💬</div>
+              <h3>Ninguna conversación seleccionada</h3>
+              <p class="empty-subtitle">Elige un mensaje de la lista para empezar</p>
+            </div>
+            <div id="chat-panel" class="chat-wrapper conversation-view">
+              <div class="chat-header">
+                <button type="button" class="chat-close" onclick="closeChat()" aria-label="Cerrar chat">✕</button>
+                <div class="chat-user-info">
+                  <div class="chat-avatar" id="chat-avatar" aria-hidden="true"></div>
+                  <span id="chat-user-name" class="chat-user-name">Conversación</span>
+                </div>
+              </div>
+              <div id="chat-messages" class="chat-messages"></div>
+              <div class="chat-input-container">
+                <textarea id="chat-input-field" class="creator-chat-textarea" rows="2" placeholder="Escribe un mensaje..." maxlength="8000" autocomplete="off"></textarea>
+                <button type="button" class="send-button" onclick="sendMessage()" aria-label="Enviar">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                    <path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z"/>
+                  </svg>
+                </button>
+              </div>
             </div>
           </div>
         </div>
@@ -4219,9 +4468,31 @@ function closeChat() {
   lastMessageCount = 0;
   stopChatPolling();
   const panel = document.getElementById('chat-panel');
-  if (panel) panel.style.display = 'none';
+  const empty = document.getElementById('empty-chat-state');
+  if (panel) {
+    panel.classList.remove('chat-panel--open');
+  }
+  if (empty) empty.style.display = 'flex';
+  document.querySelectorAll('#creator-messages-list .conversation-item').forEach(function (el) {
+    el.classList.remove('active');
+  });
   const inp = document.getElementById('chat-input-field');
   if (inp) inp.value = '';
+}
+
+function formatConversationTime(iso) {
+  if (!iso) return '';
+  const d = new Date(iso);
+  if (isNaN(d.getTime())) return '';
+  const now = new Date();
+  const sameDay =
+    d.getDate() === now.getDate() &&
+    d.getMonth() === now.getMonth() &&
+    d.getFullYear() === now.getFullYear();
+  if (sameDay) {
+    return d.toLocaleTimeString('es-MX', { hour: '2-digit', minute: '2-digit' });
+  }
+  return d.toLocaleDateString('es-MX', { day: 'numeric', month: 'short' });
 }
 
 async function openChat(userId, name) {
@@ -4229,8 +4500,18 @@ async function openChat(userId, name) {
   lastMessageCount = -1;
   const nameEl = document.getElementById('chat-user-name');
   const panel = document.getElementById('chat-panel');
+  const empty = document.getElementById('empty-chat-state');
+  const av = document.getElementById('chat-avatar');
+  if (empty) empty.style.display = 'none';
+  if (panel) panel.classList.add('chat-panel--open');
   if (nameEl) nameEl.textContent = name || 'Conversación';
-  if (panel) panel.style.display = 'flex';
+  if (av) {
+    var letter = String(name || 'C').trim().charAt(0).toUpperCase();
+    av.textContent = letter || '?';
+  }
+  document.querySelectorAll('#creator-messages-list .conversation-item').forEach(function (el) {
+    el.classList.toggle('active', el.getAttribute('data-fan-id') === userId);
+  });
   const msgs = await loadConversation();
   await markMessagesAsRead(msgs);
   startChatPolling();
@@ -4319,16 +4600,16 @@ async function loadCreatorInbox(silentRefresh) {
   const list = document.getElementById('creator-messages-list');
   if (!list || !CURRENT_USER || CURRENT_USER.role !== 'creator') return;
   if (!silentRefresh) {
-    list.innerHTML = '<div style="color:var(--gray-500);padding:20px;">Cargando…</div>';
+    list.innerHTML = '<div class="conversations-empty">Cargando…</div>';
   }
   const msgs = await api.get('/messages/' + encodeURIComponent(CURRENT_USER.id));
   if (msgs && msgs.error) {
-    list.innerHTML = '<div style="color:#b91c1c;padding:20px;">' + escapeHtml(msgs.error) + '</div>';
+    list.innerHTML =
+      '<div class="conversations-empty" style="color:#f87171;">' + escapeHtml(msgs.error) + '</div>';
     return;
   }
   if (!Array.isArray(msgs) || !msgs.length) {
-    list.innerHTML =
-      '<div style="padding:32px;text-align:center;color:var(--gray-500);">No hay mensajes aún.</div>';
+    list.innerHTML = '<div class="conversations-empty">No hay mensajes aún.</div>';
     return;
   }
 
@@ -4358,36 +4639,52 @@ async function loadCreatorInbox(silentRefresh) {
     .map(function (m) {
       const fanId = m.sender_id;
       const unreadCount = unreadCountByFan[fanId] || 0;
-      const unread = unreadCount > 0;
       const displayName = (m.sender_name || m.handle || 'Fan').trim();
-      const h = escapeHtml((m.handle || '').replace(/^@/, '') || m.sender_name || 'fan');
-      const body = escapeHtml((m.content || '').slice(0, 160));
-      const dt = m.created_at ? new Date(m.created_at).toLocaleString('es') : '';
+      const handleRaw = (m.handle || '').replace(/^@/, '') || m.sender_name || 'fan';
+      const handleDisplay = '@' + handleRaw;
+      const initial = String(handleRaw).charAt(0).toUpperCase() || 'F';
+      const previewRaw = (m.content || '').slice(0, 80);
+      const body = escapeHtml(previewRaw);
+      const t = formatConversationTime(m.created_at);
+      const searchIdx = (handleDisplay + ' ' + displayName + ' ' + (m.content || '')).toLowerCase().slice(0, 500);
       return (
-        '<div class="creator-inbox-msg ' +
-        (unread ? 'unread' : 'read') +
-        '" data-fan-id="' +
+        '<div class="conversation-item" data-fan-id="' +
         escapeHtml(fanId) +
+        '" data-search="' +
+        escapeHtml(searchIdx) +
         '" onclick="openChat(' +
         JSON.stringify(fanId) +
         ', ' +
         JSON.stringify(displayName) +
         ')">' +
-        '<div class="inbox-sender">@' +
-        h +
-        (unreadCount > 0 ? '<span class="unread-badge">' + unreadCount + '</span>' : '') +
+        '<div class="conversation-avatar">' +
+        escapeHtml(initial) +
         '</div>' +
-        '<div class="inbox-body">' +
+        '<div class="conversation-info">' +
+        '<div class="conversation-name">' +
+        escapeHtml(handleDisplay) +
+        '</div>' +
+        '<div class="conversation-preview">' +
         body +
-        (m.content && m.content.length > 160 ? '…' : '') +
+        (m.content && m.content.length > 80 ? '…' : '') +
         '</div>' +
-        '<div class="inbox-meta">' +
-        escapeHtml(dt) +
+        '</div>' +
+        '<div class="conversation-meta">' +
+        '<div class="conversation-time">' +
+        escapeHtml(t) +
+        '</div>' +
+        (unreadCount > 0 ? '<span class="unread-badge">' + unreadCount + '</span>' : '') +
         '</div>' +
         '</div>'
       );
     })
     .join('');
+
+  if (activeChatUser) {
+    document.querySelectorAll('#creator-messages-list .conversation-item').forEach(function (el) {
+      el.classList.toggle('active', el.getAttribute('data-fan-id') === activeChatUser);
+    });
+  }
 }
 
 async function markCreatorMessageRead(el) {
@@ -5581,6 +5878,13 @@ document.addEventListener('DOMContentLoaded', () => {
       e.preventDefault();
       sendMessage();
     }
+  });
+  document.getElementById('searchConversation')?.addEventListener('input', function (e) {
+    const q = (e.target.value || '').trim().toLowerCase();
+    document.querySelectorAll('#creator-messages-list .conversation-item').forEach(function (row) {
+      const hay = (row.getAttribute('data-search') || '').toLowerCase();
+      row.style.display = !q || hay.indexOf(q) !== -1 ? '' : 'none';
+    });
   });
   document.getElementById('donate-modal')?.addEventListener('click', function (e) {
     if (e.target === this) closeDonateModal();
