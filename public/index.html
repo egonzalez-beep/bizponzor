@@ -1007,6 +1007,74 @@
     display: none !important;
   }
 
+  #creator-dashboard .calendar-container {
+    background: #1a1a1a;
+    border-radius: 16px;
+    padding: 20px;
+    border: 1px solid #2a2a2a;
+    max-width: 520px;
+  }
+  #creator-dashboard .calendar-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
+    color: #ffffff;
+  }
+  #creator-dashboard .calendar-header h3 {
+    font-size: 1rem;
+    font-weight: 700;
+    margin: 0;
+  }
+  #creator-dashboard .calendar-header button {
+    background: #2a2a2a;
+    border: none;
+    color: #ffffff;
+    padding: 6px 12px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 1.1rem;
+    line-height: 1;
+  }
+  #creator-dashboard .calendar-header button:hover {
+    background: #3a3a3a;
+  }
+  #creator-dashboard .calendar-weekdays {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    text-align: center;
+    font-size: 0.7rem;
+    color: #888888;
+    margin-bottom: 10px;
+  }
+  #creator-dashboard .calendar-days {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 6px;
+  }
+  #creator-dashboard .calendar-day {
+    aspect-ratio: 1;
+    background: #111111;
+    border-radius: 10px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.8rem;
+    color: #aaaaaa;
+    min-height: 0;
+  }
+  #creator-dashboard .calendar-day.has-content {
+    background: rgba(34, 197, 94, 0.15);
+    color: #22c55e;
+    font-weight: 600;
+  }
+  #creator-dashboard .calendar-day span {
+    font-size: 0.65rem;
+    font-weight: 600;
+    margin-top: 2px;
+  }
+
   #creator-dashboard .page-header h2,
   #fan-dashboard .page-header h2 { color: #FFFFFF; }
   #creator-dashboard .page-header p,
@@ -2361,6 +2429,7 @@
         <div class="sidebar-item" id="sidebar-tab-upload" onclick="setDashTab('upload', this)"><span class="icon">⬆️</span> Subir</div>
         <div class="sidebar-item" id="sidebar-tab-plans" onclick="setDashTab('plans', this)"><span class="icon">💳</span> Mis Planes</div>
         <div class="sidebar-item" id="sidebar-tab-messages" onclick="setDashTab('messages', this)"><span class="icon">📬</span> Mensajes</div>
+        <div class="sidebar-item" id="sidebar-tab-calendar" onclick="setDashTab('calendar', this)"><span class="icon">📅</span> Calendario</div>
       </div>
       <div class="sidebar-section">
         <div class="sidebar-label">CUENTA</div>
@@ -2686,6 +2755,27 @@
           <p>Solo fans con suscripción activa pueden escribirte</p>
         </div>
         <div id="creator-messages-list" class="creator-inbox" style="display:flex;flex-direction:column;gap:12px;max-width:720px;"></div>
+      </div>
+
+      <div id="dash-calendar" style="display:none;">
+        <div class="page-header">
+          <h2>📅 Calendario</h2>
+          <p>Contenido programado por día</p>
+        </div>
+
+        <div class="calendar-container">
+          <div class="calendar-header">
+            <button type="button" onclick="changeMonth(-1)">‹</button>
+            <h3 id="calendar-month-year"></h3>
+            <button type="button" onclick="changeMonth(1)">›</button>
+          </div>
+
+          <div class="calendar-weekdays">
+            <span>D</span><span>L</span><span>M</span><span>M</span><span>J</span><span>V</span><span>S</span>
+          </div>
+
+          <div id="calendar-days" class="calendar-days"></div>
+        </div>
       </div>
 
       </div>
@@ -3126,7 +3216,7 @@
 
   function setDashTab(tab, el) {
     unmountCreatorProfileFromEmbed();
-    const tabs = ['content','upload','plans','messages','settings','earnings'];
+    const tabs = ['content','upload','plans','messages','calendar','settings','earnings'];
     tabs.forEach(t => {
       const el = document.getElementById('dash-' + t);
       if (el) el.style.display = 'none';
@@ -3149,6 +3239,9 @@
       if (tab === 'earnings' && typeof loadEarnings === 'function') loadEarnings();
       if (tab === 'settings' && typeof loadProfileSettings === 'function') {
         loadProfileSettings();
+      }
+      if (tab === 'calendar' && typeof loadScheduledSummary === 'function') {
+        loadScheduledSummary();
       }
     } catch (e) {
       console.error('[BizPonzor] Error loading creator dashboard tab:', tab, e);
@@ -3995,6 +4088,74 @@ async function loadCreatorDashboard() {
   }
 
   await loadMyContent();
+}
+
+var currentCalendarDate = new Date();
+var scheduledSummary = {};
+
+async function loadScheduledSummary() {
+  const res = await api.get('/content/scheduled-summary');
+  if (!res.error) scheduledSummary = res;
+  renderCalendar();
+}
+
+function renderCalendar() {
+  const year = currentCalendarDate.getFullYear();
+  const month = currentCalendarDate.getMonth();
+
+  const firstDay = new Date(year, month, 1);
+  const lastDay = new Date(year, month + 1, 0);
+
+  const startOffset = firstDay.getDay();
+  const daysInMonth = lastDay.getDate();
+
+  const monthNames = [
+    'Enero',
+    'Febrero',
+    'Marzo',
+    'Abril',
+    'Mayo',
+    'Junio',
+    'Julio',
+    'Agosto',
+    'Septiembre',
+    'Octubre',
+    'Noviembre',
+    'Diciembre'
+  ];
+  const myEl = document.getElementById('calendar-month-year');
+  if (myEl) myEl.textContent = monthNames[month] + ' ' + year;
+
+  const container = document.getElementById('calendar-days');
+  if (!container) return;
+  container.innerHTML = '';
+
+  for (let i = 0; i < startOffset; i++) {
+    container.innerHTML += '<div></div>';
+  }
+
+  for (let d = 1; d <= daysInMonth; d++) {
+    const dateStr =
+      year +
+      '-' +
+      String(month + 1).padStart(2, '0') +
+      '-' +
+      String(d).padStart(2, '0');
+    const count = scheduledSummary[dateStr] || 0;
+
+    container.innerHTML +=
+      '<div class="calendar-day' +
+      (count ? ' has-content' : '') +
+      '">' +
+      d +
+      (count ? '<span>' + count + '</span>' : '') +
+      '</div>';
+  }
+}
+
+function changeMonth(delta) {
+  currentCalendarDate.setMonth(currentCalendarDate.getMonth() + delta);
+  renderCalendar();
 }
 
 function redirectMercadoPagoOAuth() {

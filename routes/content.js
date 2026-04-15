@@ -299,6 +299,30 @@ router.get('/my', authMiddleware, requireCreator, (req, res) => {
   );
 });
 
+router.get('/scheduled-summary', authMiddleware, requireCreator, (req, res) => {
+  const userId = req.user.id;
+
+  const rows = db
+    .prepare(
+      `SELECT
+        DATE(scheduled_for) AS day,
+        COUNT(*) AS total
+      FROM content
+      WHERE creator_id = ?
+        AND status = 'scheduled'
+        AND scheduled_for IS NOT NULL
+      GROUP BY DATE(scheduled_for)`
+    )
+    .all(userId);
+
+  const summary = {};
+  rows.forEach((r) => {
+    summary[r.day] = r.total;
+  });
+
+  res.json(summary);
+});
+
 router.delete('/:id', authMiddleware, (req, res) => {
   const c = db.prepare('SELECT * FROM content WHERE id=? AND creator_id=?').get(req.params.id, req.user.id);
   if (!c) return res.status(404).json({ error: 'No encontrado' });
