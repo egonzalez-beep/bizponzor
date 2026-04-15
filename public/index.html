@@ -4648,15 +4648,13 @@ async function loadCreatorInbox(silentRefresh) {
       const t = formatConversationTime(m.created_at);
       const searchIdx = (handleDisplay + ' ' + displayName + ' ' + (m.content || '')).toLowerCase().slice(0, 500);
       return (
-        '<div class="conversation-item" data-fan-id="' +
+        '<div class="conversation-item" role="button" tabindex="0" data-fan-id="' +
         escapeHtml(fanId) +
         '" data-search="' +
         escapeHtml(searchIdx) +
-        '" onclick="openChat(' +
-        JSON.stringify(fanId) +
-        ', ' +
-        JSON.stringify(displayName) +
-        ')">' +
+        '" data-fan-name-enc="' +
+        encodeURIComponent(displayName) +
+        '">' +
         '<div class="conversation-avatar">' +
         escapeHtml(initial) +
         '</div>' +
@@ -5885,6 +5883,27 @@ document.addEventListener('DOMContentLoaded', () => {
       const hay = (row.getAttribute('data-search') || '').toLowerCase();
       row.style.display = !q || hay.indexOf(q) !== -1 ? '' : 'none';
     });
+  });
+  document.getElementById('creator-messages-list')?.addEventListener('click', function (e) {
+    const row = e.target.closest('.conversation-item');
+    if (!row || !this.contains(row)) return;
+    const fanId = row.getAttribute('data-fan-id');
+    if (!fanId) return;
+    var displayName = 'Fan';
+    try {
+      var enc = row.getAttribute('data-fan-name-enc');
+      if (enc) displayName = decodeURIComponent(enc);
+    } catch (err) {
+      displayName = 'Fan';
+    }
+    openChat(fanId, displayName);
+  });
+  document.getElementById('creator-messages-list')?.addEventListener('keydown', function (e) {
+    if (e.key !== 'Enter' && e.key !== ' ') return;
+    const row = e.target.closest('.conversation-item');
+    if (!row || !this.contains(row)) return;
+    e.preventDefault();
+    row.click();
   });
   document.getElementById('donate-modal')?.addEventListener('click', function (e) {
     if (e.target === this) closeDonateModal();
