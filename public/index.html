@@ -924,87 +924,83 @@
   }
   .plan-feature::before { content: '✓'; font-weight: 800; color: var(--black); }
 
-  /* Creator onboarding (perfil) */
-  .onboarding-card {
+  /* Creator onboarding (perfil) — compacto en Configuración */
+  #creator-dashboard .onboarding-card {
     background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
-    border-radius: 20px;
-    padding: 20px 24px;
-    margin-bottom: 28px;
+    border-radius: 16px;
+    padding: 16px 18px;
+    margin-bottom: 20px;
+    max-width: 600px;
     border: 1px solid rgba(56, 189, 248, 0.25);
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.18);
   }
-  .onboarding-header {
+  #creator-dashboard .onboarding-header {
     display: flex;
     align-items: center;
-    gap: 14px;
-    margin-bottom: 18px;
+    gap: 12px;
+    margin-bottom: 14px;
   }
-  .onboarding-icon { font-size: 2.2rem; line-height: 1; }
-  .onboarding-info { flex: 1; min-width: 0; }
-  .onboarding-title { font-size: 1rem; font-weight: 700; color: #ffffff; margin-bottom: 2px; }
-  .onboarding-subtitle { font-size: 0.75rem; color: #a3a3a3; }
-  .onboarding-bar {
+  #creator-dashboard .onboarding-icon { font-size: 1.75rem; line-height: 1; }
+  #creator-dashboard .onboarding-info { flex: 1; min-width: 0; }
+  #creator-dashboard .onboarding-title { font-size: 0.95rem; font-weight: 700; color: #ffffff; margin-bottom: 2px; }
+  #creator-dashboard .onboarding-subtitle { font-size: 0.72rem; color: #a3a3a3; line-height: 1.35; }
+  #creator-dashboard .onboarding-bar {
     height: 8px;
     background: #1e2a3a;
     border-radius: 10px;
     overflow: hidden;
-    margin-bottom: 20px;
+    margin-bottom: 0;
   }
-  .onboarding-fill {
+  #creator-dashboard .onboarding-fill {
     height: 100%;
     width: 0%;
     border-radius: 10px;
-    transition: width 0.5s ease, background 0.35s ease;
+    transition: width 0.35s ease;
   }
-  .onboarding-steps {
-    display: flex;
+  #creator-dashboard #onboarding-steps.onboarding-steps {
+    display: none;
     flex-direction: column;
     gap: 6px;
-    margin-bottom: 12px;
+    margin-top: 12px;
+    padding-top: 12px;
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
   }
-  .onboarding-step {
+  #creator-dashboard .onboarding-toggle {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    gap: 6px;
+    cursor: pointer;
+    font-size: 0.75rem;
+    color: #38bdf8;
+    margin-top: 10px;
+    user-select: none;
+  }
+  #creator-dashboard .onboarding-toggle:hover {
+    opacity: 0.9;
+  }
+  #creator-dashboard #toggle-icon {
+    transition: transform 0.2s ease;
+    font-size: 0.65rem;
+  }
+  #creator-dashboard .onboarding-step {
     display: flex;
     align-items: center;
-    gap: 12px;
-    padding: 8px 12px;
-    font-size: 0.85rem;
+    gap: 10px;
+    padding: 6px 10px;
+    font-size: 0.8rem;
     color: #c4c4c4;
     cursor: pointer;
-    transition: all 0.2s ease;
-    border-radius: 10px;
+    border-radius: 8px;
+    transition: background 0.15s ease;
   }
-  .onboarding-step:hover {
-    background: rgba(56, 189, 248, 0.1);
-    transform: translateX(4px);
+  #creator-dashboard .onboarding-step:hover {
+    background: rgba(56, 189, 248, 0.08);
   }
-  .onboarding-step.next {
+  #creator-dashboard .onboarding-step.next {
     background: rgba(56, 189, 248, 0.12);
-    border: 1px solid rgba(56, 189, 248, 0.3);
-    border-radius: 10px;
-    margin: 2px 0;
-    padding-left: 8px;
-  }
-  .onboarding-step-icon { width: 28px; font-size: 1rem; text-align: center; flex-shrink: 0; }
-  .onboarding-step-name { flex: 1; min-width: 0; }
-  .onboarding-step-status { font-size: 1rem; flex-shrink: 0; }
-  .onboarding-step-status.done { color: #38bdf8; }
-  .onboarding-step-status.pending { color: #475569; }
-  .onboarding-footer {
-    text-align: right;
-    padding-top: 8px;
-  }
-  .onboarding-link {
-    color: #38bdf8;
-    font-size: 0.8rem;
-    font-weight: 600;
-    text-decoration: none;
-  }
-  .onboarding-link:hover {
-    text-decoration: underline;
-    opacity: 0.85;
-  }
-  .onboarding-card.complete {
-    display: none !important;
+    border-radius: 8px;
+    padding: 6px 10px;
   }
 
   #creator-dashboard .calendar-container {
@@ -2449,22 +2445,6 @@
           <h2>Mi Contenido</h2>
           <p>Gestiona tus fotos y videos publicados</p>
         </div>
-        <div id="onboarding-card" class="onboarding-card" style="display:none;">
-          <div class="onboarding-header">
-            <span class="onboarding-icon" aria-hidden="true">🎯</span>
-            <div class="onboarding-info">
-              <div id="onboarding-title" class="onboarding-title">Configura tu perfil</div>
-              <div id="onboarding-subtitle" class="onboarding-subtitle"></div>
-            </div>
-          </div>
-          <div class="onboarding-bar" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-labelledby="onboarding-title">
-            <div id="onboarding-fill" class="onboarding-fill"></div>
-          </div>
-          <div id="onboarding-steps" class="onboarding-steps"></div>
-          <div class="onboarding-footer">
-            <a href="#" class="onboarding-link" onclick="showCreatorProfile(); return false;">Ver mi perfil público</a>
-          </div>
-        </div>
         <div id="dash-content-filters" style="display:flex;gap:12px;margin-bottom:24px;flex-wrap:wrap;">
           <button type="button" class="tag-pill filter-pill filter-pill-active" data-filter="all" onclick="applyContentFilter('all')">Todos (<span id="filter-count-all">0</span>)</button>
           <button type="button" class="tag-pill filter-pill" data-filter="photo" onclick="applyContentFilter('photo')">Fotos (<span id="filter-count-photo">0</span>)</button>
@@ -2623,6 +2603,28 @@
           <h2>Configuración de Perfil</h2>
           <p>Edita cómo te ven tus patrocinadores</p>
         </div>
+
+        <div id="onboarding-card" class="onboarding-card" style="display: none;">
+          <div class="onboarding-header">
+            <div class="onboarding-icon">🚀</div>
+            <div class="onboarding-info">
+              <div id="onboarding-title" class="onboarding-title">Configura tu perfil</div>
+              <div id="onboarding-subtitle" class="onboarding-subtitle"></div>
+            </div>
+          </div>
+
+          <div class="onboarding-bar">
+            <div id="onboarding-fill" class="onboarding-fill"></div>
+          </div>
+
+          <div class="onboarding-toggle" onclick="toggleOnboarding()">
+            <span id="toggle-text">Ver detalles</span>
+            <span id="toggle-icon">▼</span>
+          </div>
+
+          <div id="onboarding-steps" class="onboarding-steps"></div>
+        </div>
+
         <div class="dash-settings-card" style="background:var(--white);border:1px solid var(--gray-200);border-radius:var(--radius);padding:28px;max-width:600px;">
           <div class="form-group">
             <label class="form-label">Nombre de usuario</label>
@@ -3915,10 +3917,20 @@ function logout() {
 }
 
 // ─── CREATOR DASHBOARD ──────────────────────────────────
-var completionTimeout = null;
+var onboardingExpanded = false;
 
-function getBarGradient(percent) {
-  return 'linear-gradient(90deg, #1E3A5F 0%, #2563EB 25%, #3B82F6 50%, #60A5FA 75%, #06B6D4 100%)';
+function toggleOnboarding() {
+  onboardingExpanded = !onboardingExpanded;
+
+  const steps = document.getElementById('onboarding-steps');
+  const text = document.getElementById('toggle-text');
+  const icon = document.getElementById('toggle-icon');
+
+  if (!steps) return;
+
+  steps.style.display = onboardingExpanded ? 'flex' : 'none';
+  if (text) text.textContent = onboardingExpanded ? 'Ocultar detalles' : 'Ver detalles';
+  if (icon) icon.style.transform = onboardingExpanded ? 'rotate(180deg)' : 'rotate(0deg)';
 }
 
 function goToStep(stepId, tabName) {
@@ -3938,113 +3950,69 @@ function goToStep(stepId, tabName) {
   }
 }
 
-function renderOnboardingCard(onboardingData) {
+function renderOnboardingCard(data) {
+  if (!data) return;
+
   const container = document.getElementById('onboarding-card');
   const stepsContainer = document.getElementById('onboarding-steps');
   const titleEl = document.getElementById('onboarding-title');
   const subtitleEl = document.getElementById('onboarding-subtitle');
   const fillEl = document.getElementById('onboarding-fill');
-  const barEl = container && container.querySelector('.onboarding-bar');
+  const toggleText = document.getElementById('toggle-text');
+  const toggleIcon = document.getElementById('toggle-icon');
 
-  if (!container || !onboardingData || !stepsContainer || !titleEl || !subtitleEl || !fillEl) return;
+  if (!container || !stepsContainer || !titleEl || !subtitleEl || !fillEl) return;
 
-  const { percent, completedEffective, totalEffective, steps, allCompleted } = onboardingData;
-  const remaining = totalEffective - completedEffective;
-  const effectiveComplete = percent >= 100;
+  const { percent = 0, steps = [] } = data;
 
-  if (completionTimeout) clearTimeout(completionTimeout);
+  const completed = steps.filter(function (s) {
+    return s.done && !s.isBonus;
+  }).length;
+  const total = steps.filter(function (s) {
+    return !s.isBonus;
+  }).length;
+  const remaining = total - completed;
 
-  if (allCompleted || effectiveComplete) {
-    titleEl.textContent = '🎉 Sin tareas pendientes ✅';
-    subtitleEl.innerHTML = '✨ ¡Tu perfil está listo! 🔥';
+  if (completed === 0) titleEl.textContent = '🎯 Configura tu perfil';
+  else if (remaining > 0) titleEl.textContent = '🚀 Ya casi está listo';
+  else titleEl.textContent = '🎉 Sin tareas pendientes';
 
-    fillEl.style.width = '100%';
-    fillEl.style.background = getBarGradient(100);
-    if (barEl) barEl.setAttribute('aria-valuenow', '100');
-
-    container.style.display = 'block';
-    container.classList.remove('complete');
-    stepsContainer.innerHTML = (steps || [])
-      .map(function (step) {
-        const done = step.done ? 'done' : 'pending';
-        const mark = step.done ? '✓' : '○';
-        return (
-          '<div class="onboarding-step">' +
-          '<span class="onboarding-step-icon">' +
-          escapeHtml(step.icon) +
-          '</span>' +
-          '<span class="onboarding-step-name">' +
-          escapeHtml(step.name) +
-          '</span>' +
-          '<span class="onboarding-step-status ' +
-          done +
-          '">' +
-          mark +
-          '</span></div>'
-        );
-      })
-      .join('');
-
-    completionTimeout = setTimeout(function () {
-      container.style.display = 'none';
-      container.classList.add('complete');
-    }, 4000);
-    return;
-  }
-
-  if (completedEffective === 0) titleEl.textContent = '🎯 Configura tu perfil';
-  else if (completedEffective < 3) titleEl.textContent = '🔥 ¡Vas bien! Sigue así';
-  else if (completedEffective < 5) titleEl.textContent = '🚀 Ya casi está listo';
-  else titleEl.textContent = '✨ Último paso para destacar';
-
-  if (remaining === 0) {
-    subtitleEl.innerHTML = '⭐ Bonus: consigue tu primer suscriptor';
-  } else {
-    subtitleEl.innerHTML =
-      'Completa <span id="remaining-steps">' +
-      remaining +
-      '</span> paso' +
-      (remaining !== 1 ? 's' : '') +
-      ' más';
-  }
+  subtitleEl.textContent =
+    remaining > 0
+      ? 'Completa ' + remaining + ' paso' + (remaining !== 1 ? 's' : '') + ' más'
+      : 'Tu perfil está listo';
 
   fillEl.style.width = percent + '%';
-  fillEl.style.background = getBarGradient(percent);
-  fillEl.style.backgroundSize = '200% 100%';
-  fillEl.style.backgroundPosition = percent + '% 0%';
-  if (barEl) barEl.setAttribute('aria-valuenow', String(percent));
+  fillEl.style.background = 'linear-gradient(90deg, #1E3A5F, #06B6D4)';
 
   container.style.display = 'block';
-  container.classList.remove('complete');
 
-  const nextStep = (steps || []).find(function (s) {
+  onboardingExpanded = false;
+  stepsContainer.style.display = 'none';
+  if (toggleText) toggleText.textContent = 'Ver detalles';
+  if (toggleIcon) toggleIcon.style.transform = 'rotate(0deg)';
+
+  const nextStep = steps.find(function (s) {
     return !s.done && !s.isBonus;
   });
 
-  stepsContainer.innerHTML = (steps || [])
+  stepsContainer.innerHTML = steps
     .map(function (step) {
-      const isNext = !step.done && nextStep && step.id === nextStep.id;
-      const done = step.done ? 'done' : 'pending';
-      const mark = step.done ? '✓' : '○';
+      const isNext = nextStep && step.id === nextStep.id;
       const tab = step.tab != null ? step.tab : '';
       return (
-        '<div class="onboarding-step ' +
-        (isNext ? 'next' : '') +
-        '" role="button" tabindex="0" onclick="goToStep(' +
+        '<div class="onboarding-step' +
+        (isNext ? ' next' : '') +
+        '" onclick="goToStep(' +
         JSON.stringify(step.id) +
         ', ' +
         JSON.stringify(tab) +
-        ')">' +
-        '<span class="onboarding-step-icon">' +
+        ')"><span>' +
         escapeHtml(step.icon) +
-        '</span>' +
-        '<span class="onboarding-step-name">' +
+        '</span><span style="flex:1">' +
         escapeHtml(step.name) +
-        '</span>' +
-        '<span class="onboarding-step-status ' +
-        done +
-        '">' +
-        mark +
+        '</span><span>' +
+        (step.done ? '✓' : '○') +
         '</span></div>'
       );
     })
@@ -4054,13 +4022,12 @@ function renderOnboardingCard(onboardingData) {
 async function refreshOnboarding() {
   if (!CURRENT_USER || CURRENT_USER.role !== 'creator') return;
   const userData = await api.get('/auth/me');
-  if (!userData || userData.error || !userData.onboarding) return;
-  const onboarding = userData.onboarding;
+  if (!userData || userData.error) return;
   const rest = Object.assign({}, userData);
   delete rest.onboarding;
   CURRENT_USER = Object.assign({}, CURRENT_USER, rest);
   localStorage.setItem('bp_user', JSON.stringify(CURRENT_USER));
-  renderOnboardingCard(onboarding);
+  renderOnboardingCard(userData.onboarding);
 }
 
 async function loadCreatorDashboard() {
