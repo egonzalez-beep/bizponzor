@@ -1632,57 +1632,15 @@
   #creator-profile-inner #profile-plans-intro {
     color: #A3A3A3 !important;
   }
-  #creator-profile-inner #profile-message-wrap .profile-chat-messages {
-    min-height: 200px;
-    max-height: 320px;
-    overflow-y: auto;
-    padding: 12px;
-    display: flex;
-    flex-direction: column;
+  #creator-profile-inner .profile-chat-cta .btn-chat {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
     gap: 10px;
-    background: var(--bg-primary);
-    border: 1px solid var(--border-light);
-    border-radius: var(--radius-lg);
-    margin-bottom: 12px;
   }
-  #creator-profile-inner .profile-chat-bubble {
-    padding: 10px 14px;
-    border-radius: var(--radius-lg);
-    max-width: 85%;
-    font-size: 0.85rem;
-    line-height: 1.4;
-    word-break: break-word;
-    white-space: pre-wrap;
-  }
-  #creator-profile-inner .profile-chat-bubble.me {
-    align-self: flex-end;
-    background: var(--gradient-primary);
-    color: var(--white);
-    border-bottom-right-radius: 4px;
-  }
-  #creator-profile-inner .profile-chat-bubble.other {
-    align-self: flex-start;
-    background: var(--bg-tertiary);
-    color: var(--text-primary);
-    border: 1px solid var(--border-light);
-    border-bottom-left-radius: 4px;
-  }
-  #creator-profile-inner .profile-chat-time {
-    font-size: 10px;
-    margin-top: 4px;
-    opacity: 0.85;
-  }
-  #creator-profile-inner .profile-chat-bubble.other .profile-chat-time {
-    color: var(--text-tertiary);
-    opacity: 1;
-  }
-  #creator-profile-inner .profile-chat-empty {
-    text-align: center;
-    margin: auto;
-    padding: 20px 12px;
-    color: var(--text-tertiary);
-    font-size: 0.85rem;
-    line-height: 1.5;
+  #creator-profile-inner .profile-chat-cta .btn-chat-icon {
+    display: inline-flex;
+    line-height: 0;
   }
   #creator-profile-inner .profile-info strong { color: #FFFFFF; }
   #creator-profile-inner .profile-info span[style*="gray-500"] { color: #A3A3A3 !important; }
@@ -1698,6 +1656,329 @@
   #fan-dashboard .sidebar > div:first-child > div:last-child > div:last-child {
     color: #A3A3A3;
     font-size: 0.72rem;
+  }
+  #fan-dashboard #fan-messages-badge {
+    background: var(--error);
+    color: white;
+    font-size: 0.7rem;
+    font-weight: 700;
+    padding: 2px 6px;
+    border-radius: var(--radius-full);
+    margin-left: 6px;
+    min-width: 18px;
+    text-align: center;
+    line-height: 1.2;
+  }
+
+  #fan-dashboard .fan-messages-layout.messages-layout {
+    display: flex;
+    align-items: stretch;
+    width: 100%;
+    max-width: 1200px;
+    min-height: calc(100vh - 220px);
+    max-height: calc(100vh - 140px);
+    background: var(--bg-primary);
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    border: 1px solid var(--border-light);
+  }
+  #fan-dashboard .fan-messages-layout .conversations-sidebar {
+    width: 320px;
+    flex-shrink: 0;
+    border-right: 1px solid var(--border-light);
+    display: flex;
+    flex-direction: column;
+    background: var(--bg-secondary);
+    min-height: 0;
+  }
+  #fan-dashboard .fan-messages-layout .sidebar-header {
+    padding: 16px;
+    border-bottom: 1px solid var(--border-light);
+    flex-shrink: 0;
+  }
+  #fan-dashboard .fan-messages-layout .sidebar-header h3 {
+    margin: 0;
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--text-primary);
+  }
+  #fan-dashboard .fan-messages-main {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    min-height: 0;
+    position: relative;
+    background: var(--bg-primary);
+  }
+  #fan-dashboard #fan-empty-state.fan-empty-chat {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 32px 24px;
+    min-height: 280px;
+  }
+  #fan-dashboard #fan-empty-state .empty-icon {
+    font-size: 3rem;
+    opacity: 0.45;
+    margin-bottom: 12px;
+  }
+  #fan-dashboard #fan-empty-state h3 {
+    color: var(--text-primary);
+    font-size: 1.05rem;
+    font-weight: 700;
+    margin-bottom: 8px;
+  }
+  #fan-dashboard #fan-empty-state .empty-subtitle {
+    color: var(--text-tertiary);
+    font-size: 0.875rem;
+    max-width: 280px;
+    line-height: 1.45;
+  }
+  #fan-dashboard #fan-chat-panel.fan-chat-panel-inner {
+    flex: 1;
+    display: none;
+    flex-direction: column;
+    min-width: 0;
+    min-height: 0;
+    background: var(--bg-primary);
+  }
+  #fan-dashboard #fan-chat-panel.fan-chat-panel-inner.fan-chat-panel--open {
+    display: flex;
+  }
+  #fan-dashboard .fan-chat-header.chat-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 14px 16px;
+    background: var(--bg-secondary);
+    border-bottom: 1px solid var(--border-light);
+    flex-shrink: 0;
+  }
+  #fan-dashboard .fan-chat-header .chat-close {
+    background: transparent;
+    border: none;
+    color: var(--text-tertiary);
+    cursor: pointer;
+    font-size: 1.05rem;
+    padding: 4px 8px;
+    border-radius: 8px;
+    flex-shrink: 0;
+  }
+  #fan-dashboard .fan-chat-header .chat-close:hover {
+    color: var(--text-primary);
+    background: rgba(255, 255, 255, 0.06);
+  }
+  #fan-dashboard .fan-chat-header .chat-user-info {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex: 1;
+    min-width: 0;
+  }
+  #fan-dashboard .fan-chat-header .chat-avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: var(--gradient-primary);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 800;
+    color: white;
+    flex-shrink: 0;
+  }
+  #fan-dashboard .fan-chat-header .chat-user-name {
+    font-weight: 700;
+    font-size: 0.95rem;
+    color: var(--text-primary);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  #fan-dashboard #fan-chat-messages {
+    flex: 1;
+    overflow-y: auto;
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    background: var(--bg-primary);
+    min-height: 0;
+  }
+  #fan-dashboard #fan-chat-messages .chat-bubble {
+    padding: 10px 14px;
+    border-radius: var(--radius-lg);
+    max-width: 70%;
+    font-size: 0.85rem;
+    line-height: 1.4;
+    word-break: break-word;
+    white-space: pre-wrap;
+  }
+  #fan-dashboard #fan-chat-messages .chat-bubble.me {
+    align-self: flex-end;
+    background: var(--gradient-primary);
+    color: var(--white);
+    border-bottom-right-radius: 4px;
+  }
+  #fan-dashboard #fan-chat-messages .chat-bubble.other {
+    align-self: flex-start;
+    background: var(--bg-tertiary);
+    color: var(--text-primary);
+    border: 1px solid var(--border-light);
+    border-bottom-left-radius: 4px;
+  }
+  #fan-dashboard #fan-chat-messages .chat-time {
+    font-size: 10px;
+    margin-top: 4px;
+    opacity: 0.85;
+  }
+  #fan-dashboard #fan-chat-messages .chat-bubble.other .chat-time {
+    color: var(--text-tertiary);
+    opacity: 1;
+  }
+  #fan-dashboard #fan-chat-messages .chat-empty-sub {
+    display: block;
+    font-size: 0.75rem;
+    margin-top: 8px;
+    opacity: 0.9;
+  }
+  #fan-dashboard .fan-chat-input-wrap.chat-input-container {
+    display: flex;
+    align-items: flex-end;
+    gap: 10px;
+    padding: 12px 16px;
+    border-top: 1px solid var(--border-light);
+    background: var(--bg-secondary);
+    flex-shrink: 0;
+  }
+  #fan-dashboard #fan-chat-input.creator-chat-textarea {
+    flex: 1;
+    min-height: 44px;
+    max-height: 160px;
+    resize: vertical;
+    background: var(--bg-tertiary);
+    border: 1px solid var(--border-light);
+    border-radius: var(--radius-md);
+    padding: 10px 14px;
+    color: var(--text-primary);
+    outline: none;
+    font-family: inherit;
+    font-size: 0.875rem;
+    line-height: 1.4;
+  }
+  #fan-dashboard #fan-chat-input:focus {
+    border-color: var(--accent-cyan);
+    box-shadow: var(--shadow-glow);
+  }
+  #fan-dashboard .send-message-btn {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: var(--gradient-primary);
+    color: white;
+    border: none;
+    border-radius: var(--radius-full);
+    padding: 10px 20px;
+    font-weight: 600;
+    font-size: 0.875rem;
+    cursor: pointer;
+    transition: transform 0.2s, box-shadow 0.2s, filter 0.2s;
+    font-family: inherit;
+  }
+  #fan-dashboard .send-message-btn:hover {
+    transform: translateY(-1px);
+    box-shadow: var(--shadow-glow);
+    filter: brightness(1.05);
+  }
+  #fan-dashboard #fan-conversations-list .conversation-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 12px 16px;
+    cursor: pointer;
+    transition: background 0.15s;
+    border-bottom: 1px solid var(--border-light);
+  }
+  #fan-dashboard #fan-conversations-list .conversation-item:hover {
+    background: rgba(255, 255, 255, 0.05);
+  }
+  #fan-dashboard #fan-conversations-list .conversation-item.active {
+    background: rgba(139, 92, 246, 0.12);
+    border-left: 3px solid var(--accent-cyan);
+    padding-left: 13px;
+  }
+  #fan-dashboard #fan-conversations-list .conversation-avatar {
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    background: var(--gradient-primary);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 800;
+    font-size: 1rem;
+    color: white;
+    flex-shrink: 0;
+  }
+  #fan-dashboard #fan-conversations-list .conversation-info {
+    flex: 1;
+    min-width: 0;
+  }
+  #fan-dashboard #fan-conversations-list .conversation-name {
+    font-weight: 700;
+    font-size: 0.88rem;
+    color: var(--text-primary);
+    margin-bottom: 4px;
+  }
+  #fan-dashboard #fan-conversations-list .conversation-preview {
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  #fan-dashboard #fan-conversations-list .conversation-meta {
+    flex-shrink: 0;
+    text-align: right;
+  }
+  #fan-dashboard #fan-conversations-list .unread-badge {
+    display: inline-block;
+    background: var(--error);
+    color: white;
+    font-size: 0.65rem;
+    font-weight: 700;
+    padding: 2px 6px;
+    border-radius: var(--radius-full);
+    min-width: 18px;
+    text-align: center;
+  }
+  #fan-dashboard #fan-conversations-list .conversations-empty {
+    padding: 28px 16px;
+    text-align: center;
+    color: var(--text-tertiary);
+    font-size: 0.85rem;
+  }
+  @media (max-width: 900px) {
+    #fan-dashboard .fan-messages-layout.messages-layout {
+      flex-direction: column;
+      max-height: none;
+      min-height: auto;
+    }
+    #fan-dashboard .fan-messages-layout .conversations-sidebar {
+      width: 100%;
+      max-height: 260px;
+      border-right: none;
+      border-bottom: 1px solid var(--border-light);
+    }
+  }
+  @media (max-width: 640px) {
+    #fan-dashboard .send-message-btn span {
+      display: none;
+    }
   }
 
   #creator-dashboard #settings-name:disabled {
@@ -3316,6 +3597,7 @@
       <div class="sidebar-section">
         <div class="sidebar-label">Explorar</div>
         <div class="sidebar-item active" onclick="setFanTab('feed', this)"><span class="icon">🏠</span> Feed</div>
+        <div class="sidebar-item" id="fan-sidebar-tab-messages" onclick="setFanTab('messages', this)"><span class="icon">💬</span> Mensajes <span id="fan-messages-badge" class="badge-hidden">0</span></div>
         <div class="sidebar-item" onclick="setFanTab('subscriptions', this)"><span class="icon">💳</span> Mis suscripciones</div>
         <div class="sidebar-item" onclick="setFanTab('discover', this)"><span class="icon">🔍</span> Descubrir creadores</div>
       </div>
@@ -3348,6 +3630,48 @@
             <div class="content-info"><h4>Solo para premium</h4><p>Carlos Vega · hace 1 mes</p></div>
           </div>
           <div class="content-item"><div class="content-thumb" style="background:#ededed">🎬<span class="content-type-badge">VIDEO</span></div><div class="content-info"><h4>Street Photography</h4><p>Ana Molina · hace 3 sem</p></div></div>
+        </div>
+      </div>
+
+      <!-- MESSAGES TAB (fan ↔ creadores) -->
+      <div id="fan-messages" style="display:none;">
+        <div class="page-header">
+          <h2>💬 Mensajes</h2>
+          <p>Conversaciones con creadores a los que estás suscrito</p>
+        </div>
+        <div class="fan-messages-layout messages-layout">
+          <aside class="conversations-sidebar">
+            <div class="sidebar-header">
+              <h3>💬 Conversaciones</h3>
+            </div>
+            <div id="fan-conversations-list" class="conversations-list"></div>
+          </aside>
+          <div class="fan-messages-main">
+            <div id="fan-empty-state" class="empty-chat-state fan-empty-chat">
+              <div class="empty-icon">💬</div>
+              <h3>Selecciona una conversación</h3>
+              <p class="empty-subtitle">Elige un creador en la lista para ver el chat</p>
+            </div>
+            <div id="fan-chat-panel" class="fan-chat-panel-inner">
+              <div class="chat-header fan-chat-header">
+                <button type="button" class="chat-close" onclick="closeFanChat()" aria-label="Cerrar chat">✕</button>
+                <div class="chat-user-info">
+                  <div class="chat-avatar" id="fan-chat-avatar" aria-hidden="true"></div>
+                  <span id="fan-chat-user-name" class="chat-user-name">Creador</span>
+                </div>
+              </div>
+              <div id="fan-chat-messages" class="chat-messages"></div>
+              <div class="chat-input-container fan-chat-input-wrap">
+                <textarea id="fan-chat-input" class="creator-chat-textarea" rows="2" placeholder="Escribe un mensaje..." maxlength="8000" autocomplete="off"></textarea>
+                <button type="button" class="send-message-btn" onclick="sendFanMessage()" aria-label="Enviar">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                    <path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z"/>
+                  </svg>
+                  <span>Enviar</span>
+                </button>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
 
@@ -3465,13 +3789,18 @@
             </div>
           </div>
           <div id="profile-message-wrap" style="display:none;margin-top:16px;padding-top:16px;border-top:1px solid rgba(255,255,255,0.12);">
-            <h4 style="font-size:0.9rem;font-weight:800;margin-bottom:10px;color:#FFFFFF;">Chat con el creador</h4>
+            <h4 style="font-size:0.9rem;font-weight:800;margin-bottom:10px;color:#FFFFFF;">Mensajes</h4>
             <div id="profile-msg-subscriber" style="display:none;">
-              <div id="profile-chat-messages" class="profile-chat-messages" aria-live="polite"></div>
-              <form id="profile-message-form" onsubmit="sendProfileMessage(event)">
-                <textarea id="profile-message-text" class="form-input" rows="3" maxlength="8000" placeholder="Escribe un mensaje..." style="background:#2a2a2a;border-color:#444;color:#fff;"></textarea>
-                <button type="submit" class="btn btn-primary btn-full" style="margin-top:10px;">Enviar</button>
-              </form>
+              <div class="creator-actions profile-chat-cta">
+                <button type="button" class="btn btn-primary btn-full btn-chat" id="profile-btn-fan-messages">
+                  <span class="btn-chat-icon" aria-hidden="true">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+                    </svg>
+                  </span>
+                  Enviar mensaje
+                </button>
+              </div>
             </div>
             <div id="profile-msg-locked" style="display:none;font-size:0.82rem;color:#A3A3A3;line-height:1.5;"></div>
           </div>
@@ -3791,7 +4120,8 @@
   }
 
   function setFanTab(tab, el) {
-    ['feed','subscriptions','discover'].forEach(t => {
+    if (tab !== 'messages' && typeof closeFanChat === 'function') closeFanChat();
+    ['feed','messages','subscriptions','discover'].forEach(t => {
       const e = document.getElementById('fan-' + t);
       if (e) e.style.display = 'none';
     });
@@ -3809,6 +4139,7 @@
       if (tab === 'discover' && typeof loadDiscoverCreators === 'function') loadDiscoverCreators();
       if (tab === 'subscriptions' && typeof loadFanSubscriptions === 'function') loadFanSubscriptions();
       if (tab === 'feed' && typeof loadFanFeed === 'function') loadFanFeed();
+      if (tab === 'messages' && typeof loadFanConversations === 'function') loadFanConversations();
     } catch (e) {
       console.error('[BizPonzor] Error loading fan dashboard tab:', tab, e);
     }
@@ -4296,47 +4627,240 @@ function escapeHtml(s) {
     .replace(/"/g, '&quot;');
 }
 
-var profileChatCreatorId = null;
-var profileChatPollInterval = null;
-var profileLastMessageCount = 0;
+function stopProfileChatPolling() {}
+function clearProfileChatState() {}
 
-function stopProfileChatPolling() {
-  if (profileChatPollInterval) {
-    clearInterval(profileChatPollInterval);
-    profileChatPollInterval = null;
+window.SELECTED_CHAT_CREATOR = null;
+var fanChatPollInterval = null;
+var fanMessagesBadgeInterval = null;
+var fanLastMessageCount = 0;
+
+function getProfileFanMessageHandle() {
+  const el = document.querySelector('#creator-profile-inner .profile-handle');
+  if (!el) return '@creador';
+  const t = el.textContent || '';
+  const i = t.indexOf('@');
+  if (i === -1) return '@creador';
+  const chunk = t.slice(i);
+  const handle = chunk.split(/[\s·|]/)[0].trim();
+  return handle || '@creador';
+}
+
+function goToFanMessages(creatorId, handle) {
+  var h = handle || getProfileFanMessageHandle();
+  window.SELECTED_CHAT_CREATOR = { id: creatorId, handle: h };
+  showPage('fan-dashboard');
+  var tabEl = document.getElementById('fan-sidebar-tab-messages');
+  setFanTab('messages', tabEl);
+}
+
+function stopFanChatPolling() {
+  if (fanChatPollInterval) {
+    clearInterval(fanChatPollInterval);
+    fanChatPollInterval = null;
   }
 }
 
-function clearProfileChatState() {
-  profileChatCreatorId = null;
-  profileLastMessageCount = 0;
-  const pc = document.getElementById('profile-chat-messages');
-  if (pc) pc.innerHTML = '';
-}
-
-function startProfileChatPolling() {
-  stopProfileChatPolling();
-  profileChatPollInterval = setInterval(loadProfileConversation, 5000);
-}
-
-async function loadProfileConversation() {
-  if (!profileChatCreatorId || !CURRENT_USER || CURRENT_USER.role !== 'fan' || !TOKEN) return null;
-  const messages = await api.get('/messages/conversation/' + encodeURIComponent(profileChatCreatorId));
-  if (!messages || messages.error) return null;
-  if (!Array.isArray(messages)) return null;
-  if (messages.length !== profileLastMessageCount) {
-    renderProfileChatMessages(messages);
-    profileLastMessageCount = messages.length;
+function stopFanMessagesBadgePolling() {
+  if (fanMessagesBadgeInterval) {
+    clearInterval(fanMessagesBadgeInterval);
+    fanMessagesBadgeInterval = null;
   }
-  return messages;
 }
 
-function renderProfileChatMessages(messages) {
-  const container = document.getElementById('profile-chat-messages');
+function closeFanChat() {
+  window.ACTIVE_FAN_CHAT = null;
+  fanLastMessageCount = 0;
+  stopFanChatPolling();
+  const panel = document.getElementById('fan-chat-panel');
+  const empty = document.getElementById('fan-empty-state');
+  if (panel) panel.classList.remove('fan-chat-panel--open');
+  if (empty) empty.style.display = 'flex';
+  document.querySelectorAll('#fan-conversations-list .conversation-item').forEach(function (el) {
+    el.classList.remove('active');
+  });
+  const inp = document.getElementById('fan-chat-input');
+  if (inp) inp.value = '';
+}
+
+async function updateFanMessagesBadge() {
+  if (!CURRENT_USER || CURRENT_USER.role !== 'fan') return;
+  const subs = await api.get('/subscriptions/my');
+  if (!subs || subs.error || !Array.isArray(subs)) return;
+  var total = 0;
+  for (var i = 0; i < subs.length; i++) {
+    var sub = subs[i];
+    if (sub.status !== 'active') continue;
+    var msgs = await api.get('/messages/conversation/' + encodeURIComponent(sub.creator_id));
+    if (!msgs || !Array.isArray(msgs)) continue;
+    total += msgs.filter(function (m) {
+      return m.sender_id === sub.creator_id && !m.read_at;
+    }).length;
+  }
+  const badge = document.getElementById('fan-messages-badge');
+  if (!badge) return;
+  if (total > 0) {
+    badge.textContent = total > 99 ? '99+' : String(total);
+    badge.classList.remove('badge-hidden');
+  } else {
+    badge.classList.add('badge-hidden');
+  }
+}
+
+async function loadFanConversations() {
+  if (!CURRENT_USER || CURRENT_USER.role !== 'fan') return;
+  const list = document.getElementById('fan-conversations-list');
+  const subs = await api.get('/subscriptions/my');
+  if (!subs || subs.error || !Array.isArray(subs)) {
+    if (list) list.innerHTML = '<div class="conversations-empty">No se pudieron cargar las conversaciones.</div>';
+    return;
+  }
+  const activeSubs = subs.filter(function (s) {
+    return s.status === 'active';
+  });
+  if (!activeSubs.length) {
+    if (list) list.innerHTML = '<div class="conversations-empty">No tienes suscripciones activas.</div>';
+    return;
+  }
+  if (list) list.innerHTML = '<div class="conversations-empty">Cargando…</div>';
+
+  const rows = [];
+  for (var j = 0; j < activeSubs.length; j++) {
+    var sub = activeSubs[j];
+    var msgs = await api.get('/messages/conversation/' + encodeURIComponent(sub.creator_id));
+    if (!msgs || msgs.error || !Array.isArray(msgs)) continue;
+    var last = msgs.length ? msgs[msgs.length - 1] : null;
+    var unread = msgs.filter(function (m) {
+      return m.sender_id === sub.creator_id && !m.read_at;
+    }).length;
+    var rawH = sub.handle ? String(sub.handle) : '';
+    var handleDisp = rawH ? (rawH.indexOf('@') === 0 ? rawH : '@' + rawH.replace(/^@/, '')) : '@' + String(sub.creator_name || 'creador').replace(/\s+/g, '').slice(0, 12);
+    rows.push({
+      creator_id: sub.creator_id,
+      handle: handleDisp,
+      last_message: last ? last.content : '',
+      last_time: last ? last.created_at : null,
+      unread: unread
+    });
+  }
+  rows.sort(function (a, b) {
+    return new Date(b.last_time || 0) - new Date(a.last_time || 0);
+  });
+  renderFanConversationRows(rows);
+
+  if (window.SELECTED_CHAT_CREATOR && window.SELECTED_CHAT_CREATOR.id) {
+    var sel = window.SELECTED_CHAT_CREATOR;
+    var found = rows.find(function (r) {
+      return r.creator_id === sel.id;
+    });
+    openFanChat(sel.id, sel.handle || (found && found.handle) || '@creador');
+    window.SELECTED_CHAT_CREATOR = null;
+  }
+}
+
+function renderFanConversationRows(rows) {
+  const list = document.getElementById('fan-conversations-list');
+  if (!list) return;
+  if (!rows.length) {
+    list.innerHTML = '<div class="conversations-empty">No hay conversaciones aún.</div>';
+    return;
+  }
+  list.innerHTML = rows
+    .map(function (c) {
+      var initial = String((c.handle || '@').replace(/^@/, '')).charAt(0).toUpperCase() || 'C';
+      var preview = escapeHtml((c.last_message || 'Sin mensajes').slice(0, 80));
+      var t = c.last_time ? formatConversationTime(c.last_time) : '';
+      var searchBlob = ((c.handle || '') + ' ' + (c.last_message || '')).toLowerCase().slice(0, 400);
+      return (
+        '<div class="conversation-item" role="button" tabindex="0" data-creator-id="' +
+        escapeHtml(c.creator_id) +
+        '" data-search="' +
+        escapeHtml(searchBlob) +
+        '" data-handle-enc="' +
+        encodeURIComponent(c.handle || '') +
+        '">' +
+        '<div class="conversation-avatar">' +
+        escapeHtml(initial) +
+        '</div>' +
+        '<div class="conversation-info">' +
+        '<div class="conversation-name">' +
+        escapeHtml(c.handle || '@') +
+        '</div>' +
+        '<div class="conversation-preview">' +
+        preview +
+        (c.last_message && c.last_message.length > 80 ? '…' : '') +
+        '</div>' +
+        '</div>' +
+        '<div class="conversation-meta">' +
+        (c.last_time ? '<div class="conversation-time">' + escapeHtml(t) + '</div>' : '') +
+        (c.unread > 0 ? '<span class="unread-badge">' + c.unread + '</span>' : '') +
+        '</div>' +
+        '</div>'
+      );
+    })
+    .join('');
+
+  if (window.ACTIVE_FAN_CHAT) {
+    list.querySelectorAll('.conversation-item').forEach(function (el) {
+      el.classList.toggle('active', el.getAttribute('data-creator-id') === window.ACTIVE_FAN_CHAT);
+    });
+  }
+}
+
+async function markFanMessagesRead(creatorId) {
+  if (!creatorId || !CURRENT_USER) return;
+  const messages = await api.get('/messages/conversation/' + encodeURIComponent(creatorId));
+  if (!messages || !Array.isArray(messages)) return;
+  const unread = messages.filter(function (m) {
+    return m.receiver_id === CURRENT_USER.id && m.sender_id === creatorId && !m.read_at;
+  });
+  for (var k = 0; k < unread.length; k++) {
+    await api.post('/messages/' + encodeURIComponent(unread[k].id) + '/read', {});
+  }
+  if (typeof updateFanMessagesBadge === 'function') updateFanMessagesBadge();
+}
+
+async function openFanChat(creatorId, handle) {
+  window.ACTIVE_FAN_CHAT = creatorId;
+  fanLastMessageCount = -1;
+  const panel = document.getElementById('fan-chat-panel');
+  const empty = document.getElementById('fan-empty-state');
+  const nameEl = document.getElementById('fan-chat-user-name');
+  const av = document.getElementById('fan-chat-avatar');
+  var h = handle || '@creador';
+  if (empty) empty.style.display = 'none';
+  if (panel) panel.classList.add('fan-chat-panel--open');
+  if (nameEl) nameEl.textContent = h;
+  if (av) {
+    av.textContent = String(h).replace(/^@/, '').charAt(0).toUpperCase() || 'C';
+  }
+  document.querySelectorAll('#fan-conversations-list .conversation-item').forEach(function (el) {
+    el.classList.toggle('active', el.getAttribute('data-creator-id') === creatorId);
+  });
+  stopFanChatPolling();
+  await loadFanConversation();
+  await markFanMessagesRead(creatorId);
+  fanChatPollInterval = setInterval(loadFanConversation, 5000);
+}
+
+async function loadFanConversation() {
+  var id = window.ACTIVE_FAN_CHAT;
+  if (!id) return;
+  const messages = await api.get('/messages/conversation/' + encodeURIComponent(id));
+  if (!messages || messages.error) return;
+  if (!Array.isArray(messages)) return;
+  if (messages.length !== fanLastMessageCount) {
+    renderFanChatMessages(messages);
+    fanLastMessageCount = messages.length;
+  }
+}
+
+function renderFanChatMessages(messages) {
+  const container = document.getElementById('fan-chat-messages');
   if (!container || !CURRENT_USER) return;
   if (!messages || !messages.length) {
     container.innerHTML =
-      '<div class="profile-chat-empty">💬 Aún no hay mensajes<br><span style="font-size:0.75rem;">Envía el primero abajo</span></div>';
+      '<div class="chat-empty-state">💬 Aún no hay mensajes<span class="chat-empty-sub">Escribe abajo para comenzar</span></div>';
     return;
   }
   container.innerHTML = messages
@@ -4347,11 +4871,11 @@ function renderProfileChatMessages(messages) {
         ? date.toLocaleTimeString('es-MX', { hour: '2-digit', minute: '2-digit' })
         : '';
       return (
-        '<div class="profile-chat-bubble ' +
+        '<div class="chat-bubble ' +
         (isMe ? 'me' : 'other') +
         '">' +
         escapeHtml(m.content || '') +
-        '<div class="profile-chat-time">' +
+        '<div class="chat-time">' +
         escapeHtml(timeStr) +
         '</div></div>'
       );
@@ -4360,16 +4884,33 @@ function renderProfileChatMessages(messages) {
   container.scrollTop = container.scrollHeight;
 }
 
+async function sendFanMessage() {
+  const input = document.getElementById('fan-chat-input');
+  const text = input && input.value ? input.value.trim() : '';
+  if (!text || !window.ACTIVE_FAN_CHAT) return;
+  const res = await api.post('/messages', {
+    receiverId: window.ACTIVE_FAN_CHAT,
+    content: text
+  });
+  if (res && res.error) {
+    showNotif('❌ ' + res.error);
+    return;
+  }
+  if (input) input.value = '';
+  fanLastMessageCount = 0;
+  await loadFanConversation();
+  await loadFanConversations();
+}
+
 async function updateProfileMessageSection(creatorId) {
   const wrap = document.getElementById('profile-message-wrap');
   const subForm = document.getElementById('profile-msg-subscriber');
   const locked = document.getElementById('profile-msg-locked');
+  const btn = document.getElementById('profile-btn-fan-messages');
   if (!wrap || !subForm || !locked) return;
   subForm.style.display = 'none';
   locked.style.display = 'none';
   wrap.style.display = 'none';
-  stopProfileChatPolling();
-  clearProfileChatState();
   if (!CURRENT_USER || CURRENT_USER.role !== 'fan') return;
   wrap.style.display = 'block';
   if (!TOKEN) {
@@ -4383,40 +4924,16 @@ async function updateProfileMessageSection(creatorId) {
     Array.isArray(subs) && subs.some((s) => s.creator_id === creatorId && s.status === 'active');
   if (ok) {
     subForm.style.display = 'block';
-    const ta = document.getElementById('profile-message-text');
-    if (ta) ta.value = '';
-    const form = document.getElementById('profile-message-form');
-    if (form) form.dataset.receiverId = creatorId;
-    profileChatCreatorId = creatorId;
-    profileLastMessageCount = -1;
-    await loadProfileConversation();
-    startProfileChatPolling();
+    if (btn) {
+      btn.onclick = function () {
+        goToFanMessages(creatorId, getProfileFanMessageHandle());
+      };
+    }
   } else {
     locked.style.display = 'block';
     locked.innerHTML =
       '🔒 Suscríbete para enviar mensajes. <a href="#" onclick="subscribeFromProfile();return false;" style="color:#93C5FD;font-weight:700;">Suscribirse</a>';
   }
-}
-
-async function sendProfileMessage(e) {
-  e.preventDefault();
-  const form = document.getElementById('profile-message-form');
-  const receiverId = (form && form.dataset.receiverId) || CURRENT_CREATOR_ID;
-  const ta = document.getElementById('profile-message-text');
-  const content = ta && ta.value ? ta.value.trim() : '';
-  if (!content) {
-    showNotif('⚠️ Escribe un mensaje');
-    return;
-  }
-  const res = await api.post('/messages', { receiverId, content });
-  if (res.error) {
-    showNotif('❌ ' + res.error);
-    return;
-  }
-  showNotif('✅ Mensaje enviado');
-  if (ta) ta.value = '';
-  profileLastMessageCount = 0;
-  await loadProfileConversation();
 }
 
 var activeChatUser = null;
@@ -4747,6 +5264,8 @@ function setSession(res) {
 function logout() {
   if (typeof unmountCreatorProfileFromEmbed === 'function') unmountCreatorProfileFromEmbed();
   stopGlobalMessagesBadgePolling();
+  if (typeof stopFanMessagesBadgePolling === 'function') stopFanMessagesBadgePolling();
+  if (typeof stopFanChatPolling === 'function') stopFanChatPolling();
   TOKEN = null; CURRENT_USER = null;
   localStorage.removeItem('bp_token');
   localStorage.removeItem('bp_user');
@@ -5383,6 +5902,11 @@ async function loadFanDashboard() {
   document.querySelector('#fan-dashboard .sidebar > div:first-child div:first-child').textContent = CURRENT_USER.name[0].toUpperCase();
   await loadFanFeed();
   await loadFanSubscriptions();
+  if (CURRENT_USER.role === 'fan') {
+    if (typeof updateFanMessagesBadge === 'function') updateFanMessagesBadge();
+    if (typeof stopFanMessagesBadgePolling === 'function') stopFanMessagesBadgePolling();
+    fanMessagesBadgeInterval = setInterval(updateFanMessagesBadge, 15000);
+  }
 }
 
 async function loadFanFeed() {
@@ -5904,6 +6428,33 @@ document.addEventListener('DOMContentLoaded', () => {
     if (!row || !this.contains(row)) return;
     e.preventDefault();
     row.click();
+  });
+  document.getElementById('fan-conversations-list')?.addEventListener('click', function (e) {
+    const row = e.target.closest('.conversation-item');
+    if (!row || !this.contains(row)) return;
+    const cid = row.getAttribute('data-creator-id');
+    if (!cid) return;
+    var displayName = '@creador';
+    try {
+      var henc = row.getAttribute('data-handle-enc');
+      if (henc) displayName = decodeURIComponent(henc);
+    } catch (err) {
+      displayName = '@creador';
+    }
+    openFanChat(cid, displayName);
+  });
+  document.getElementById('fan-conversations-list')?.addEventListener('keydown', function (e) {
+    if (e.key !== 'Enter' && e.key !== ' ') return;
+    const row = e.target.closest('.conversation-item');
+    if (!row || !this.contains(row)) return;
+    e.preventDefault();
+    row.click();
+  });
+  document.getElementById('fan-chat-input')?.addEventListener('keydown', function (e) {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      sendFanMessage();
+    }
   });
   document.getElementById('donate-modal')?.addEventListener('click', function (e) {
     if (e.target === this) closeDonateModal();
