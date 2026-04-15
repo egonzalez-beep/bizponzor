@@ -1261,18 +1261,48 @@
     border-color: #444444;
   }
 
-  /* Notifications */
-  .notification {
-    position: fixed; bottom: 28px; right: 28px; z-index: 9999;
-    background: #222222;
-    color: #FFFFFF;
-    border: 1px solid #444444;
-    padding: 14px 24px; border-radius: var(--radius);
-    font-size: 0.875rem; font-weight: 600;
-    box-shadow: var(--shadow-lg); display: none;
-    animation: slideUp 0.3s ease;
+  /* Notifications (stack, centro-inferior) */
+  #notification-container {
+    position: fixed;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 9999;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    pointer-events: none;
+    align-items: center;
+    max-width: min(420px, calc(100vw - 32px));
   }
-  @keyframes slideUp { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+  #notification-container .notification {
+    pointer-events: auto;
+    background: var(--bg-secondary);
+    color: var(--text-primary);
+    padding: 12px 18px;
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-lg);
+    border: 1px solid var(--border-light);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 0.875rem;
+    font-weight: 600;
+    animation: slideUpNotif 0.3s ease;
+  }
+  #notification-container .notification.success {
+    border-left: 4px solid var(--accent-cyan);
+  }
+  #notification-container .notification.gold {
+    border-left: 4px solid #f59e0b;
+  }
+  #notification-container .notification.default {
+    border-left: 4px solid var(--border-light);
+  }
+  @keyframes slideUpNotif {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
 
   /* ─── MEDIA MODAL (Lightbox) ─── */
   .media-modal {
@@ -3985,8 +4015,8 @@
   </div>
 </div>
 
-<!-- NOTIFICATION -->
-<div class="notification" id="notif"></div>
+<!-- NOTIFICATIONS -->
+<div id="notification-container" aria-live="polite" aria-relevant="additions"></div>
 
 <!-- DONATE MODAL -->
 <div class="modal-overlay" id="donate-modal">
@@ -4303,10 +4333,17 @@
   }
 
   function showNotif(msg) {
-    const n = document.getElementById('notif');
-    n.textContent = msg;
-    n.style.display = 'block';
-    setTimeout(() => n.style.display = 'none', 3500);
+    if (typeof window.showNotification === 'function') {
+      window.showNotification(msg, 'default');
+      return;
+    }
+    const c = document.getElementById('notification-container');
+    if (!c) return;
+    const el = document.createElement('div');
+    el.className = 'notification default';
+    el.textContent = msg;
+    c.appendChild(el);
+    setTimeout(function () { el.remove(); }, 4000);
   }
 
   // Close modal on overlay click
@@ -4755,6 +4792,147 @@ const api = {
   del: (url) => fetch(API + url, { method: 'DELETE', headers: api.headers() }).then(r => r.json()),
   upload: (url, formData) => fetch(API + url, { method: 'POST', headers: { ...(TOKEN ? { 'Authorization': 'Bearer ' + TOKEN } : {}) }, body: formData }).then(r => r.json())
 };
+
+var lastSubscriberIds = null;
+var lastContentIds = null;
+var lastDonationIds = null;
+var notificationInterval = null;
+
+function normalizeNotifyId(id) {
+  return id == null ? '' : String(id);
+}
+
+function showNotification(message, type) {
+  type = type || 'default';
+  var container = document.getElementById('notification-container');
+  if (!container) return;
+  var el = document.createElement('div');
+  el.className = 'notification ' + (type === 'default' ? 'default' : type);
+  el.textContent = message;
+  container.appendChild(el);
+  setTimeout(function () {
+    el.remove();
+  }, 4000);
+}
+window.showNotification = showNotification;
+
+async function checkNewSubscribers() {
+  try {
+    var subs = await api.get('/subscriptions/my-subscribers');
+    if (!subs || subs.error || !Array.isArray(subs)) return;
+    var currentIds = subs
+      .map(function (s) {
+        return normalizeNotifyId(s.fan_id);
+      })
+      .filter(Boolean);
+    if (lastSubscriberIds === null) {
+      lastSubscriberIds = currentIds.slice();
+      return;
+    }
+    var newIds = currentIds.filter(function (id) {
+      return lastSubscriberIds.indexOf(id) === -1;
+    });
+    if (newIds.length > 0) {
+      var newSub = subs.find(function (s) {
+        return normalizeNotifyId(s.fan_id) === newIds[0];
+      });
+      var handle =
+        (newSub && (newSub.fan_handle || newSub.fan_name)) || 'Nuevo fan';
+      showNotification(
+        '🎉 ' +
+          handle +
+          ' se suscribió' +
+          (newIds.length > 1 ? ' y ' + (newIds.length - 1) + ' más' : ''),
+        'success'
+      );
+    }
+    lastSubscriberIds = currentIds.slice();
+  } catch (e) {
+    console.error('Error subscribers:', e);
+  }
+}
+
+async function checkNewContent() {
+  try {
+    var subscriptions = await api.get('/subscriptions/my');
+    if (!subscriptions || subscriptions.error || !Array.isArray(subscriptions)) return;
+    var allContent = [];
+    for (var i = 0; i < subscriptions.length; i++) {
+      var sub = subscriptions[i];
+      var content = await api.get('/content/creator/' + encodeURIComponent(sub.creator_id));
+      if (content && !content.error && Array.isArray(content)) {
+        allContent = allContent.concat(content);
+      }
+    }
+    var currentIds = allContent
+      .map(function (c) {
+        return normalizeNotifyId(c.id);
+      })
+      .filter(Boolean);
+    if (lastContentIds === null) {
+      lastContentIds = currentIds.slice();
+      return;
+    }
+    var newIds = currentIds.filter(function (id) {
+      return lastContentIds.indexOf(id) === -1;
+    });
+    if (newIds.length > 0) {
+      showNotification('📢 Nuevo contenido disponible', 'success');
+    }
+    lastContentIds = currentIds.slice();
+  } catch (e) {
+    console.error('Error content:', e);
+  }
+}
+
+async function checkNewDonations() {
+  try {
+    var donations = await api.get('/donations/received');
+    if (!donations || donations.error || !Array.isArray(donations)) return;
+    var currentIds = donations
+      .map(function (d) {
+        return normalizeNotifyId(d.id);
+      })
+      .filter(Boolean);
+    if (lastDonationIds === null) {
+      lastDonationIds = currentIds.slice();
+      return;
+    }
+    var newIds = currentIds.filter(function (id) {
+      return lastDonationIds.indexOf(id) === -1;
+    });
+    if (newIds.length > 0) {
+      showNotification('💸 Nueva donación recibida', 'gold');
+    }
+    lastDonationIds = currentIds.slice();
+  } catch (e) {
+    console.error('Error donations:', e);
+  }
+}
+
+function startNotificationPolling(userRole) {
+  stopNotificationPolling();
+  if (!userRole || !TOKEN) return;
+  notificationInterval = setInterval(function () {
+    if (userRole === 'creator') {
+      checkNewSubscribers();
+      checkNewDonations();
+    }
+    if (userRole === 'fan') {
+      checkNewContent();
+    }
+  }, 20000);
+}
+
+function stopNotificationPolling() {
+  if (notificationInterval) {
+    clearInterval(notificationInterval);
+    notificationInterval = null;
+  }
+  lastSubscriberIds = null;
+  lastContentIds = null;
+  lastDonationIds = null;
+}
 
 function escapeHtml(s) {
   return String(s || '')
@@ -5484,6 +5662,7 @@ function setSession(res) {
   
   updateNavbar(CURRENT_USER.role === 'creator' ? 'creator-dashboard' : 'fan-dashboard');
   if (typeof updateMobileMenuToggle === 'function') updateMobileMenuToggle();
+  if (typeof startNotificationPolling === 'function') startNotificationPolling(CURRENT_USER.role);
 }
 
 function logout() {
@@ -5491,6 +5670,7 @@ function logout() {
   stopGlobalMessagesBadgePolling();
   if (typeof stopFanMessagesBadgePolling === 'function') stopFanMessagesBadgePolling();
   if (typeof stopFanChatPolling === 'function') stopFanChatPolling();
+  if (typeof stopNotificationPolling === 'function') stopNotificationPolling();
   TOKEN = null; CURRENT_USER = null;
   localStorage.removeItem('bp_token');
   localStorage.removeItem('bp_user');
@@ -6707,6 +6887,7 @@ if (TOKEN && CURRENT_USER) {
   }
   updateNavbar(CURRENT_USER.role === 'creator' ? 'creator-dashboard' : 'fan-dashboard');
   if (typeof updateMobileMenuToggle === 'function') updateMobileMenuToggle();
+  if (typeof startNotificationPolling === 'function') startNotificationPolling(CURRENT_USER.role);
 }
 
   // Wire up publish button properly

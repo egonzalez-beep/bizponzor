@@ -190,6 +190,24 @@ router.post('/activate/:sub_id', auth, (req, res) => {
   res.json({ success: true, status: 'active' });
 });
 
+/** GET /api/subscriptions/my-subscribers — solo creador; lista activa con fan_handle para notificaciones/UI */
+router.get('/my-subscribers', auth, (req, res) => {
+  if (req.user.role !== 'creator') {
+    return res.status(403).json({ error: 'Solo creadores' });
+  }
+  const subs = db
+    .prepare(
+      `SELECT s.*, u.name as fan_name, u.email as fan_email, u.handle as fan_handle,
+              p.name as plan_name, p.price
+       FROM subscriptions s
+       JOIN users u ON s.fan_id=u.id
+       JOIN plans p ON s.plan_id=p.id
+       WHERE s.creator_id=? AND s.status='active'`
+    )
+    .all(req.user.id);
+  res.json(subs);
+});
+
 router.get('/my', auth, (req, res) => {
   if (req.user.role === 'fan') {
     const subs = db

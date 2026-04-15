@@ -134,7 +134,7 @@ router.post('/checkout', auth, async (req, res) => {
   }
 });
 
-router.get('/my', auth, (req, res) => {
+function listReceivedDonations(req, res) {
   if (req.user.role !== 'creator') {
     return res.status(403).json({ error: 'Solo creadores' });
   }
@@ -149,7 +149,11 @@ router.get('/my', auth, (req, res) => {
     )
     .all(req.user.id);
   res.json(rows);
-});
+}
+
+router.get('/my', auth, listReceivedDonations);
+/** Alias solicitado por el cliente (misma respuesta que GET /donations/my) */
+router.get('/received', auth, listReceivedDonations);
 
 router.get('/summary', auth, (req, res) => {
   if (req.user.role !== 'creator') {

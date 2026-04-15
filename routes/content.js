@@ -229,7 +229,7 @@ router.post('/upload', authMiddleware, requireCreator, ensureAuthedUserInDb, (re
   }
 });
 
-router.get('/feed/:creatorId', (req, res) => {
+function sendCreatorPublicFeed(req, res) {
   const { creatorId } = req.params;
   let userId = null;
   try {
@@ -275,7 +275,11 @@ router.get('/feed/:creatorId', (req, res) => {
       };
     })
   );
-});
+}
+
+/** Misma respuesta que /feed/:creatorId */
+router.get('/creator/:creatorId', sendCreatorPublicFeed);
+router.get('/feed/:creatorId', sendCreatorPublicFeed);
 
 router.get('/my', authMiddleware, requireCreator, (req, res) => {
   res.json(
