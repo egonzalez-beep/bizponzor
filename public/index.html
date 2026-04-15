@@ -1339,6 +1339,16 @@
 
   /* Creator Profile (public) */
   #creator-profile { padding-top: 0; background: #1A1A1A; color: #FFFFFF; }
+  #creator-profile-inner .promo-banner {
+    background: rgba(34, 197, 94, 0.15);
+    border: 1px solid rgba(34, 197, 94, 0.4);
+    color: #22c55e;
+    padding: 10px 12px;
+    border-radius: 10px;
+    margin-bottom: 12px;
+    font-size: 0.85rem;
+    line-height: 1.4;
+  }
   .profile-banner {
     height: min(420px, 48vw);
     min-height: 280px;
@@ -2733,6 +2743,28 @@
             </tbody>
           </table>
         </div>
+        <div style="background:var(--white);border:1px solid var(--gray-200);border-radius:var(--radius);overflow:hidden;margin-bottom:24px;">
+          <div style="padding:20px 24px;border-bottom:1px solid var(--gray-200);">
+            <h3 style="font-size:1rem;font-weight:800;">Códigos promocionales</h3>
+            <p style="font-size:0.8rem;color:var(--gray-500);margin-top:6px;">Acceso gratuito 100% por tiempo limitado. Un fan solo puede usar un código una vez.</p>
+          </div>
+          <div style="padding:20px 24px;display:flex;flex-wrap:wrap;gap:12px;align-items:flex-end;border-bottom:1px solid var(--gray-200);">
+            <div class="form-group" style="margin:0;min-width:120px;">
+              <label class="form-label">Código</label>
+              <input type="text" id="creator-promo-code" class="form-input" placeholder="FREE7" maxlength="32" autocomplete="off" />
+            </div>
+            <div class="form-group" style="margin:0;min-width:90px;">
+              <label class="form-label">Días</label>
+              <input type="number" id="creator-promo-days" class="form-input" value="7" min="1" max="365" />
+            </div>
+            <div class="form-group" style="margin:0;min-width:90px;">
+              <label class="form-label">Máx. usos</label>
+              <input type="number" id="creator-promo-max" class="form-input" value="10" min="1" max="10000" />
+            </div>
+            <button type="button" class="btn btn-primary" onclick="createCreatorPromoCode()">Crear código</button>
+          </div>
+          <div id="creator-promo-list" style="padding:16px 24px;font-size:0.82rem;color:var(--gray-600);">Cargando…</div>
+        </div>
         <div style="background:var(--white);border:1px solid var(--gray-200);border-radius:var(--radius);overflow:hidden;">
           <div style="padding:20px 24px;border-bottom:1px solid var(--gray-200);">
             <h3 style="font-size:1rem;font-weight:800;">Suscriptores (planes)</h3>
@@ -2741,11 +2773,12 @@
             <thead><tr style="background:var(--gray-100);">
               <th style="padding:12px 24px;text-align:left;font-size:0.75rem;color:var(--gray-500);font-weight:700;">FAN</th>
               <th style="padding:12px 24px;text-align:left;font-size:0.75rem;color:var(--gray-500);font-weight:700;">PLAN</th>
+              <th style="padding:12px 24px;text-align:left;font-size:0.75rem;color:var(--gray-500);font-weight:700;">TIPO</th>
               <th style="padding:12px 24px;text-align:left;font-size:0.75rem;color:var(--gray-500);font-weight:700;">FECHA</th>
               <th style="padding:12px 24px;text-align:right;font-size:0.75rem;color:var(--gray-500);font-weight:700;">MONTO</th>
             </tr></thead>
             <tbody id="earnings-subs-tbody">
-              <tr><td colspan="4" style="padding:24px;text-align:center;color:var(--gray-500);">Cargando…</td></tr>
+              <tr><td colspan="5" style="padding:24px;text-align:center;color:var(--gray-500);">Cargando…</td></tr>
             </tbody>
           </table>
         </div>
@@ -2935,6 +2968,9 @@
           <div class="profile-metric-row"><span class="profile-metric-label">Estrellas</span><span class="profile-metric-num" id="metric-stars">0</span></div>
         </div>
         <div id="profile-sidebar-fan">
+          <div id="promo-access-banner" style="display:none;" class="promo-banner">
+            ✅ Tienes acceso activo a este creador
+          </div>
           <h4>Hazte patrocinador 💎</h4>
           <p id="profile-plans-intro" style="font-size:0.88rem;color:var(--gray-600);margin-bottom:18px;line-height:1.5;">Accede a contenido exclusivo y apoya al creador</p>
           <div id="profile-action-buttons" class="profile-action-buttons">
@@ -2942,6 +2978,13 @@
             <button type="button" class="btn btn-primary btn-full" id="profile-btn-subscribe" onclick="subscribeFromProfile()">Suscribirse</button>
           </div>
           <div id="profile-single-plan-slot"></div>
+          <div class="promo-box" style="margin-top:14px;padding-top:14px;border-top:1px solid rgba(255,255,255,0.12);">
+            <button type="button" class="btn btn-ghost" style="padding:6px 0;font-size:0.8rem;color:#38bdf8;" onclick="togglePromo('profile')">¿Tienes un código promocional?</button>
+            <div id="promo-input-box-profile" style="display:none;margin-top:10px;">
+              <input type="text" id="promo-code-input" class="form-input" placeholder="Ingresa tu código" autocomplete="off" style="margin-bottom:8px;background:#2a2a2a;border-color:#444;color:#fff;" />
+              <button type="button" class="btn btn-primary btn-full" onclick="redeemPromo('profile')">Aplicar código</button>
+            </div>
+          </div>
           <div id="profile-message-wrap" style="display:none;margin-top:16px;padding-top:16px;border-top:1px solid rgba(255,255,255,0.12);">
             <h4 style="font-size:0.9rem;font-weight:800;margin-bottom:10px;color:#FFFFFF;">Mensaje al creador</h4>
             <div id="profile-msg-subscriber" style="display:none;">
@@ -2985,6 +3028,13 @@
       <div class="form-group">
         <label class="form-label">CVV</label>
         <input type="tel" class="form-input" inputmode="numeric" pattern="[0-9]*" placeholder="123" maxlength="4">
+      </div>
+    </div>
+    <div class="promo-box" style="margin-top:16px;padding-top:16px;border-top:1px solid rgba(255,255,255,0.12);">
+      <button type="button" class="btn btn-ghost" style="padding:6px 0;font-size:0.8rem;color:#38bdf8;" onclick="togglePromo('modal')">¿Tienes un código?</button>
+      <div id="promo-input-box-modal" style="display:none;margin-top:10px;">
+        <input type="text" id="promo-code-input-modal" class="form-input" placeholder="Ingresa tu código" autocomplete="off" style="margin-bottom:8px;" />
+        <button type="button" class="btn btn-primary btn-full" onclick="redeemPromo('modal')">Aplicar código</button>
       </div>
     </div>
     <div class="modal-actions">
@@ -3186,6 +3236,7 @@
         const plans = await api.get('/plans/' + creator.id);
         fillCreatorProfileSidebar(creator, plans);
         void updateProfileMessageSection(creator.id);
+        void updatePromoAccessBanner();
         mountCreatorProfileToEmbed();
         document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
         document.getElementById('creator-dashboard').classList.add('active');
@@ -4721,7 +4772,45 @@ async function openCreatorProfile(handle) {
   const plans = await api.get('/plans/' + creator.id);
   fillCreatorProfileSidebar(creator, plans);
   void updateProfileMessageSection(creator.id);
+  void updatePromoAccessBanner();
   showPage('creator-profile');
+}
+
+async function updatePromoAccessBanner() {
+  const el = document.getElementById('promo-access-banner');
+  if (!el) return;
+  if (!CURRENT_USER || CURRENT_USER.role !== 'fan' || !CURRENT_CREATOR_ID) {
+    el.style.display = 'none';
+    return;
+  }
+  try {
+    const subs = await api.get('/subscriptions/my');
+    if (!subs || subs.error || !Array.isArray(subs)) {
+      el.style.display = 'none';
+      return;
+    }
+    const active = subs.some(function (s) {
+      return s.creator_id === CURRENT_CREATOR_ID && s.status === 'active';
+    });
+    el.style.display = active ? 'block' : 'none';
+  } catch (e) {
+    el.style.display = 'none';
+  }
+}
+
+async function refreshCreatorProfileAccess() {
+  try {
+    const inner = document.getElementById('creator-profile-inner');
+    const handleRaw = inner && inner.dataset ? inner.dataset.handle : '';
+    const h = String(handleRaw || '').trim();
+    if (h) {
+      await openCreatorProfile(h);
+    } else {
+      await updatePromoAccessBanner();
+    }
+  } catch (err) {
+    console.error('Error refrescando acceso:', err);
+  }
 }
 
 let selectedPlan = null;
@@ -4753,6 +4842,165 @@ async function simulatePayment() {
       setTimeout(() => loadFanDashboard(), 1000);
     }
   }
+}
+
+function togglePromo(which) {
+  const id = which === 'modal' ? 'promo-input-box-modal' : 'promo-input-box-profile';
+  const box = document.getElementById(id);
+  if (!box) return;
+  box.style.display = box.style.display === 'none' ? 'block' : 'none';
+}
+
+async function redeemPromo(context) {
+  if (context === undefined) context = 'profile';
+  const inputId = context === 'modal' ? 'promo-code-input-modal' : 'promo-code-input';
+  const input = document.getElementById(inputId);
+  if (!input) return;
+
+  if (!CURRENT_USER || CURRENT_USER.role !== 'fan') {
+    showNotif('Inicia sesión como fan');
+    return;
+  }
+
+  const code = String(input.value || '')
+    .trim()
+    .toUpperCase();
+  if (!code) {
+    showNotif('Ingresa un código');
+    return;
+  }
+
+  const creatorId = CURRENT_CREATOR_ID || (selectedPlan && selectedPlan.creatorId) || null;
+  if (!creatorId) {
+    showNotif('No se pudo identificar al creador');
+    return;
+  }
+
+  const res = await api.post('/promo/redeem', {
+    code: code,
+    creator_id: creatorId
+  });
+
+  if (res && res.success) {
+    showNotif('🎉 Acceso desbloqueado correctamente');
+    const untilStr = res.access_until
+      ? new Date(res.access_until).toLocaleDateString('es', {
+          day: 'numeric',
+          month: 'long',
+          year: 'numeric'
+        })
+      : '';
+    alert(
+      '✅ Acceso activado\n\nPodrás ver contenido exclusivo y enviar mensajes hasta:\n' +
+        (untilStr || '—')
+    );
+    input.value = '';
+    await refreshCreatorProfileAccess();
+    if (context === 'modal' && typeof closeModal === 'function') {
+      closeModal();
+    }
+  } else {
+    showNotif(res && res.error ? res.error : 'Código inválido');
+  }
+}
+
+async function createCreatorPromoCode() {
+  const codeIn = document.getElementById('creator-promo-code');
+  const daysIn = document.getElementById('creator-promo-days');
+  const maxIn = document.getElementById('creator-promo-max');
+  if (!codeIn) return;
+  const res = await api.post('/creator/promo-codes', {
+    code: codeIn.value,
+    duration_days: parseInt(daysIn && daysIn.value ? daysIn.value : '7', 10),
+    max_uses: parseInt(maxIn && maxIn.value ? maxIn.value : '10', 10)
+  });
+  if (res.error) {
+    showNotif('❌ ' + res.error);
+    return;
+  }
+  if (res && res.code) {
+    try {
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        await navigator.clipboard.writeText(res.code);
+      }
+    } catch (e) {
+      /* ignore */
+    }
+    alert(
+      '🎟️ Código generado: ' +
+        res.code +
+        '\n\nYa lo copiamos por ti. Compártelo con tus fans.'
+    );
+    codeIn.value = '';
+    await loadCreatorPromoCodes();
+  } else {
+    showNotif('✅ Código creado');
+    codeIn.value = '';
+    await loadCreatorPromoCodes();
+  }
+}
+
+async function loadCreatorPromoCodes() {
+  const el = document.getElementById('creator-promo-list');
+  if (!el) return;
+  if (!CURRENT_USER || CURRENT_USER.role !== 'creator') return;
+  const rows = await api.get('/creator/promo-codes');
+  if (rows && rows.error) {
+    el.textContent = rows.error;
+    return;
+  }
+  if (!Array.isArray(rows) || !rows.length) {
+    el.innerHTML =
+      '<span style="color:var(--gray-500);">Aún no hay códigos. Crea uno arriba.</span>';
+    return;
+  }
+  el.innerHTML = rows
+    .map(function (r, i) {
+      return (
+        '<div style="display:flex;flex-wrap:wrap;align-items:center;gap:12px;padding:10px 0;' +
+        (i ? 'border-top:1px solid var(--gray-200);' : '') +
+        '">' +
+        '<strong>' +
+        escapeHtml(r.code) +
+        '</strong>' +
+        '<span style="color:var(--gray-500);">' +
+        r.used_count +
+        '/' +
+        r.max_uses +
+        ' usos · ' +
+        r.duration_days +
+        ' días</span>' +
+        '<button type="button" class="btn btn-sm btn-outline" onclick="showPromoRedemptions(\'' +
+        String(r.id).replace(/'/g, '') +
+        "')\">Ver quién canjeó</button></div>"
+      );
+    })
+    .join('');
+}
+
+async function showPromoRedemptions(codeId) {
+  if (!codeId) return;
+  const res = await api.get('/creator/promo-codes/' + encodeURIComponent(codeId) + '/redemptions');
+  if (res && res.error) {
+    showNotif(res.error);
+    return;
+  }
+  if (!Array.isArray(res) || !res.length) {
+    showNotif('Nadie ha canjeado este código aún');
+    return;
+  }
+  const lines = res
+    .map(function (x) {
+      return (
+        (x.fan_email || '—') +
+        ' · ' +
+        (x.redeemed_at ? new Date(x.redeemed_at).toLocaleString('es') : '') +
+        ' · acceso hasta ' +
+        (x.access_until ? new Date(x.access_until).toLocaleString('es') : '—')
+      );
+    })
+    .join('\n');
+  alert('Canjes:\n\n' + lines);
 }
 
 async function loadEarnings() {
@@ -4795,21 +5043,37 @@ async function loadEarnings() {
   if (sbody) {
     if (subs && !subs.error && subs.length) {
       sbody.innerHTML = subs
-        .map(
-          (s) => `
-      <tr style="border-top:1px solid var(--gray-200);">
-        <td style="padding:14px 24px;font-size:0.875rem;font-weight:600;">${s.fan_name || s.fan_email}</td>
-        <td style="padding:14px 24px;"><span class="tag-pill">${s.plan_name}</span></td>
-        <td style="padding:14px 24px;font-size:0.82rem;color:var(--gray-500);">${new Date(s.created_at).toLocaleDateString('es')}</td>
-        <td style="padding:14px 24px;text-align:right;font-weight:700;">$${s.price.toFixed(2)}</td>
-      </tr>`
-        )
+        .map(function (s) {
+          const tipo = s.promo_code
+            ? '🎟️ Promo (' + escapeHtml(s.promo_code) + ')'
+            : '💳 Pago';
+          return (
+            '<tr style="border-top:1px solid var(--gray-200);">' +
+            '<td style="padding:14px 24px;font-size:0.875rem;font-weight:600;">' +
+            escapeHtml(s.fan_name || s.fan_email || '') +
+            '</td>' +
+            '<td style="padding:14px 24px;"><span class="tag-pill">' +
+            escapeHtml(s.plan_name || '') +
+            '</span></td>' +
+            '<td style="padding:14px 24px;font-size:0.82rem;">' +
+            tipo +
+            '</td>' +
+            '<td style="padding:14px 24px;font-size:0.82rem;color:var(--gray-500);">' +
+            new Date(s.created_at).toLocaleDateString('es') +
+            '</td>' +
+            '<td style="padding:14px 24px;text-align:right;font-weight:700;">$' +
+            Number(s.price || 0).toFixed(2) +
+            '</td></tr>'
+          );
+        })
         .join('');
     } else {
       sbody.innerHTML =
-        '<tr><td colspan="4" style="padding:24px;text-align:center;color:var(--gray-500);">No hay suscriptores aún</td></tr>';
+        '<tr><td colspan="5" style="padding:24px;text-align:center;color:var(--gray-500);">No hay suscriptores aún</td></tr>';
     }
   }
+
+  loadCreatorPromoCodes();
 }
 
 // Override publish button

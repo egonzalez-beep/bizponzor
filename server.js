@@ -24,6 +24,8 @@ app.use('/api/creators', require('./routes/creators'));
 app.use('/api/webhook', require('./routes/webhook'));
 app.use('/api/donations', require('./routes/donations'));
 app.use('/api/messages', require('./routes/messages'));
+app.use('/api/promo', require('./routes/promo'));
+app.use('/api/creator', require('./routes/creatorPromo'));
 
 app.get('/api/health', (req, res) => res.json({ status: 'ok', app: 'BizPonzor' }));
 

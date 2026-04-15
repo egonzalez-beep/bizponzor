@@ -223,4 +223,38 @@ db.exec(`
   }
 })();
 
+db.exec(`
+  CREATE TABLE IF NOT EXISTS promo_codes (
+    id TEXT PRIMARY KEY,
+    creator_id TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    code TEXT NOT NULL UNIQUE,
+    discount_percent INTEGER DEFAULT 100,
+    duration_days INTEGER DEFAULT 7,
+    max_uses INTEGER DEFAULT 1,
+    used_count INTEGER DEFAULT 0,
+    expires_at TEXT,
+    is_active INTEGER DEFAULT 1,
+    created_at TEXT DEFAULT (datetime('now'))
+  );
+  CREATE TABLE IF NOT EXISTS promo_redemptions (
+    id TEXT PRIMARY KEY,
+    promo_code_id TEXT NOT NULL REFERENCES promo_codes(id) ON DELETE CASCADE,
+    fan_id TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    created_at TEXT DEFAULT (datetime('now')),
+    UNIQUE(promo_code_id, fan_id)
+  );
+  CREATE INDEX IF NOT EXISTS idx_promo_codes_creator ON promo_codes(creator_id);
+`);
+
+try {
+  db.exec('ALTER TABLE subscriptions ADD COLUMN promo_code TEXT;');
+} catch (e) {
+  /* exists */
+}
+try {
+  db.exec('ALTER TABLE subscriptions ADD COLUMN discount_percent INTEGER DEFAULT 0;');
+} catch (e) {
+  /* exists */
+}
+
 module.exports = db;
