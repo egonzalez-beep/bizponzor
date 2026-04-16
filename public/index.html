@@ -5023,104 +5023,204 @@ async function updateFanMessagesBadge() {
   }
 }
 
-async function loadFanConversations() {
-  if (!CURRENT_USER || CURRENT_USER.role !== 'fan') return;
-  const list = document.getElementById('fan-conversations-list');
-  const subs = await api.get('/subscriptions/my');
-  if (!subs || subs.error || !Array.isArray(subs)) {
-    if (list) list.innerHTML = '<div class="conversations-empty">No se pudieron cargar las conversaciones.</div>';
-    return;
-  }
-  const activeSubs = subs.filter(function (s) {
-    return s.status === 'active';
-  });
-  if (!activeSubs.length) {
-    if (list) list.innerHTML = '<div class="conversations-empty">No tienes suscripciones activas.</div>';
-    return;
-  }
-  if (list) list.innerHTML = '<div class="conversations-empty">Cargando…</div>';
+async function loadConversations(silentRefresh) {
+  if (!CURRENT_USER) return;
+  const role = CURRENT_USER.role;
+  const container =
+    role === 'creator'
+      ? document.getElementById('creator-messages-list')
+      : document.getElementById('fan-conversations-list');
+  if (!container) return;
 
-  const rows = [];
-  for (var j = 0; j < activeSubs.length; j++) {
-    var sub = activeSubs[j];
-    var msgs = await api.get('/messages/conversation/' + encodeURIComponent(sub.creator_id));
-    if (!msgs || msgs.error || !Array.isArray(msgs)) continue;
-    var last = msgs.length ? msgs[msgs.length - 1] : null;
-    var unread = msgs.filter(function (m) {
-      return m.sender_id === sub.creator_id && !m.read_at;
-    }).length;
-    var rawH = sub.handle ? String(sub.handle) : '';
-    var handleDisp = rawH ? (rawH.indexOf('@') === 0 ? rawH : '@' + rawH.replace(/^@/, '')) : '@' + String(sub.creator_name || 'creador').replace(/\s+/g, '').slice(0, 12);
-    rows.push({
-      creator_id: sub.creator_id,
-      handle: handleDisp,
-      last_message: last ? last.content : '',
-      last_time: last ? last.created_at : null,
-      unread: unread
-    });
-  }
-  rows.sort(function (a, b) {
-    return new Date(b.last_time || 0) - new Date(a.last_time || 0);
-  });
-  renderFanConversationRows(rows);
+  if (role !== 'creator' && role !== 'fan') return;
 
-  if (window.SELECTED_CHAT_CREATOR && window.SELECTED_CHAT_CREATOR.id) {
-    var sel = window.SELECTED_CHAT_CREATOR;
-    var found = rows.find(function (r) {
-      return r.creator_id === sel.id;
-    });
-    openFanChat(sel.id, sel.handle || (found && found.handle) || '@creador');
-    window.SELECTED_CHAT_CREATOR = null;
+  if (!silentRefresh) {
+    container.innerHTML = '<div class="conversations-empty">Cargando…</div>';
+  }
+
+  try {
+    var conversations = await api.get('/messages/conversations');
+    if (!conversations || conversations.error) {
+      if (!silentRefresh) {
+        container.innerHTML =
+          '<div class="conversations-empty">No se pudieron cargar las conversaciones.</div>';
+      }
+      return;
+    }
+    if (!Array.isArray(conversations)) {
+      if (!silentRefresh) {
+        container.innerHTML =
+          '<div class="conversations-empty">No se pudieron cargar las conversaciones.</div>';
+      }
+      return;
+    }
+
+    if (role === 'fan' && conversations.length === 0) {
+      var subsCheck = await api.get('/subscriptions/my');
+      if (!subsCheck || !Array.isArray(subsCheck) || !subsCheck.some(function (s) { return s.status === 'active'; })) {
+        container.innerHTML =
+          '<div class="conversations-empty">No tienes suscripciones activas.</div>';
+        return;
+      }
+    }
+
+    renderConversationsList(conversations);
+
+    if (role === 'fan' && window.SELECTED_CHAT_CREATOR && window.SELECTED_CHAT_CREATOR.id) {
+      var sel = window.SELECTED_CHAT_CREATOR;
+      var found = conversations.find(function (r) {
+        return r.user_id === sel.id;
+      });
+      var disp =
+        sel.handle ||
+        (found && found.user_handle
+          ? (String(found.user_handle).indexOf('@') === 0
+              ? found.user_handle
+              : '@' + String(found.user_handle).replace(/^@/, ''))
+          : '@creador');
+      openFanChat(sel.id, disp);
+      window.SELECTED_CHAT_CREATOR = null;
+    }
+  } catch (err) {
+    console.error('Error loading conversations:', err);
+    if (!silentRefresh && container) {
+      container.innerHTML =
+        '<div class="conversations-empty">No se pudieron cargar las conversaciones.</div>';
+    }
   }
 }
 
-function renderFanConversationRows(rows) {
-  const list = document.getElementById('fan-conversations-list');
+function renderConversationsList(conversations) {
+  if (!CURRENT_USER) return;
+  const role = CURRENT_USER.role;
+  const list =
+    role === 'creator'
+      ? document.getElementById('creator-messages-list')
+      : document.getElementById('fan-conversations-list');
   if (!list) return;
-  if (!rows.length) {
+
+  if (!conversations.length) {
     list.innerHTML = '<div class="conversations-empty">No hay conversaciones aún.</div>';
     return;
   }
-  list.innerHTML = rows
-    .map(function (c) {
-      var initial = String((c.handle || '@').replace(/^@/, '')).charAt(0).toUpperCase() || 'C';
-      var preview = escapeHtml((c.last_message || 'Sin mensajes').slice(0, 80));
-      var t = c.last_time ? formatConversationTime(c.last_time) : '';
-      var searchBlob = ((c.handle || '') + ' ' + (c.last_message || '')).toLowerCase().slice(0, 400);
-      return (
-        '<div class="conversation-item" role="button" tabindex="0" data-creator-id="' +
-        escapeHtml(c.creator_id) +
-        '" data-search="' +
-        escapeHtml(searchBlob) +
-        '" data-handle-enc="' +
-        encodeURIComponent(c.handle || '') +
-        '">' +
-        '<div class="conversation-avatar">' +
-        escapeHtml(initial) +
-        '</div>' +
-        '<div class="conversation-info">' +
-        '<div class="conversation-name">' +
-        escapeHtml(c.handle || '@') +
-        '</div>' +
-        '<div class="conversation-preview">' +
-        preview +
-        (c.last_message && c.last_message.length > 80 ? '…' : '') +
-        '</div>' +
-        '</div>' +
-        '<div class="conversation-meta">' +
-        (c.last_time ? '<div class="conversation-time">' + escapeHtml(t) + '</div>' : '') +
-        (c.unread > 0 ? '<span class="unread-badge">' + c.unread + '</span>' : '') +
-        '</div>' +
-        '</div>'
-      );
-    })
-    .join('');
 
-  if (window.ACTIVE_FAN_CHAT) {
-    list.querySelectorAll('.conversation-item').forEach(function (el) {
-      el.classList.toggle('active', el.getAttribute('data-creator-id') === window.ACTIVE_FAN_CHAT);
-    });
+  if (role === 'fan') {
+    list.innerHTML = conversations
+      .map(function (conv) {
+        var rawH = conv.user_handle ? String(conv.user_handle) : '';
+        var handleDisp = rawH
+          ? rawH.indexOf('@') === 0
+            ? rawH
+            : '@' + rawH.replace(/^@/, '')
+          : '@' + String(conv.user_name || 'creador')
+              .replace(/\s+/g, '')
+              .slice(0, 12);
+        var initial = String(handleDisp.replace(/^@/, '')).charAt(0).toUpperCase() || 'C';
+        var lm = conv.last_message || '';
+        var preview = escapeHtml((lm || 'Sin mensajes').slice(0, 80));
+        var t = conv.last_message_at ? formatConversationTime(conv.last_message_at) : '';
+        var searchBlob = (handleDisp + ' ' + lm).toLowerCase().slice(0, 400);
+        var unread = Number(conv.unread_count) || 0;
+        return (
+          '<div class="conversation-item" role="button" tabindex="0" data-creator-id="' +
+          escapeHtml(conv.user_id) +
+          '" data-search="' +
+          escapeHtml(searchBlob) +
+          '" data-handle-enc="' +
+          encodeURIComponent(handleDisp) +
+          '">' +
+          '<div class="conversation-avatar">' +
+          escapeHtml(initial) +
+          '</div>' +
+          '<div class="conversation-info">' +
+          '<div class="conversation-name">' +
+          escapeHtml(handleDisp) +
+          '</div>' +
+          '<div class="conversation-preview">' +
+          preview +
+          (lm.length > 80 ? '…' : '') +
+          '</div>' +
+          '</div>' +
+          '<div class="conversation-meta">' +
+          (conv.last_message_at ? '<div class="conversation-time">' + escapeHtml(t) + '</div>' : '') +
+          (unread > 0
+            ? '<span class="unread-badge">' + (unread > 99 ? '99+' : unread) + '</span>'
+            : '') +
+          '</div>' +
+          '</div>'
+        );
+      })
+      .join('');
+
+    if (window.ACTIVE_FAN_CHAT) {
+      list.querySelectorAll('.conversation-item').forEach(function (el) {
+        el.classList.toggle('active', el.getAttribute('data-creator-id') === window.ACTIVE_FAN_CHAT);
+      });
+    }
+    return;
   }
+
+  if (role === 'creator') {
+    list.innerHTML = conversations
+      .map(function (conv) {
+        var displayName = (conv.user_name || conv.user_handle || 'Fan').trim();
+        var handleRaw = (conv.user_handle || '').replace(/^@/, '') || displayName || 'fan';
+        var handleDisplay = '@' + handleRaw;
+        var initial = String(handleRaw).charAt(0).toUpperCase() || 'F';
+        var previewRaw = (conv.last_message || '').slice(0, 80);
+        var body = escapeHtml(previewRaw);
+        var t = conv.last_message_at ? formatConversationTime(conv.last_message_at) : '';
+        var searchIdx = (handleDisplay + ' ' + displayName + ' ' + (conv.last_message || ''))
+          .toLowerCase()
+          .slice(0, 500);
+        var unreadCount = Number(conv.unread_count) || 0;
+        return (
+          '<div class="conversation-item" role="button" tabindex="0" data-fan-id="' +
+          escapeHtml(conv.user_id) +
+          '" data-search="' +
+          escapeHtml(searchIdx) +
+          '" data-fan-name-enc="' +
+          encodeURIComponent(displayName) +
+          '">' +
+          '<div class="conversation-avatar">' +
+          escapeHtml(initial) +
+          '</div>' +
+          '<div class="conversation-info">' +
+          '<div class="conversation-name">' +
+          escapeHtml(handleDisplay) +
+          '</div>' +
+          '<div class="conversation-preview">' +
+          body +
+          (conv.last_message && conv.last_message.length > 80 ? '…' : '') +
+          '</div>' +
+          '</div>' +
+          '<div class="conversation-meta">' +
+          '<div class="conversation-time">' +
+          escapeHtml(t) +
+          '</div>' +
+          (unreadCount > 0
+            ? '<span class="unread-badge">' + (unreadCount > 99 ? '99+' : unreadCount) + '</span>'
+            : '') +
+          '</div>' +
+          '</div>'
+        );
+      })
+      .join('');
+
+    if (activeChatUser) {
+      list.querySelectorAll('.conversation-item').forEach(function (el) {
+        el.classList.toggle('active', el.getAttribute('data-fan-id') === activeChatUser);
+      });
+    }
+  }
+}
+
+async function loadFanConversations() {
+  return loadConversations(false);
+}
+
+async function loadCreatorInbox(silentRefresh) {
+  return loadConversations(silentRefresh);
 }
 
 async function markFanMessagesRead(creatorId) {
@@ -5343,6 +5443,30 @@ var activeChatUser = null;
 var lastMessageCount = 0;
 var chatPollInterval = null;
 var globalMessagesBadgeInterval = null;
+var conversationsPollInterval = null;
+
+function stopConversationsPolling() {
+  if (conversationsPollInterval) {
+    clearInterval(conversationsPollInterval);
+    conversationsPollInterval = null;
+  }
+}
+
+function startConversationsPolling() {
+  stopConversationsPolling();
+  conversationsPollInterval = setInterval(function () {
+    if (!CURRENT_USER || !TOKEN) return;
+    var vis = false;
+    if (CURRENT_USER.role === 'creator') {
+      var d = document.getElementById('dash-messages');
+      vis = !!(d && d.style.display === 'block');
+    } else if (CURRENT_USER.role === 'fan') {
+      var f = document.getElementById('fan-messages');
+      vis = !!(f && f.style.display === 'block');
+    }
+    if (vis && typeof loadConversations === 'function') loadConversations(true);
+  }, 15000);
+}
 
 function stopGlobalMessagesBadgePolling() {
   if (globalMessagesBadgeInterval) {
@@ -5516,95 +5640,6 @@ async function sendMessage() {
   await loadConversation();
 }
 
-async function loadCreatorInbox(silentRefresh) {
-  const list = document.getElementById('creator-messages-list');
-  if (!list || !CURRENT_USER || CURRENT_USER.role !== 'creator') return;
-  if (!silentRefresh) {
-    list.innerHTML = '<div class="conversations-empty">Cargando…</div>';
-  }
-  const msgs = await api.get('/messages/' + encodeURIComponent(CURRENT_USER.id));
-  if (msgs && msgs.error) {
-    list.innerHTML =
-      '<div class="conversations-empty" style="color:#f87171;">' + escapeHtml(msgs.error) + '</div>';
-    return;
-  }
-  if (!Array.isArray(msgs) || !msgs.length) {
-    list.innerHTML = '<div class="conversations-empty">No hay mensajes aún.</div>';
-    return;
-  }
-
-  const byFan = {};
-  msgs.forEach(function (m) {
-    const sid = m.sender_id;
-    const prev = byFan[sid];
-    if (!prev || new Date(m.created_at) > new Date(prev.created_at)) {
-      byFan[sid] = m;
-    }
-  });
-  const unreadCountByFan = {};
-  msgs.forEach(function (m) {
-    if (!m.read_at) {
-      const sid = m.sender_id;
-      unreadCountByFan[sid] = (unreadCountByFan[sid] || 0) + 1;
-    }
-  });
-  const threads = Object.keys(byFan).map(function (k) {
-    return byFan[k];
-  });
-  threads.sort(function (a, b) {
-    return new Date(b.created_at) - new Date(a.created_at);
-  });
-
-  list.innerHTML = threads
-    .map(function (m) {
-      const fanId = m.sender_id;
-      const unreadCount = unreadCountByFan[fanId] || 0;
-      const displayName = (m.sender_name || m.handle || 'Fan').trim();
-      const handleRaw = (m.handle || '').replace(/^@/, '') || m.sender_name || 'fan';
-      const handleDisplay = '@' + handleRaw;
-      const initial = String(handleRaw).charAt(0).toUpperCase() || 'F';
-      const previewRaw = (m.content || '').slice(0, 80);
-      const body = escapeHtml(previewRaw);
-      const t = formatConversationTime(m.created_at);
-      const searchIdx = (handleDisplay + ' ' + displayName + ' ' + (m.content || '')).toLowerCase().slice(0, 500);
-      return (
-        '<div class="conversation-item" role="button" tabindex="0" data-fan-id="' +
-        escapeHtml(fanId) +
-        '" data-search="' +
-        escapeHtml(searchIdx) +
-        '" data-fan-name-enc="' +
-        encodeURIComponent(displayName) +
-        '">' +
-        '<div class="conversation-avatar">' +
-        escapeHtml(initial) +
-        '</div>' +
-        '<div class="conversation-info">' +
-        '<div class="conversation-name">' +
-        escapeHtml(handleDisplay) +
-        '</div>' +
-        '<div class="conversation-preview">' +
-        body +
-        (m.content && m.content.length > 80 ? '…' : '') +
-        '</div>' +
-        '</div>' +
-        '<div class="conversation-meta">' +
-        '<div class="conversation-time">' +
-        escapeHtml(t) +
-        '</div>' +
-        (unreadCount > 0 ? '<span class="unread-badge">' + unreadCount + '</span>' : '') +
-        '</div>' +
-        '</div>'
-      );
-    })
-    .join('');
-
-  if (activeChatUser) {
-    document.querySelectorAll('#creator-messages-list .conversation-item').forEach(function (el) {
-      el.classList.toggle('active', el.getAttribute('data-fan-id') === activeChatUser);
-    });
-  }
-}
-
 async function markCreatorMessageRead(el) {
   if (!el || !el.classList || !el.classList.contains('unread')) return;
   const id = el.getAttribute('data-msg-id');
@@ -5663,6 +5698,7 @@ function setSession(res) {
   updateNavbar(CURRENT_USER.role === 'creator' ? 'creator-dashboard' : 'fan-dashboard');
   if (typeof updateMobileMenuToggle === 'function') updateMobileMenuToggle();
   if (typeof startNotificationPolling === 'function') startNotificationPolling(CURRENT_USER.role);
+  if (typeof startConversationsPolling === 'function') startConversationsPolling();
 }
 
 function logout() {
@@ -5671,6 +5707,7 @@ function logout() {
   if (typeof stopFanMessagesBadgePolling === 'function') stopFanMessagesBadgePolling();
   if (typeof stopFanChatPolling === 'function') stopFanChatPolling();
   if (typeof stopNotificationPolling === 'function') stopNotificationPolling();
+  if (typeof stopConversationsPolling === 'function') stopConversationsPolling();
   TOKEN = null; CURRENT_USER = null;
   localStorage.removeItem('bp_token');
   localStorage.removeItem('bp_user');
@@ -5821,6 +5858,7 @@ async function loadCreatorDashboard() {
     updateGlobalMessagesBadge();
     stopGlobalMessagesBadgePolling();
     globalMessagesBadgeInterval = setInterval(updateGlobalMessagesBadge, 10000);
+    if (typeof loadConversations === 'function') loadConversations(true);
   }
 }
 
@@ -6311,6 +6349,7 @@ async function loadFanDashboard() {
     if (typeof updateFanMessagesBadge === 'function') updateFanMessagesBadge();
     if (typeof stopFanMessagesBadgePolling === 'function') stopFanMessagesBadgePolling();
     fanMessagesBadgeInterval = setInterval(updateFanMessagesBadge, 15000);
+    if (typeof loadConversations === 'function') loadConversations(true);
   }
 }
 
@@ -6888,6 +6927,7 @@ if (TOKEN && CURRENT_USER) {
   updateNavbar(CURRENT_USER.role === 'creator' ? 'creator-dashboard' : 'fan-dashboard');
   if (typeof updateMobileMenuToggle === 'function') updateMobileMenuToggle();
   if (typeof startNotificationPolling === 'function') startNotificationPolling(CURRENT_USER.role);
+  if (typeof startConversationsPolling === 'function') startConversationsPolling();
 }
 
   // Wire up publish button properly

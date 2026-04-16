@@ -136,6 +136,129 @@ router.get('/conversation/:userId', auth, (req, res) => {
   }
 });
 
+/**
+ * GET /api/messages/conversations
+ * Lista conversaciones en una sola query (fan: por suscripciones activas; creador: hilos con mensajes + sub activa).
+ */
+router.get('/conversations', auth, (req, res) => {
+  try {
+    const userId = req.user.id;
+    const userRole = req.user.role;
+
+    if (userRole === 'fan') {
+      const rows = db
+        .prepare(
+          `SELECT 
+            c.id AS user_id,
+            c.handle AS user_handle,
+            c.name AS user_name,
+            (
+              SELECT content FROM messages 
+              WHERE (sender_id = ? AND receiver_id = c.id) 
+                 OR (sender_id = c.id AND receiver_id = ?)
+              ORDER BY datetime(created_at) DESC LIMIT 1
+            ) AS last_message,
+            (
+              SELECT created_at FROM messages 
+              WHERE (sender_id = ? AND receiver_id = c.id) 
+                 OR (sender_id = c.id AND receiver_id = ?)
+              ORDER BY datetime(created_at) DESC LIMIT 1
+            ) AS last_message_at,
+            (
+              SELECT COUNT(*) FROM messages 
+              WHERE sender_id = c.id AND receiver_id = ? AND read_at IS NULL
+            ) AS unread_count
+          FROM subscriptions s
+          JOIN users c ON c.id = s.creator_id
+          WHERE s.fan_id = ? AND s.status = 'active'
+          ORDER BY (last_message_at IS NULL), datetime(last_message_at) DESC`
+        )
+        .all(userId, userId, userId, userId, userId, userId);
+
+      return res.json(
+        rows.map((conv) => ({
+          user_id: conv.user_id,
+          user_handle: conv.user_handle || '',
+          user_name: conv.user_name || '',
+          last_message: conv.last_message || '',
+          last_message_at: conv.last_message_at,
+          unread_count: Number(conv.unread_count) || 0
+        }))
+      );
+    }
+
+    if (userRole === 'creator') {
+      const rows = db
+        .prepare(
+          `SELECT 
+            u.id AS user_id,
+            u.handle AS user_handle,
+            u.name AS user_name,
+            (
+              SELECT content FROM messages 
+              WHERE (sender_id = u.id AND receiver_id = ?) 
+                 OR (sender_id = ? AND receiver_id = u.id)
+              ORDER BY datetime(created_at) DESC LIMIT 1
+            ) AS last_message,
+            (
+              SELECT created_at FROM messages 
+              WHERE (sender_id = u.id AND receiver_id = ?) 
+                 OR (sender_id = ? AND receiver_id = u.id)
+              ORDER BY datetime(created_at) DESC LIMIT 1
+            ) AS last_message_at,
+            (
+              SELECT COUNT(*) FROM messages 
+              WHERE sender_id = u.id AND receiver_id = ? AND read_at IS NULL
+            ) AS unread_count
+          FROM (
+            SELECT DISTINCT
+              CASE 
+                WHEN m.sender_id = ? THEN m.receiver_id
+                WHEN m.receiver_id = ? THEN m.sender_id
+              END AS fan_id
+            FROM messages m
+            WHERE m.sender_id = ? OR m.receiver_id = ?
+          ) AS p
+          JOIN users u ON u.id = p.fan_id AND u.role = 'fan'
+          WHERE p.fan_id IS NOT NULL
+            AND EXISTS (
+              SELECT 1 FROM subscriptions s
+              WHERE s.creator_id = ? AND s.fan_id = u.id AND s.status = 'active'
+            )
+          ORDER BY (last_message_at IS NULL), datetime(last_message_at) DESC`
+        )
+        .all(
+          userId,
+          userId,
+          userId,
+          userId,
+          userId,
+          userId,
+          userId,
+          userId,
+          userId,
+          userId
+        );
+
+      return res.json(
+        rows.map((conv) => ({
+          user_id: conv.user_id,
+          user_handle: conv.user_handle || '',
+          user_name: conv.user_name || '',
+          last_message: conv.last_message || '',
+          last_message_at: conv.last_message_at,
+          unread_count: Number(conv.unread_count) || 0
+        }))
+      );
+    }
+
+    return res.status(403).json({ error: 'No permitido' });
+  } catch (error) {
+    console.error('Error conversaciones:', error);
+    res.status(500).json({ error: 'Error al obtener conversaciones' });
+  }
+});
+
 router.get('/:userId', auth, (req, res) => {
   try {
     const userId = req.params.userId;
