@@ -6250,33 +6250,41 @@ function paintProfileHeroAvatar(creator) {
   );
 }
 
-function resizeAvatarFileToJpegBlob(file, size, quality) {
+function bpAllowedAvatarMime(type) {
+  return type === 'image/jpeg' || type === 'image/png' || type === 'image/webp';
+}
+
+function bpCanUseWebP() {
+  try {
+    const canvas = document.createElement('canvas');
+    return canvas.toDataURL('image/webp').indexOf('data:image/webp') === 0;
+  } catch (e) {
+    return false;
+  }
+}
+
+function bpAvatarUploadFilename(blob) {
+  if (blob && blob.type === 'image/webp') return 'avatar.webp';
+  return 'avatar.jpg';
+}
+
+function bpAvatarDevLog(origBytes, outBytes) {
+  try {
+    if (typeof location !== 'undefined' && /^(localhost|127\.0\.0\.1)$/.test(location.hostname)) {
+      console.log(
+        'Avatar optimized: ' + (origBytes / 1024).toFixed(1) + 'KB → ' + (outBytes / 1024).toFixed(1) + 'KB'
+      );
+    }
+  } catch (e) {}
+}
+
+function loadImage(file) {
   return new Promise(function (resolve, reject) {
     const url = URL.createObjectURL(file);
     const img = new Image();
     img.onload = function () {
       URL.revokeObjectURL(url);
-      var S = size || 512;
-      var canvas = document.createElement('canvas');
-      canvas.width = S;
-      canvas.height = S;
-      var ctx = canvas.getContext('2d');
-      var iw = img.naturalWidth;
-      var ih = img.naturalHeight;
-      var scale = Math.max(S / iw, S / ih);
-      var sw = S / scale;
-      var sh = S / scale;
-      var sx = (iw - sw) / 2;
-      var sy = (ih - sh) / 2;
-      ctx.drawImage(img, sx, sy, sw, sh, 0, 0, S, S);
-      canvas.toBlob(
-        function (blob) {
-          if (!blob) reject(new Error('blob'));
-          else resolve(blob);
-        },
-        'image/jpeg',
-        quality == null ? 0.88 : quality
-      );
+      resolve(img);
     };
     img.onerror = function () {
       URL.revokeObjectURL(url);
@@ -6284,6 +6292,58 @@ function resizeAvatarFileToJpegBlob(file, size, quality) {
     };
     img.src = url;
   });
+}
+
+/** Recorte centrado tipo cover: cuadrado tomando el lado menor de la imagen. */
+function getCoverCrop(img) {
+  const iw = img.naturalWidth || img.width;
+  const ih = img.naturalHeight || img.height;
+  const cropSize = Math.min(iw, ih);
+  const sx = (iw - cropSize) / 2;
+  const sy = (ih - cropSize) / 2;
+  return { sx: sx, sy: sy, sw: cropSize, sh: cropSize };
+}
+
+async function compressImage(canvas, mimeType) {
+  let quality = 0.9;
+  let blob = null;
+  const MAX_ATTEMPTS = 6;
+  let attempt = 0;
+  do {
+    blob = await new Promise(function (resolve) {
+      canvas.toBlob(resolve, mimeType, mimeType === 'image/jpeg' || mimeType === 'image/webp' ? quality : undefined);
+    });
+    if (!blob) break;
+    quality -= 0.1;
+    attempt++;
+  } while (blob.size > 2 * 1024 * 1024 && quality >= 0.5 && attempt < MAX_ATTEMPTS);
+  return blob;
+}
+
+async function processAvatar(file) {
+  const img = await loadImage(file);
+  const crop = getCoverCrop(img);
+  const sizes = [512, 448, 384, 320, 256];
+  const preferWebp = bpCanUseWebP();
+  for (let i = 0; i < sizes.length; i++) {
+    const SIZE = sizes[i];
+    const canvas = document.createElement('canvas');
+    canvas.width = SIZE;
+    canvas.height = SIZE;
+    const ctx = canvas.getContext('2d');
+    ctx.drawImage(img, crop.sx, crop.sy, crop.sw, crop.sh, 0, 0, SIZE, SIZE);
+    let mimeType = preferWebp ? 'image/webp' : 'image/jpeg';
+    let blob = await compressImage(canvas, mimeType);
+    if ((!blob || blob.size > 2 * 1024 * 1024) && mimeType === 'image/webp') {
+      blob = await compressImage(canvas, 'image/jpeg');
+    }
+    canvas.remove();
+    if (blob && blob.size <= 2 * 1024 * 1024) {
+      bpAvatarDevLog(file.size, blob.size);
+      return blob;
+    }
+  }
+  throw new Error('compress');
 }
 
 (function setupSettingsAvatarFile() {
@@ -6296,36 +6356,39 @@ function resizeAvatarFileToJpegBlob(file, size, quality) {
   fin.addEventListener('change', function () {
     const f = fin.files && fin.files[0];
     if (!f) return;
-    if (f.size > 2 * 1024 * 1024) {
-      if (typeof showNotif === 'function') showNotif('La imagen supera 2 MB');
+    if (!bpAllowedAvatarMime(f.type)) {
+      if (typeof showNotif === 'function') showNotif('Usa una imagen JPEG, PNG o WebP');
       fin.value = '';
       return;
     }
-    resizeAvatarFileToJpegBlob(f, 512, 0.88)
-      .then(function (blob) {
-        window._pendingAvatarBlob = blob;
-        const prev = document.getElementById('settings-avatar-preview');
-        const col = document.getElementById('settings-avatar-color');
-        if (prev && CURRENT_USER) {
-          bpPaintAvatar(
-            prev,
-            {
-              avatar_url: URL.createObjectURL(blob),
-              name: CURRENT_USER.name,
-              email: CURRENT_USER.email,
-              id: CURRENT_USER.id,
-              avatar_color: col ? col.value : '#333333',
-              updated_at: Date.now()
-            },
-            'xl',
-            'settings-avatar-preview bp-avatar'
-          );
-        }
-      })
-      .catch(function () {
-        if (typeof showNotif === 'function') showNotif('No se pudo leer la imagen');
-        fin.value = '';
-      });
+    if (typeof showNotif === 'function') showNotif('Optimizando imagen...');
+    requestAnimationFrame(function () {
+      Promise.resolve(processAvatar(f))
+        .then(function (blob) {
+          window._pendingAvatarBlob = blob;
+          const prev = document.getElementById('settings-avatar-preview');
+          const col = document.getElementById('settings-avatar-color');
+          if (prev && CURRENT_USER) {
+            bpPaintAvatar(
+              prev,
+              {
+                avatar_url: URL.createObjectURL(blob),
+                name: CURRENT_USER.name,
+                email: CURRENT_USER.email,
+                id: CURRENT_USER.id,
+                avatar_color: col ? col.value : '#333333',
+                updated_at: Date.now()
+              },
+              'xl',
+              'settings-avatar-preview bp-avatar'
+            );
+          }
+        })
+        .catch(function () {
+          if (typeof showNotif === 'function') showNotif('No se pudo optimizar la imagen. Prueba con otra foto.');
+          fin.value = '';
+        });
+    });
   });
 })();
 
@@ -6339,33 +6402,36 @@ function resizeAvatarFileToJpegBlob(file, size, quality) {
       fin.value = '';
       return;
     }
-    if (f.size > 2 * 1024 * 1024) {
-      if (typeof showNotif === 'function') showNotif('La imagen supera 2 MB');
+    if (!bpAllowedAvatarMime(f.type)) {
+      if (typeof showNotif === 'function') showNotif('Usa una imagen JPEG, PNG o WebP');
       fin.value = '';
       return;
     }
-    resizeAvatarFileToJpegBlob(f, 512, 0.88)
-      .then(function (blob) {
-        const fd = new FormData();
-        fd.append('avatar', blob, 'avatar.jpg');
-        return api.upload('/auth/avatar', fd);
-      })
-      .then(function (avRes) {
-        fin.value = '';
-        if (!avRes || avRes.error) {
-          if (typeof showNotif === 'function') showNotif(avRes && avRes.error ? avRes.error : 'Error al subir');
-          return;
-        }
-        CURRENT_USER.avatar_url = avRes.avatar_url || avRes.avatarUrl;
-        CURRENT_USER.updated_at = avRes.updated_at;
-        localStorage.setItem('bp_user', JSON.stringify(CURRENT_USER));
-        syncSessionAvatarsFromCurrentUser();
-        if (typeof showNotif === 'function') showNotif('Foto de perfil actualizada');
-      })
-      .catch(function () {
-        if (typeof showNotif === 'function') showNotif('No se pudo subir la foto');
-        fin.value = '';
-      });
+    if (typeof showNotif === 'function') showNotif('Optimizando imagen...');
+    requestAnimationFrame(function () {
+      Promise.resolve(processAvatar(f))
+        .then(function (blob) {
+          const fd = new FormData();
+          fd.append('avatar', blob, bpAvatarUploadFilename(blob));
+          return api.upload('/auth/avatar', fd);
+        })
+        .then(function (avRes) {
+          fin.value = '';
+          if (!avRes || avRes.error) {
+            if (typeof showNotif === 'function') showNotif(avRes && avRes.error ? avRes.error : 'Error al subir');
+            return;
+          }
+          CURRENT_USER.avatar_url = avRes.avatar_url || avRes.avatarUrl;
+          CURRENT_USER.updated_at = avRes.updated_at;
+          localStorage.setItem('bp_user', JSON.stringify(CURRENT_USER));
+          syncSessionAvatarsFromCurrentUser();
+          if (typeof showNotif === 'function') showNotif('Foto de perfil actualizada');
+        })
+        .catch(function () {
+          if (typeof showNotif === 'function') showNotif('No se pudo subir la foto');
+          fin.value = '';
+        });
+    });
   });
 })();
 
@@ -8077,7 +8143,7 @@ async function saveProfileSettings() {
 
     if (window._pendingAvatarBlob) {
       const fd = new FormData();
-      fd.append('avatar', window._pendingAvatarBlob, 'avatar.jpg');
+      fd.append('avatar', window._pendingAvatarBlob, bpAvatarUploadFilename(window._pendingAvatarBlob));
       const avRes = await api.upload('/auth/avatar', fd);
       if (avRes.error) {
         msgDiv.style.display = 'block';
