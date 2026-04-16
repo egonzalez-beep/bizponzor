@@ -1,11 +1,19 @@
 
 const router = require('express').Router();
+const path = require('path');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const multer = require('multer');
 const { v4: uuidv4 } = require('uuid');
 const db = require('../db');
-const upload = multer({ dest: 'uploads/' });
+const { avatarMulter } = require('../lib/avatarUpload');
+const { handleAvatarUpload } = require('../lib/handleAvatarUpload');
+
+const uploadsDir = path.join(__dirname, '../uploads');
+const uploadBanner = multer({
+  dest: uploadsDir,
+  limits: { fileSize: 15 * 1024 * 1024 }
+});
 
 function getOnboardingStatus(user, stats) {
   const effectiveSteps = [
@@ -121,7 +129,7 @@ router.post('/login', async (req, res) => {
 router.get('/me', require('../middleware/auth'), (req, res) => {
   const user = db
     .prepare(
-      'SELECT id, name, email, role, handle, bio, category, location, avatar_url, banner_url, avatar_color, social_instagram, social_facebook, social_tiktok, social_other FROM users WHERE id = ?'
+      'SELECT id, name, email, role, handle, bio, category, location, avatar_url, banner_url, avatar_color, social_instagram, social_facebook, social_tiktok, social_other, updated_at FROM users WHERE id = ?'
     )
     .get(req.user.id);
   if (!user) return res.status(404).json({ error: 'Usuario no encontrado' });
@@ -191,15 +199,18 @@ router.put('/profile', require('../middleware/auth'), (req, res) => {
   res.json({ success: true, handle: normalizedHandle });
 });
 
-// Subir foto de perfil
-router.post('/avatar', require('../middleware/auth'), upload.single('avatar'), (req, res) => {
-  if (!req.file) return res.status(400).json({ error: 'Archivo requerido' });
-  const avatar_url = '/uploads/' + req.file.filename;
-  db.prepare('UPDATE users SET avatar_url = ? WHERE id = ?').run(avatar_url, req.user.id);
-  res.json({ avatar_url });
+// Subir foto de perfil (misma lógica que PATCH /api/users/avatar)
+router.post('/avatar', require('../middleware/auth'), (req, res, next) => {
+  avatarMulter.single('avatar')(req, res, (err) => {
+    if (err) {
+      if (err.code === 'LIMIT_FILE_SIZE') return res.status(400).json({ error: 'El archivo supera 2 MB' });
+      return res.status(400).json({ error: String(err.message || 'Archivo inválido') });
+    }
+    Promise.resolve(handleAvatarUpload(req, res)).catch(next);
+  });
 });
 
-router.post('/banner', require('../middleware/auth'), upload.single('banner'), (req, res) => {
+router.post('/banner', require('../middleware/auth'), uploadBanner.single('banner'), (req, res) => {
   if (!req.file) return res.status(400).json({ error: 'Archivo requerido' });
   const banner_url = '/uploads/' + req.file.filename;
   db.prepare('UPDATE users SET banner_url = ? WHERE id = ?').run(banner_url, req.user.id);

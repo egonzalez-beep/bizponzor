@@ -26,7 +26,7 @@ function countPhotosVideos(creatorId) {
 
 // Listar creadores
 router.get('/', (req, res) => {
-  const creators = db.prepare("SELECT u.id, u.name, u.handle, u.bio, u.category, u.location, u.avatar_url, u.banner_url, u.avatar_color, COUNT(DISTINCT s.id) as subscribers FROM users u LEFT JOIN subscriptions s ON u.id=s.creator_id AND s.status='active' WHERE u.role='creator' GROUP BY u.id ORDER BY subscribers DESC").all();
+  const creators = db.prepare("SELECT u.id, u.name, u.handle, u.bio, u.category, u.location, u.avatar_url, u.banner_url, u.avatar_color, u.updated_at, COUNT(DISTINCT s.id) as subscribers FROM users u LEFT JOIN subscriptions s ON u.id=s.creator_id AND s.status='active' WHERE u.role='creator' GROUP BY u.id ORDER BY subscribers DESC").all();
   res.json(creators);
 });
 
@@ -35,7 +35,7 @@ router.get('/me', auth, (req, res) => {
   const creator = db
     .prepare(
       `SELECT id, name, handle, bio, category, location, avatar_url, banner_url, avatar_color,
-              social_instagram, social_facebook, social_tiktok, social_other
+              social_instagram, social_facebook, social_tiktok, social_other, updated_at
        FROM users WHERE id=? AND role='creator'`
     )
     .get(req.user.id);
@@ -59,7 +59,7 @@ router.get('/me', auth, (req, res) => {
 router.get('/:handle', (req, res) => {
   const creator = db
     .prepare(
-      "SELECT id, name, handle, bio, category, location, avatar_url, banner_url, avatar_color, social_instagram, social_facebook, social_tiktok, social_other FROM users WHERE handle=? AND role='creator'"
+      "SELECT id, name, handle, bio, category, location, avatar_url, banner_url, avatar_color, social_instagram, social_facebook, social_tiktok, social_other, updated_at FROM users WHERE handle=? AND role='creator'"
     )
     .get(req.params.handle);
   if (!creator) return res.status(404).json({ error: 'Creador no encontrado' });

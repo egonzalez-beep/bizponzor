@@ -257,6 +257,17 @@ try {
   /* exists */
 }
 
+try {
+  db.exec("ALTER TABLE users ADD COLUMN updated_at TEXT;");
+} catch (e) {
+  /* exists */
+}
+try {
+  db.prepare("UPDATE users SET updated_at = datetime('now') WHERE updated_at IS NULL").run();
+} catch (e) {
+  /* ignore */
+}
+
 db.exec(`
   CREATE TABLE IF NOT EXISTS deleted_conversations (
     id TEXT PRIMARY KEY,

@@ -879,6 +879,104 @@
     color: #ffffff;
   }
 
+  .visually-hidden-input {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+  }
+
+  .bp-avatar {
+    position: relative;
+    overflow: hidden;
+    border-radius: 50%;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-sizing: border-box;
+  }
+  .bp-avatar-img {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+  }
+  .bp-avatar-img.bp-avatar-img--ready {
+    opacity: 1;
+  }
+  .bp-avatar-fallback {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    color: #fff;
+    font-size: inherit;
+  }
+  .bp-avatar--xs { width: 24px; height: 24px; font-size: 0.65rem; }
+  .bp-avatar--sm { width: 32px; height: 32px; font-size: 0.75rem; }
+  .bp-avatar--md { width: 40px; height: 40px; font-size: 0.95rem; }
+  .bp-avatar--lg { width: 64px; height: 64px; font-size: 1.2rem; }
+  .bp-avatar--xl {
+    width: 112px;
+    height: 112px;
+    font-size: 1.75rem;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.22), 0 0 0 2px rgba(255, 255, 255, 0.9);
+  }
+  .bp-avatar--2xl { width: 144px; height: 144px; font-size: 2rem; }
+
+  #creator-dashboard #dash-settings .settings-avatar-editor {
+    position: relative;
+    display: inline-block;
+    margin-top: 8px;
+  }
+  #creator-dashboard #dash-settings .settings-avatar-cam {
+    position: absolute;
+    bottom: 4px;
+    right: 4px;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    border: 2px solid rgba(255, 255, 255, 0.95);
+    background: rgba(15, 23, 42, 0.92);
+    color: #e2e8f0;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.2s ease, transform 0.15s ease;
+    padding: 0;
+  }
+  #creator-dashboard #dash-settings .settings-avatar-cam:hover {
+    background: rgba(56, 189, 248, 0.28);
+    color: #fff;
+  }
+
+  .navbar-user-wrap {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    max-width: min(220px, 46vw);
+  }
+  .navbar-session-avatar {
+    flex-shrink: 0;
+  }
+  .navbar-user-wrap .navbar-user-name {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
   #creator-dashboard #messages-badge {
     background: var(--error);
     color: white;
@@ -2557,12 +2655,17 @@
     margin-top: -50px; margin-bottom: 20px; position: relative; display: inline-block;
   }
   .profile-avatar {
-    width: 104px; height: 104px; border-radius: 50%;
+    border-radius: 50%;
     background: linear-gradient(135deg, #333 0%, #888 100%);
     border: 4px solid var(--white);
-    box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+    box-shadow: 0 8px 24px rgba(0,0,0,0.12), 0 0 0 1px rgba(0,0,0,0.06);
     display: flex; align-items: center; justify-content: center;
     font-size: 2.5rem; font-weight: 800; color: white;
+  }
+  .profile-avatar.bp-avatar--xl {
+    width: 112px;
+    height: 112px;
+    font-size: 1.75rem;
   }
   .profile-name { font-size: 1.6rem; font-weight: 800; letter-spacing: -0.5px; }
   #creator-profile-inner .profile-name { color: #FFFFFF; }
@@ -2662,13 +2765,32 @@
     color: #FFFFFF;
   }
 
-  #fan-dashboard .sidebar > div:first-child > div:last-child > div:first-child {
+  #fan-sidebar-name {
     color: #FFFFFF;
     font-weight: 700;
   }
-  #fan-dashboard .sidebar > div:first-child > div:last-child > div:last-child {
+  #fan-sidebar-sub {
     color: #A3A3A3;
     font-size: 0.72rem;
+  }
+  #fan-dashboard .fan-avatar-change-btn {
+    width: 100%;
+    margin-bottom: 16px;
+    padding: 8px 12px;
+    font-size: 0.78rem;
+    font-weight: 600;
+    color: #94a3b8;
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    font-family: inherit;
+    transition: border-color 0.2s ease, color 0.2s ease, background 0.2s ease;
+  }
+  #fan-dashboard .fan-avatar-change-btn:hover {
+    color: #e2e8f0;
+    border-color: rgba(56, 189, 248, 0.35);
+    background: rgba(56, 189, 248, 0.08);
   }
   #fan-dashboard #fan-messages-badge {
     background: var(--error);
@@ -4743,9 +4865,20 @@
                 Apariencia
               </h3>
               <div class="form-group">
+                <label class="form-label">Foto de perfil</label>
+                <div class="settings-avatar-editor">
+                  <div class="bp-avatar bp-avatar--xl settings-avatar-preview" id="settings-avatar-preview" role="img" aria-label="Vista previa de foto de perfil"></div>
+                  <button type="button" class="settings-avatar-cam" id="settings-avatar-cam-btn" aria-label="Elegir foto de perfil" title="Cambiar foto">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
+                  </button>
+                  <input type="file" id="settings-avatar-file" class="visually-hidden-input" accept="image/jpeg,image/png,image/webp" tabindex="-1" aria-hidden="true">
+                </div>
+                <p class="settings-hint">JPG, PNG o WebP · máx. 2&nbsp;MB · se muestra a 512&nbsp;px en el perfil</p>
+              </div>
+              <div class="form-group">
                 <label class="form-label">Color del avatar</label>
                 <input type="color" class="form-input" id="settings-avatar-color" value="#333333" style="height:44px;padding:6px 10px;max-width:120px;">
-                <div class="settings-hint">Inicial sobre este color en el perfil público</div>
+                <div class="settings-hint">Inicial sobre este color si no hay foto</div>
               </div>
               <div class="form-group">
                 <label class="form-label">Banner (portada)</label>
@@ -4946,12 +5079,14 @@
   <div class="dashboard-layout">
     <div class="sidebar">
       <div class="sidebar-user-row">
-        <div class="sidebar-user-avatar" aria-hidden="true">L</div>
+        <div class="sidebar-user-avatar bp-avatar bp-avatar--md" id="fan-sidebar-avatar" aria-hidden="true">L</div>
         <div class="sidebar-user-meta">
-          <div class="sidebar-user-name">Luis García</div>
-          <div class="sidebar-user-sub">Fan</div>
+          <div class="sidebar-user-name" id="fan-sidebar-name">Luis García</div>
+          <div class="sidebar-user-sub" id="fan-sidebar-sub">Fan</div>
         </div>
       </div>
+      <input type="file" id="fan-avatar-file" class="visually-hidden-input" accept="image/jpeg,image/png,image/webp" tabindex="-1" aria-hidden="true" />
+      <button type="button" class="fan-avatar-change-btn" id="fan-avatar-change-btn" onclick="document.getElementById('fan-avatar-file').click()">Cambiar foto</button>
       <div class="sidebar-section">
         <div class="sidebar-label">Explorar</div>
         <div class="sidebar-item active" onclick="setFanTab('feed', this)"><span class="icon">🏠</span> Feed</div>
@@ -5099,7 +5234,7 @@
     <div class="profile-hero-row">
       <div class="profile-hero-identity">
         <div class="profile-avatar-wrap">
-          <div class="profile-avatar">A</div>
+          <div class="profile-avatar bp-avatar bp-avatar--xl" id="profile-hero-avatar" role="img" aria-label="Foto de perfil">A</div>
         </div>
         <div class="profile-hero-text-block">
           <div class="profile-name">Ana Molina</div>
@@ -5323,9 +5458,15 @@
     if (page === 'creator-profile') {
       actions.innerHTML = `<button class="btn btn-ghost" onclick="goBackToDashboard()">← Volver al panel</button>`;
     } else if (CURRENT_USER && CURRENT_USER.role === 'creator') {
-      actions.innerHTML = `<span class="navbar-user-name">${CURRENT_USER.name}</span><button class="btn btn-outline btn-sm" onclick="logout()">Salir</button>`;
+      actions.innerHTML =
+        '<div class="navbar-user-wrap"><div class="bp-avatar bp-avatar--sm navbar-session-avatar" id="navbar-session-avatar"></div><span class="navbar-user-name">' +
+        escapeHtml(CURRENT_USER.name) +
+        '</span></div><button class="btn btn-outline btn-sm" onclick="logout()">Salir</button>';
     } else if (CURRENT_USER && CURRENT_USER.role === 'fan') {
-      actions.innerHTML = `<span class="navbar-user-name">${CURRENT_USER.name} 👋</span><button class="btn btn-outline btn-sm" onclick="logout()">Salir</button>`;
+      actions.innerHTML =
+        '<div class="navbar-user-wrap"><div class="bp-avatar bp-avatar--sm navbar-session-avatar" id="navbar-session-avatar"></div><span class="navbar-user-name">' +
+        escapeHtml(CURRENT_USER.name) +
+        '</span></div><button class="btn btn-outline btn-sm" onclick="logout()">Salir</button>';
     } else {
       actions.innerHTML = `<button class="btn btn-ghost" onclick="showAuth('login')">Iniciar sesión</button><button class="btn btn-primary" onclick="showAuth('register')">Comenzar gratis</button>`;
     }
@@ -5389,13 +5530,7 @@
         if (innerRoot) innerRoot.dataset.handle = creator.handle || '';
         applyCreatorHeroFields(creator);
         fillProfileSocialLinks(creator);
-        const avatarDiv = document.querySelector('#creator-profile-inner .profile-avatar');
-        if (avatarDiv) {
-          avatarDiv.style.backgroundImage = '';
-          avatarDiv.style.background = creator.avatar_color || '#333333';
-          const aliasInitial = (creator.handle || creator.name || 'C').replace('@', '').charAt(0).toUpperCase();
-          avatarDiv.textContent = aliasInitial;
-        }
+        paintProfileHeroAvatar(creator);
         const bannerDiv = document.querySelector('#creator-profile-inner .profile-banner');
         if (bannerDiv) {
           if (creator.banner_url) {
@@ -6001,8 +6136,238 @@ const api = {
       body: JSON.stringify(body != null ? body : {})
     }).then(r => r.json()),
   del: (url) => fetch(API + url, { method: 'DELETE', headers: api.headers() }).then(r => r.json()),
-  upload: (url, formData) => fetch(API + url, { method: 'POST', headers: { ...(TOKEN ? { 'Authorization': 'Bearer ' + TOKEN } : {}) }, body: formData }).then(r => r.json())
+  upload: (url, formData) => fetch(API + url, { method: 'POST', headers: { ...(TOKEN ? { 'Authorization': 'Bearer ' + TOKEN } : {}) }, body: formData }).then(r => r.json()),
+  uploadPatch: (url, formData) =>
+    fetch(API + url, {
+      method: 'PATCH',
+      headers: { ...(TOKEN ? { Authorization: 'Bearer ' + TOKEN } : {}) },
+      body: formData
+    }).then((r) => r.json())
 };
+
+function bpAvatarBustUrl(url, updatedAt) {
+  if (!url) return '';
+  const sep = url.indexOf('?') >= 0 ? '&' : '?';
+  const v =
+    updatedAt != null && updatedAt !== ''
+      ? new Date(updatedAt).getTime()
+      : Date.now();
+  return url + sep + 'v=' + v;
+}
+
+function bpGetInitials(name, email) {
+  const n = (name || '').trim();
+  if (n) {
+    const parts = n.split(/\s+/).filter(Boolean);
+    if (parts.length >= 2) return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
+    return n.substring(0, 2).toUpperCase();
+  }
+  const e = (email || '').split('@')[0] || '';
+  return e.substring(0, 2).toUpperCase() || '?';
+}
+
+function bpAvatarColorForId(userId) {
+  const s = String(userId || 'x');
+  let h = 0;
+  for (let i = 0; i < s.length; i++) h = s.charCodeAt(i) + ((h << 5) - h);
+  const hue = Math.abs(h) % 360;
+  return 'hsl(' + hue + ', 42%, 36%)';
+}
+
+function bpPaintAvatar(el, user, size, extraClass) {
+  if (!el || !user) return;
+  const sz = size || 'md';
+  const extra = extraClass ? String(extraClass) : '';
+  el.className = 'bp-avatar bp-avatar--' + sz + (extra ? ' ' + extra : '');
+  el.innerHTML = '';
+  const urlRaw = user.avatar_url ? bpAvatarBustUrl(user.avatar_url, user.updated_at) : '';
+  if (urlRaw) {
+    const img = document.createElement('img');
+    img.className = 'bp-avatar-img';
+    img.alt = '';
+    img.loading = 'lazy';
+    img.src = urlRaw;
+    img.onload = function () {
+      img.classList.add('bp-avatar-img--ready');
+    };
+    el.appendChild(img);
+    const fb = document.createElement('span');
+    fb.className = 'bp-avatar-fallback';
+    fb.style.display = 'none';
+    fb.textContent = bpGetInitials(user.name, user.email);
+    fb.style.background = user.avatar_color || bpAvatarColorForId(user.id);
+    el.appendChild(fb);
+    img.onerror = function () {
+      img.remove();
+      fb.style.display = 'flex';
+    };
+  } else {
+    const fb = document.createElement('span');
+    fb.className = 'bp-avatar-fallback';
+    fb.textContent = bpGetInitials(user.name, user.email);
+    fb.style.background = user.avatar_color || bpAvatarColorForId(user.id);
+    el.appendChild(fb);
+  }
+}
+
+function syncSessionAvatarsFromCurrentUser() {
+  if (!CURRENT_USER) return;
+  const u = {
+    id: CURRENT_USER.id,
+    name: CURRENT_USER.name,
+    email: CURRENT_USER.email,
+    avatar_url: CURRENT_USER.avatar_url,
+    avatar_color: CURRENT_USER.avatar_color,
+    updated_at: CURRENT_USER.updated_at
+  };
+  const nav = document.getElementById('navbar-session-avatar');
+  if (nav) bpPaintAvatar(nav, u, 'sm', 'navbar-session-avatar');
+  if (CURRENT_USER.role === 'creator') {
+    const side = document.getElementById('sidebar-avatar');
+    if (side) bpPaintAvatar(side, u, 'md', 'sidebar-user-avatar');
+  }
+  if (CURRENT_USER.role === 'fan') {
+    const fa = document.getElementById('fan-sidebar-avatar');
+    if (fa) bpPaintAvatar(fa, u, 'md', 'sidebar-user-avatar');
+  }
+}
+
+function paintProfileHeroAvatar(creator) {
+  const el = document.getElementById('profile-hero-avatar');
+  if (!el || !creator) return;
+  bpPaintAvatar(
+    el,
+    {
+      id: creator.id,
+      name: creator.name,
+      email: creator.email,
+      avatar_url: creator.avatar_url,
+      avatar_color: creator.avatar_color || '#333333',
+      updated_at: creator.updated_at
+    },
+    'xl',
+    'profile-avatar'
+  );
+}
+
+function resizeAvatarFileToJpegBlob(file, size, quality) {
+  return new Promise(function (resolve, reject) {
+    const url = URL.createObjectURL(file);
+    const img = new Image();
+    img.onload = function () {
+      URL.revokeObjectURL(url);
+      var S = size || 512;
+      var canvas = document.createElement('canvas');
+      canvas.width = S;
+      canvas.height = S;
+      var ctx = canvas.getContext('2d');
+      var iw = img.naturalWidth;
+      var ih = img.naturalHeight;
+      var scale = Math.max(S / iw, S / ih);
+      var sw = S / scale;
+      var sh = S / scale;
+      var sx = (iw - sw) / 2;
+      var sy = (ih - sh) / 2;
+      ctx.drawImage(img, sx, sy, sw, sh, 0, 0, S, S);
+      canvas.toBlob(
+        function (blob) {
+          if (!blob) reject(new Error('blob'));
+          else resolve(blob);
+        },
+        'image/jpeg',
+        quality == null ? 0.88 : quality
+      );
+    };
+    img.onerror = function () {
+      URL.revokeObjectURL(url);
+      reject(new Error('img'));
+    };
+    img.src = url;
+  });
+}
+
+(function setupSettingsAvatarFile() {
+  const cam = document.getElementById('settings-avatar-cam-btn');
+  const fin = document.getElementById('settings-avatar-file');
+  if (!cam || !fin) return;
+  cam.addEventListener('click', function () {
+    fin.click();
+  });
+  fin.addEventListener('change', function () {
+    const f = fin.files && fin.files[0];
+    if (!f) return;
+    if (f.size > 2 * 1024 * 1024) {
+      if (typeof showNotif === 'function') showNotif('La imagen supera 2 MB');
+      fin.value = '';
+      return;
+    }
+    resizeAvatarFileToJpegBlob(f, 512, 0.88)
+      .then(function (blob) {
+        window._pendingAvatarBlob = blob;
+        const prev = document.getElementById('settings-avatar-preview');
+        const col = document.getElementById('settings-avatar-color');
+        if (prev && CURRENT_USER) {
+          bpPaintAvatar(
+            prev,
+            {
+              avatar_url: URL.createObjectURL(blob),
+              name: CURRENT_USER.name,
+              email: CURRENT_USER.email,
+              id: CURRENT_USER.id,
+              avatar_color: col ? col.value : '#333333',
+              updated_at: Date.now()
+            },
+            'xl',
+            'settings-avatar-preview bp-avatar'
+          );
+        }
+      })
+      .catch(function () {
+        if (typeof showNotif === 'function') showNotif('No se pudo leer la imagen');
+        fin.value = '';
+      });
+  });
+})();
+
+(function setupFanAvatarFile() {
+  const fin = document.getElementById('fan-avatar-file');
+  if (!fin) return;
+  fin.addEventListener('change', function () {
+    const f = fin.files && fin.files[0];
+    if (!f) return;
+    if (!CURRENT_USER || CURRENT_USER.role !== 'fan') {
+      fin.value = '';
+      return;
+    }
+    if (f.size > 2 * 1024 * 1024) {
+      if (typeof showNotif === 'function') showNotif('La imagen supera 2 MB');
+      fin.value = '';
+      return;
+    }
+    resizeAvatarFileToJpegBlob(f, 512, 0.88)
+      .then(function (blob) {
+        const fd = new FormData();
+        fd.append('avatar', blob, 'avatar.jpg');
+        return api.upload('/auth/avatar', fd);
+      })
+      .then(function (avRes) {
+        fin.value = '';
+        if (!avRes || avRes.error) {
+          if (typeof showNotif === 'function') showNotif(avRes && avRes.error ? avRes.error : 'Error al subir');
+          return;
+        }
+        CURRENT_USER.avatar_url = avRes.avatar_url || avRes.avatarUrl;
+        CURRENT_USER.updated_at = avRes.updated_at;
+        localStorage.setItem('bp_user', JSON.stringify(CURRENT_USER));
+        syncSessionAvatarsFromCurrentUser();
+        if (typeof showNotif === 'function') showNotif('Foto de perfil actualizada');
+      })
+      .catch(function () {
+        if (typeof showNotif === 'function') showNotif('No se pudo subir la foto');
+        fin.value = '';
+      });
+  });
+})();
 
 var ncListCache = null;
 var ncNcCursor = null;
@@ -7349,8 +7714,9 @@ function setSession(res) {
     document.getElementById('fan-dashboard').classList.add('active');
     loadFanDashboard();
   }
-  
+
   updateNavbar(CURRENT_USER.role === 'creator' ? 'creator-dashboard' : 'fan-dashboard');
+  syncSessionAvatarsFromCurrentUser();
   if (typeof updateMobileMenuToggle === 'function') updateMobileMenuToggle();
   if (typeof startNotificationPolling === 'function') startNotificationPolling(CURRENT_USER.role);
   if (typeof startConversationsPolling === 'function') startConversationsPolling();
@@ -7488,26 +7854,25 @@ async function refreshOnboarding() {
 async function loadCreatorDashboard() {
   if (!CURRENT_USER) return;
   const name = (CURRENT_USER.name && String(CURRENT_USER.name).trim()) || 'Creador';
-  const initial = name.replace(/\s/g, '').charAt(0).toUpperCase() || '?';
 
-  const sidebarAvatar = document.getElementById('sidebar-avatar');
   const sidebarName = document.getElementById('sidebar-name');
   const sidebarHandle = document.getElementById('sidebar-handle');
-  if (sidebarAvatar) sidebarAvatar.textContent = initial;
   if (sidebarName) sidebarName.textContent = name;
   if (sidebarHandle) sidebarHandle.textContent = CURRENT_USER.handle || '@' + name.toLowerCase().replace(/\s+/g, '');
 
   if (CURRENT_USER.role === 'creator') {
     const userData = await api.get('/auth/me');
-    if (userData && !userData.error && userData.onboarding) {
+    if (userData && !userData.error) {
       const onboarding = userData.onboarding;
       const rest = Object.assign({}, userData);
       delete rest.onboarding;
       CURRENT_USER = Object.assign({}, CURRENT_USER, rest);
       localStorage.setItem('bp_user', JSON.stringify(CURRENT_USER));
-      renderOnboardingCard(onboarding);
+      if (onboarding) renderOnboardingCard(onboarding);
     }
   }
+
+  syncSessionAvatarsFromCurrentUser();
 
   await loadMyContent();
 
@@ -7638,6 +8003,25 @@ async function loadProfileSettings() {
   if (sf) sf.value = res.social_facebook || '';
   if (st) st.value = res.social_tiktok || '';
   if (so) so.value = res.social_other || '';
+  window._pendingAvatarBlob = null;
+  var saf = document.getElementById('settings-avatar-file');
+  if (saf) saf.value = '';
+  var prev = document.getElementById('settings-avatar-preview');
+  if (prev) {
+    bpPaintAvatar(
+      prev,
+      {
+        id: res.id,
+        name: res.name,
+        email: res.email,
+        avatar_url: res.avatar_url,
+        avatar_color: res.avatar_color || '#333333',
+        updated_at: res.updated_at
+      },
+      'xl',
+      'settings-avatar-preview bp-avatar'
+    );
+  }
 }
 
 async function saveProfileSettings() {
@@ -7688,6 +8072,41 @@ async function saveProfileSettings() {
     if (sidebarName) sidebarName.textContent = CURRENT_USER.name;
     const sidebarHandle = document.getElementById('sidebar-handle');
     if (sidebarHandle) sidebarHandle.textContent = CURRENT_USER.handle;
+
+    if (window._pendingAvatarBlob) {
+      const fd = new FormData();
+      fd.append('avatar', window._pendingAvatarBlob, 'avatar.jpg');
+      const avRes = await api.upload('/auth/avatar', fd);
+      if (avRes.error) {
+        msgDiv.style.display = 'block';
+        msgDiv.style.color = '#FF3B30';
+        msgDiv.textContent = 'Perfil guardado, pero la foto: ' + avRes.error;
+      } else {
+        CURRENT_USER.avatar_url = avRes.avatar_url || avRes.avatarUrl;
+        CURRENT_USER.updated_at = avRes.updated_at;
+        localStorage.setItem('bp_user', JSON.stringify(CURRENT_USER));
+        window._pendingAvatarBlob = null;
+        var saf = document.getElementById('settings-avatar-file');
+        if (saf) saf.value = '';
+        var prev = document.getElementById('settings-avatar-preview');
+        if (prev) {
+          bpPaintAvatar(
+            prev,
+            {
+              id: CURRENT_USER.id,
+              name: CURRENT_USER.name,
+              email: CURRENT_USER.email,
+              avatar_url: CURRENT_USER.avatar_url,
+              avatar_color: document.getElementById('settings-avatar-color').value,
+              updated_at: CURRENT_USER.updated_at
+            },
+            'xl',
+            'settings-avatar-preview bp-avatar'
+          );
+        }
+        syncSessionAvatarsFromCurrentUser();
+      }
+    }
     
     // Si hay banner, subirlo
     const bannerFile = document.getElementById('settings-banner').files[0];
@@ -8036,8 +8455,18 @@ async function activateFreePlan() {
 
 // ─── FAN DASHBOARD ──────────────────────────────────────
 async function loadFanDashboard() {
-  document.querySelector('#fan-dashboard .sidebar > div:first-child div:nth-child(2) div:first-child').textContent = CURRENT_USER.name;
-  document.querySelector('#fan-dashboard .sidebar > div:first-child div:first-child').textContent = CURRENT_USER.name[0].toUpperCase();
+  const fanName = document.getElementById('fan-sidebar-name');
+  const fanSub = document.getElementById('fan-sidebar-sub');
+  if (fanName) fanName.textContent = CURRENT_USER.name;
+  if (fanSub) fanSub.textContent = 'Fan';
+  try {
+    const me = await api.get('/auth/me');
+    if (me && !me.error) {
+      Object.assign(CURRENT_USER, me);
+      localStorage.setItem('bp_user', JSON.stringify(CURRENT_USER));
+    }
+  } catch (e) {}
+  syncSessionAvatarsFromCurrentUser();
   await loadFanFeed();
   await loadFanSubscriptions();
   if (CURRENT_USER.role === 'fan') {
@@ -8190,14 +8619,20 @@ async function loadDiscoverCreators() {
   const creators = await api.get('/creators');
   const container = document.querySelector('#fan-discover .creators-grid');
   if (!container || !creators) return;
-  container.innerHTML = creators.length ? creators.map(c => `
+  container.innerHTML = creators.length ? creators.map(c => {
+    const bust = c.updated_at ? '?v=' + new Date(c.updated_at).getTime() : '';
+    const avImg = c.avatar_url
+      ? `<img class="creator-avatar-img" src="${String(c.avatar_url).replace(/"/g, '')}${bust}" alt="" width="80" height="80" loading="lazy" style="width:80px;height:80px;border-radius:50%;object-fit:cover;display:block;margin:0 auto 12px;border:2px solid rgba(139,92,246,0.35);"/>`
+      : `<div class="creator-avatar" style="background:linear-gradient(135deg,#1a1a1a,#666);color:white;width:80px;height:80px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:1.8rem;">${c.name ? c.name[0] : '?'}</div>`;
+    return `
     <div class="creator-card" style="background:var(--white);border-color:var(--gray-200);cursor:pointer;" onclick="openCreatorProfile('${c.handle}')">
-      <div class="creator-avatar" style="background:linear-gradient(135deg,#1a1a1a,#666);color:white;">${c.name[0]}</div>
+      ${avImg}
       <h4 style="color:var(--black);">${c.name}</h4>
       <p style="color:var(--gray-500);">${c.category || 'Creador de contenido'}</p>
       <span class="tag-pill" style="margin-bottom:12px;">${c.subscribers} patrocinadores</span>
       <button class="btn btn-primary btn-sm btn-full" onclick="event.stopPropagation();openCreatorProfile('${c.handle}')">Ver perfil</button>
-    </div>`).join('') : '<div style="grid-column:1/-1;padding:40px;text-align:center;color:var(--gray-500);">No hay creadores registrados aún</div>';
+    </div>`;
+  }).join('') : '<div style="grid-column:1/-1;padding:40px;text-align:center;color:var(--gray-500);">No hay creadores registrados aún</div>';
 }
 
 // CREATOR PROFILE (public)
@@ -8210,13 +8645,7 @@ async function openCreatorProfile(handle) {
   if (innerRoot) innerRoot.dataset.handle = creator.handle || '';
   applyCreatorHeroFields(creator);
   fillProfileSocialLinks(creator);
-  const avatarDiv = document.querySelector('#creator-profile-inner .profile-avatar');
-  if (avatarDiv) {
-    avatarDiv.style.backgroundImage = '';
-    avatarDiv.style.background = creator.avatar_color || '#333333';
-    const aliasInitial = (creator.handle || creator.name || 'C').replace('@', '').charAt(0).toUpperCase();
-    avatarDiv.textContent = aliasInitial;
-  }
+  paintProfileHeroAvatar(creator);
   if (creator.banner_url) {
     const bannerDiv = document.querySelector('#creator-profile-inner .profile-banner');
     if (bannerDiv) {
@@ -8642,6 +9071,7 @@ if (TOKEN && CURRENT_USER) {
     loadFanDashboard();
   }
   updateNavbar(CURRENT_USER.role === 'creator' ? 'creator-dashboard' : 'fan-dashboard');
+  syncSessionAvatarsFromCurrentUser();
   if (typeof updateMobileMenuToggle === 'function') updateMobileMenuToggle();
   if (typeof startNotificationPolling === 'function') startNotificationPolling(CURRENT_USER.role);
   if (typeof startConversationsPolling === 'function') startConversationsPolling();
