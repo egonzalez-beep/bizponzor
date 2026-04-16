@@ -184,6 +184,7 @@ router.post('/upload', authMiddleware, requireCreator, ensureAuthedUserInDb, (re
     if (!userExists) return res.status(400).json({ error: 'Usuario creador no encontrado en la base de datos' });
     if (!req.file) return res.status(400).json({ error: 'Archivo requerido' });
     const { title, description, is_exclusive, scheduled_for } = req.body;
+    const cleanTitle = typeof title === 'string' ? title.trim() : '';
     const sched = resolveSchedule(scheduled_for);
     if (sched.error) {
       return res.status(400).json({ error: sched.error });
@@ -200,7 +201,7 @@ router.post('/upload', authMiddleware, requireCreator, ensureAuthedUserInDb, (re
     ).run(
       id,
       req.user.id,
-      title || 'Sin titulo',
+      cleanTitle,
       description || '',
       type,
       file_url,
@@ -210,13 +211,13 @@ router.post('/upload', authMiddleware, requireCreator, ensureAuthedUserInDb, (re
     );
     console.log('[POST] Creado:', {
       id,
-      title: title || 'Sin titulo',
+      title: cleanTitle || '(sin título)',
       status,
       scheduled_for: scheduledFor
     });
     res.json({
       id,
-      title,
+      title: cleanTitle,
       type,
       file_url,
       is_exclusive: is_exclusive === 'true',

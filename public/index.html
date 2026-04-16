@@ -1193,6 +1193,73 @@
     align-items: center;
     gap: 12px;
   }
+  #creator-dashboard #dash-upload .emoji-picker-details summary.emoji-summary-pro.emoji-summary-icon-only {
+    padding: 8px;
+    border-radius: 12px;
+    gap: 0;
+  }
+  #creator-dashboard #dash-upload .upload-access-picker {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+  #creator-dashboard #dash-upload .upload-access-opt {
+    flex: 1;
+    min-width: 140px;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 4px;
+    padding: 12px 14px;
+    border-radius: 12px;
+    border: 1px solid rgba(148, 163, 184, 0.25);
+    background: rgba(15, 23, 42, 0.35);
+    color: #94a3b8;
+    cursor: pointer;
+    font: inherit;
+    text-align: left;
+    transition: border-color 0.2s ease, background 0.2s ease, color 0.2s ease, box-shadow 0.2s ease;
+  }
+  #creator-dashboard #dash-upload .upload-access-opt:hover {
+    border-color: rgba(56, 189, 248, 0.35);
+    color: #e2e8f0;
+  }
+  #creator-dashboard #dash-upload .upload-access-opt.is-active {
+    border-color: rgba(56, 189, 248, 0.55);
+    background: rgba(56, 189, 248, 0.1);
+    color: #f1f5f9;
+    box-shadow: 0 0 0 1px rgba(56, 189, 248, 0.15);
+  }
+  #creator-dashboard #dash-upload .upload-access-opt .ua-label {
+    font-weight: 700;
+    font-size: 0.88rem;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    width: 100%;
+  }
+  #creator-dashboard #dash-upload .upload-access-opt .ua-label svg {
+    flex-shrink: 0;
+    color: #38bdf8;
+  }
+  #creator-dashboard #dash-upload .upload-access-opt.is-active .ua-label svg {
+    color: #7dd3fc;
+  }
+  #creator-dashboard #dash-upload .upload-access-hint {
+    font-size: 0.72rem;
+    font-weight: 500;
+    opacity: 0.85;
+    padding-left: 28px;
+  }
+  .content-item .content-item-desc {
+    font-size: 0.85rem;
+    line-height: 1.45;
+    color: var(--gray-500);
+    margin: 0 0 6px 0;
+  }
+  .content-item .content-scheduled-pill-wrap {
+    margin-bottom: 6px;
+  }
 
   #creator-dashboard .calendar-container {
     background: #1a1a1a;
@@ -3613,11 +3680,10 @@
       <!-- UPLOAD TAB -->
       <div id="dash-upload" style="display:none;">
         <div class="page-header">
-          <h2>Subir Contenido</h2>
-          <p>Fotos, videos o publicaciones de texto</p>
+          <h2>Subir contenido</h2>
+          <p>Comparte con tu comunidad</p>
         </div>
         <div class="upload-studio">
-          <p class="upload-studio-tagline">Aquí compartes lo que te define: <strong>visual, texto y voz</strong> en un solo flujo pensado para creadores.</p>
           <div class="form-group" style="max-width:420px;">
             <label class="form-label">Tipo de contenido</label>
             <select class="form-input" id="upload-content-type" onchange="onUploadTypeChange()">
@@ -3662,7 +3728,7 @@
               <label class="form-label">Texto completo</label>
               <div class="emoji-field-toolbar">
                 <details class="emoji-picker-details">
-                  <summary class="emoji-summary-pro"><span class="emoji-summary-ic"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M8 14s1.5 2 4 2 4-2 4-2"/><line x1="9" y1="9" x2="9.01" y2="9"/><line x1="15" y1="9" x2="15.01" y2="9"/></svg></span><span>Insertar emoji</span></summary>
+                  <summary class="emoji-summary-pro emoji-summary-icon-only" aria-label="Insertar emoji"><span class="emoji-summary-ic"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M8 14s1.5 2 4 2 4-2 4-2"/><line x1="9" y1="9" x2="9.01" y2="9"/><line x1="15" y1="9" x2="15.01" y2="9"/></svg></span></summary>
                   <div class="emoji-picker-panel" data-emoji-for="upload-text-body"></div>
                 </details>
               </div>
@@ -3680,7 +3746,7 @@
               <label class="form-label">Título del contenido</label>
               <div class="emoji-field-toolbar">
                 <details class="emoji-picker-details">
-                  <summary class="emoji-summary-pro"><span class="emoji-summary-ic"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M8 14s1.5 2 4 2 4-2 4-2"/><line x1="9" y1="9" x2="9.01" y2="9"/><line x1="15" y1="9" x2="15.01" y2="9"/></svg></span><span>Insertar emoji</span></summary>
+                  <summary class="emoji-summary-pro emoji-summary-icon-only" aria-label="Insertar emoji"><span class="emoji-summary-ic"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M8 14s1.5 2 4 2 4-2 4-2"/><line x1="9" y1="9" x2="9.01" y2="9"/><line x1="15" y1="9" x2="15.01" y2="9"/></svg></span></summary>
                   <div class="emoji-picker-panel" data-emoji-for="upload-title"></div>
                 </details>
               </div>
@@ -3690,7 +3756,7 @@
               <label class="form-label">Descripción <span style="font-weight:500;opacity:0.75">(opcional)</span></label>
               <div class="emoji-field-toolbar">
                 <details class="emoji-picker-details">
-                  <summary class="emoji-summary-pro"><span class="emoji-summary-ic"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M8 14s1.5 2 4 2 4-2 4-2"/><line x1="9" y1="9" x2="9.01" y2="9"/><line x1="15" y1="9" x2="15.01" y2="9"/></svg></span><span>Insertar emoji</span></summary>
+                  <summary class="emoji-summary-pro emoji-summary-icon-only" aria-label="Insertar emoji"><span class="emoji-summary-ic"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M8 14s1.5 2 4 2 4-2 4-2"/><line x1="9" y1="9" x2="9.01" y2="9"/><line x1="15" y1="9" x2="15.01" y2="9"/></svg></span></summary>
                   <div class="emoji-picker-panel" data-emoji-for="upload-description"></div>
                 </details>
               </div>
@@ -3698,10 +3764,23 @@
             </div>
             <div class="form-group">
               <label class="form-label">Acceso</label>
-              <select class="form-input" id="upload-access">
-                <option value="exclusive">Exclusivo — solo suscriptores</option>
-                <option value="public">Público — visible para todos</option>
-              </select>
+              <input type="hidden" id="upload-access" value="exclusive" />
+              <div class="upload-access-picker" role="radiogroup" aria-label="Acceso al contenido">
+                <button type="button" class="upload-access-opt is-active" data-value="exclusive" aria-pressed="true" onclick="setUploadAccess('exclusive')">
+                  <span class="ua-label">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+                    Exclusivo
+                  </span>
+                  <span class="upload-access-hint">Solo suscriptores</span>
+                </button>
+                <button type="button" class="upload-access-opt" data-value="public" aria-pressed="false" onclick="setUploadAccess('public')">
+                  <span class="ua-label">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 9.9-1"/></svg>
+                    Público
+                  </span>
+                  <span class="upload-access-hint">Visible para todos</span>
+                </button>
+              </div>
             </div>
             <div class="form-group">
               <label class="form-label">
@@ -5242,6 +5321,26 @@ function escapeHtml(s) {
     .replace(/"/g, '&quot;');
 }
 
+/** Oculta título vacío, placeholder viejo o nombre de archivo tipo UUID (subidas sin título). */
+function shouldHideContentTitle(t) {
+  const s = String(t || '').trim();
+  if (!s) return true;
+  if (s === 'Sin titulo') return true;
+  if (/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}\./i.test(s)) return true;
+  return false;
+}
+
+function setUploadAccess(val) {
+  const hid = document.getElementById('upload-access');
+  if (!hid) return;
+  hid.value = val;
+  document.querySelectorAll('#dash-upload .upload-access-opt').forEach(function (btn) {
+    const on = btn.getAttribute('data-value') === val;
+    btn.classList.toggle('is-active', on);
+    btn.setAttribute('aria-pressed', on ? 'true' : 'false');
+  });
+}
+
 function stopProfileChatPolling() {}
 function clearProfileChatState() {}
 
@@ -6530,7 +6629,7 @@ function renderContentGrid(container, items) {
     }
     const isScheduled = c.status === 'scheduled';
     const scheduledBadge = isScheduled
-      ? '<span class="tag-pill" style="background:#F59E0B;color:white;margin-left:8px;">📅 Programado</span>'
+      ? '<span class="tag-pill" style="background:#F59E0B;color:white;">📅 Programado</span>'
       : '';
     const scheduledInfo =
       isScheduled && c.scheduled_for
@@ -6538,10 +6637,21 @@ function renderContentGrid(container, items) {
     📅 Publicará: ${new Date(c.scheduled_for).toLocaleString('es')}
   </div>`
         : '';
+    const hideTitle = shouldHideContentTitle(c.title);
+    const titleStr = String(c.title || '').trim();
+    const descStr = String(c.description || '').trim();
+    let titleBlock = '';
+    if (!hideTitle) {
+      titleBlock = `<h4>${escapeHtml(titleStr)}${scheduledBadge ? ' ' + scheduledBadge : ''}</h4>`;
+    } else if (scheduledBadge) {
+      titleBlock = `<div class="content-scheduled-pill-wrap">${scheduledBadge}</div>`;
+    }
+    const descBlock = descStr ? `<p class="content-item-desc">${escapeHtml(descStr)}</p>` : '';
     return `<div class="content-item">
       ${thumb}
       <div class="content-info">
-        <h4>${c.title}${scheduledBadge}</h4>
+        ${titleBlock}
+        ${descBlock}
         <p>${new Date(c.created_at).toLocaleDateString('es')}</p>
         ${scheduledInfo}
         ${c.is_exclusive ? '<span class="exclusive-badge">Exclusivo</span>' : ''}
@@ -6598,7 +6708,8 @@ async function publishTextContent(evt) {
   }
   const title = document.getElementById('upload-title')?.value;
   const description = document.getElementById('upload-description')?.value;
-  const is_exclusive = document.getElementById('upload-access')?.value === 'exclusive';
+  const accEl = document.getElementById('upload-access');
+  const is_exclusive = accEl && accEl.value === 'exclusive';
   const scheduled_for = document.getElementById('scheduled_for')?.value || null;
   if (scheduled_for) {
     const selectedDate = new Date(scheduled_for);
@@ -6651,7 +6762,8 @@ async function publishContent(evt) {
   }
   const title = document.getElementById('upload-title')?.value;
   const description = document.getElementById('upload-description')?.value;
-  const is_exclusive = document.getElementById('upload-access')?.value === 'exclusive' ? 'true' : 'false';
+  const accEl = document.getElementById('upload-access');
+  const is_exclusive = accEl && accEl.value === 'exclusive' ? 'true' : 'false';
   const scheduled_for = document.getElementById('scheduled_for')?.value || null;
   if (scheduled_for) {
     const selectedDate = new Date(scheduled_for);
@@ -6662,7 +6774,8 @@ async function publishContent(evt) {
   }
   const formData = new FormData();
   formData.append('file', window._pendingFile);
-  formData.append('title', title || window._pendingFile.name);
+  const titleTrim = (title && String(title).trim()) || '';
+  formData.append('title', titleTrim);
   formData.append('description', description || '');
   formData.append('is_exclusive', is_exclusive);
   if (scheduled_for) formData.append('scheduled_for', scheduled_for);
@@ -6872,11 +6985,21 @@ function renderFanContent(container, items, opts) {
     } else {
       thumbInner = `<div class="content-thumb ${aspect}">${isVid ? '🎬' : '📸'}<span class="content-type-badge">${isVid ? 'VIDEO' : 'FOTO'}</span></div>`;
     }
+    const hideTitle = shouldHideContentTitle(c.title);
+    const titleStr = String(c.title || '').trim();
+    const descStr = String(c.description || '').trim();
+    let titleBlock = '';
+    if (!hideTitle) {
+      titleBlock = `<h4>${escapeHtml(titleStr)}</h4>`;
+    }
+    const descBlock =
+      descStr && !locked ? `<p class="content-item-desc">${escapeHtml(descStr)}</p>` : '';
     return `<div class="content-item">
       ${thumbInner}
       <div class="content-info">
-        <h4>${c.title}</h4>
-        <p>${c.creator_name ? c.creator_name + ' · ' : ''}${new Date(c.created_at).toLocaleDateString('es')}</p>
+        ${titleBlock}
+        ${descBlock}
+        <p>${c.creator_name ? escapeHtml(c.creator_name) + ' · ' : ''}${new Date(c.created_at).toLocaleDateString('es')}</p>
         ${c.is_exclusive ? '<span class="exclusive-badge">Exclusivo</span>' : ''}
         ${starRow}
         ${!locked && !isText && c.file_url ? `<div style="display:flex;gap:10px;align-items:center;margin-top:6px;">
@@ -7265,6 +7388,10 @@ async function loadEarnings() {
 // Override publish button
 document.addEventListener('DOMContentLoaded', () => {
   initEmojiPickerPanels();
+  (function syncUploadAccessFromDom() {
+    const hid = document.getElementById('upload-access');
+    if (hid && hid.value) setUploadAccess(hid.value);
+  })();
   document.getElementById('chat-input-field')?.addEventListener('keydown', function (e) {
     if (e.key === 'Enter' && !e.shiftKey) {
       e.preventDefault();
