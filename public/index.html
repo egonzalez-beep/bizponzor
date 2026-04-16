@@ -1697,6 +1697,108 @@
     color: #f1f5f9;
     box-shadow: 0 0 0 1px rgba(56, 189, 248, 0.12);
   }
+
+  /* Mi Contenido — mismo lenguaje que Calendario / Subir; público=verde, exclusivo=ámbar */
+  #creator-dashboard #dash-content .content-studio {
+    width: 100%;
+    max-width: 1100px;
+  }
+  #creator-dashboard #dash-content .content-studio-surface {
+    padding: 28px 28px 32px;
+    border-radius: 18px;
+    background: linear-gradient(155deg, rgba(22, 33, 62, 0.55) 0%, rgba(26, 26, 46, 0.4) 42%, rgba(18, 18, 24, 0.75) 100%);
+    border: 1px solid rgba(56, 189, 248, 0.22);
+    box-shadow:
+      0 12px 40px rgba(0, 0, 0, 0.35),
+      inset 0 1px 0 rgba(255, 255, 255, 0.05);
+  }
+  #creator-dashboard #dash-content .content-toolbar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    margin-bottom: 22px;
+    padding-bottom: 18px;
+    border-bottom: 1px solid rgba(148, 163, 184, 0.12);
+  }
+  #creator-dashboard #dash-content .content-toolbar-left {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: #94a3b8;
+    font-size: 0.78rem;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+  }
+  #creator-dashboard #dash-content .content-toolbar-left svg {
+    color: #38bdf8;
+    flex-shrink: 0;
+  }
+  #creator-dashboard #dash-content #dash-content-filters {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+  #creator-dashboard #dash-content .tag-pill.filter-pill {
+    cursor: pointer;
+    font: inherit;
+    font-size: 0.8rem;
+    font-weight: 600;
+    padding: 8px 16px;
+    border-radius: 999px;
+    transition: border-color 0.2s ease, background 0.2s ease, color 0.2s ease, box-shadow 0.2s ease;
+  }
+  #creator-dashboard #dash-content .tag-pill.filter-pill:not(.green):not(.yellow) {
+    border: 1px solid rgba(148, 163, 184, 0.22);
+    background: rgba(15, 23, 42, 0.45);
+    color: #94a3b8;
+  }
+  #creator-dashboard #dash-content .tag-pill.filter-pill:not(.green):not(.yellow):hover {
+    border-color: rgba(56, 189, 248, 0.35);
+    color: #e2e8f0;
+  }
+  #creator-dashboard #dash-content .tag-pill.filter-pill:not(.green):not(.yellow).filter-pill-active {
+    border-color: rgba(56, 189, 248, 0.55);
+    background: linear-gradient(135deg, rgba(99, 102, 241, 0.28) 0%, rgba(139, 92, 246, 0.2) 45%, rgba(56, 189, 248, 0.18) 100%);
+    color: #f8fafc;
+    box-shadow: 0 0 0 1px rgba(56, 189, 248, 0.15);
+  }
+  #creator-dashboard #dash-content .tag-pill.filter-pill.green {
+    background: rgba(34, 197, 94, 0.08);
+    border: 1px solid rgba(34, 197, 94, 0.28);
+    color: #86efac;
+  }
+  #creator-dashboard #dash-content .tag-pill.filter-pill.green:hover {
+    border-color: rgba(74, 222, 128, 0.45);
+    color: #bbf7d0;
+  }
+  #creator-dashboard #dash-content .tag-pill.filter-pill.green.filter-pill-active {
+    background: linear-gradient(135deg, rgba(22, 163, 74, 0.42) 0%, rgba(34, 197, 94, 0.22) 100%);
+    border-color: rgba(74, 222, 128, 0.5);
+    color: #ecfdf5;
+    box-shadow: 0 0 0 1px rgba(34, 197, 94, 0.18);
+  }
+  #creator-dashboard #dash-content .tag-pill.filter-pill.yellow {
+    background: rgba(245, 158, 11, 0.08);
+    border: 1px solid rgba(245, 158, 11, 0.28);
+    color: #fcd34d;
+  }
+  #creator-dashboard #dash-content .tag-pill.filter-pill.yellow:hover {
+    border-color: rgba(251, 191, 36, 0.45);
+    color: #fde68a;
+  }
+  #creator-dashboard #dash-content .tag-pill.filter-pill.yellow.filter-pill-active {
+    background: linear-gradient(135deg, rgba(217, 119, 6, 0.38) 0%, rgba(245, 158, 11, 0.2) 100%);
+    border-color: rgba(251, 191, 36, 0.5);
+    color: #fffbeb;
+    box-shadow: 0 0 0 1px rgba(245, 158, 11, 0.18);
+  }
+  #creator-dashboard #dash-content .content-grid {
+    min-height: 120px;
+  }
+
   #creator-dashboard .calendar-container {
     width: 100%;
     background: rgba(12, 14, 22, 0.55);
@@ -1874,25 +1976,6 @@
     background: rgba(245, 158, 11, 0.12);
     border-color: #92400E;
     color: #FCD34D;
-  }
-  #creator-dashboard .tag-pill.filter-pill {
-    cursor: pointer;
-    font: inherit;
-    font-size: 0.75rem;
-    border: 1px solid #444444;
-    padding: 6px 12px;
-    border-radius: 999px;
-  }
-  #creator-dashboard .tag-pill.filter-pill.filter-pill-active {
-    background: var(--brand);
-    border-color: var(--brand);
-    color: #FFFFFF;
-  }
-  #creator-dashboard .tag-pill.filter-pill.green.filter-pill-active,
-  #creator-dashboard .tag-pill.filter-pill.yellow.filter-pill-active {
-    background: var(--brand);
-    border-color: var(--brand);
-    color: #FFFFFF;
   }
   #creator-dashboard .form-label,
   #fan-dashboard .form-label { color: #A3A3A3; }
@@ -4161,14 +4244,24 @@
           <h2>Mi Contenido</h2>
           <p>Gestiona tus fotos y videos publicados</p>
         </div>
-        <div id="dash-content-filters" style="display:flex;gap:12px;margin-bottom:24px;flex-wrap:wrap;">
-          <button type="button" class="tag-pill filter-pill filter-pill-active" data-filter="all" onclick="applyContentFilter('all')">Todos (<span id="filter-count-all">0</span>)</button>
-          <button type="button" class="tag-pill filter-pill" data-filter="photo" onclick="applyContentFilter('photo')">Fotos (<span id="filter-count-photo">0</span>)</button>
-          <button type="button" class="tag-pill filter-pill" data-filter="video" onclick="applyContentFilter('video')">Videos (<span id="filter-count-video">0</span>)</button>
-          <button type="button" class="tag-pill filter-pill green" data-filter="public" onclick="applyContentFilter('public')">Públicos (<span id="filter-count-public">0</span>)</button>
-          <button type="button" class="tag-pill filter-pill yellow" data-filter="exclusive" onclick="applyContentFilter('exclusive')">Exclusivos (<span id="filter-count-exclusive">0</span>)</button>
+        <div class="content-studio">
+          <div class="content-studio-surface">
+            <div class="content-toolbar">
+              <div class="content-toolbar-left" aria-hidden="true">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"/></svg>
+                <span>Filtrar</span>
+              </div>
+              <div id="dash-content-filters" class="content-filter-pills" role="group" aria-label="Filtro de contenido">
+                <button type="button" class="tag-pill filter-pill filter-pill-active" data-filter="all" onclick="applyContentFilter('all')">Todos (<span id="filter-count-all">0</span>)</button>
+                <button type="button" class="tag-pill filter-pill" data-filter="photo" onclick="applyContentFilter('photo')">Fotos (<span id="filter-count-photo">0</span>)</button>
+                <button type="button" class="tag-pill filter-pill" data-filter="video" onclick="applyContentFilter('video')">Videos (<span id="filter-count-video">0</span>)</button>
+                <button type="button" class="tag-pill filter-pill green" data-filter="public" onclick="applyContentFilter('public')">Públicos (<span id="filter-count-public">0</span>)</button>
+                <button type="button" class="tag-pill filter-pill yellow" data-filter="exclusive" onclick="applyContentFilter('exclusive')">Exclusivos (<span id="filter-count-exclusive">0</span>)</button>
+              </div>
+            </div>
+            <div class="content-grid"></div>
+          </div>
         </div>
-        <div class="content-grid"></div>
       </div>
 
       <!-- UPLOAD TAB -->
