@@ -4516,16 +4516,6 @@
             <svg class="nc-bell-svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/></svg>
             <span class="nc-badge badge-hidden" id="nc-badge">0</span>
           </button>
-          <div class="nc-dropdown" id="nc-dropdown" role="region" aria-hidden="true">
-            <div class="nc-dropdown-head">
-              <span class="nc-dropdown-title">Notificaciones</span>
-              <button type="button" class="nc-mark-all" id="nc-mark-all">Marcar todas</button>
-            </div>
-            <div class="nc-list" id="nc-list"></div>
-            <div class="nc-load-more-wrap" id="nc-load-more-wrap" style="display:none;">
-              <button type="button" class="nc-load-more" id="nc-load-more">Cargar más</button>
-            </div>
-          </div>
         </div>
       </div>
       <button type="button" class="btn btn-sm btn-sidebar-public-profile" style="width:100%;margin-bottom:24px;" onclick="showCreatorProfile()">Mi Perfil</button>
@@ -5067,6 +5057,16 @@
       </div>
 
       <div id="creator-profile-embed" class="creator-app-panels creator-profile-embed" style="display:none;" aria-hidden="true"></div>
+    </div>
+  </div>
+  <div class="nc-dropdown" id="nc-dropdown" role="region" aria-hidden="true">
+    <div class="nc-dropdown-head">
+      <span class="nc-dropdown-title">Notificaciones</span>
+      <button type="button" class="nc-mark-all" id="nc-mark-all">Marcar todas</button>
+    </div>
+    <div class="nc-list" id="nc-list"></div>
+    <div class="nc-load-more-wrap" id="nc-load-more-wrap" style="display:none;">
+      <button type="button" class="nc-load-more" id="nc-load-more">Cargar más</button>
     </div>
   </div>
 </div>
@@ -6664,8 +6664,10 @@ function ncWireNotificationCenter() {
 
 document.addEventListener('click', function (e) {
   var wrap = document.getElementById('nc-wrap');
+  var dd = document.getElementById('nc-dropdown');
   if (!wrap || !ncDropdownOpen) return;
-  if (!wrap.contains(e.target)) ncCloseDropdown();
+  if (wrap.contains(e.target) || (dd && dd.contains(e.target))) return;
+  ncCloseDropdown();
 });
 
 var lastSubscriberIds = null;
