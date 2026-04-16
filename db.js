@@ -265,7 +265,22 @@ db.exec(`
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
     UNIQUE(user_id, other_user_id)
   );
-  CREATE INDEX IF NOT EXISTS idx_deleted_conv_user_other ON deleted_conversations(user_id, other_user_id);
+`);
+
+/** Índices de rendimiento: conversaciones, no leídos, polling (sin cambiar tablas ni queries) */
+db.exec(`
+  CREATE INDEX IF NOT EXISTS idx_messages_sender_receiver ON messages(sender_id, receiver_id);
+  CREATE INDEX IF NOT EXISTS idx_messages_created_at ON messages(created_at DESC);
+  CREATE INDEX IF NOT EXISTS idx_messages_unread ON messages(receiver_id, read_at);
+  CREATE INDEX IF NOT EXISTS idx_messages_receiver_sender ON messages(receiver_id, sender_id);
+
+  CREATE INDEX IF NOT EXISTS idx_subscriptions_fan ON subscriptions(fan_id);
+  CREATE INDEX IF NOT EXISTS idx_subscriptions_creator ON subscriptions(creator_id);
+  CREATE INDEX IF NOT EXISTS idx_subscriptions_status ON subscriptions(status);
+
+  CREATE INDEX IF NOT EXISTS idx_deleted_conversations_user ON deleted_conversations(user_id, other_user_id);
+
+  CREATE INDEX IF NOT EXISTS idx_users_id ON users(id);
 `);
 
 module.exports = db;
