@@ -804,9 +804,10 @@
     box-shadow: 0 0 0 2px #1a1a1a;
   }
   #creator-dashboard .nc-dropdown {
-    position: absolute;
-    right: 0;
-    top: calc(100% + 8px);
+    position: fixed;
+    left: 0;
+    top: 0;
+    right: auto;
     width: min(380px, calc(100vw - 24px));
     max-height: 400px;
     display: flex;
@@ -5541,6 +5542,25 @@ function ncOnListClick(e) {
   });
 }
 
+/** Panel fijo bajo la campana, centrado y limitado al viewport (evita recorte por el borde izquierdo). */
+function ncPositionDropdown() {
+  var dd = document.getElementById('nc-dropdown');
+  var btn = document.getElementById('nc-bell-btn');
+  if (!dd || !btn) return;
+  var pad = 12;
+  var maxW = Math.min(380, window.innerWidth - pad * 2);
+  var rect = btn.getBoundingClientRect();
+  var left = rect.left + rect.width / 2 - maxW / 2;
+  if (left < pad) left = pad;
+  if (left + maxW > window.innerWidth - pad) left = window.innerWidth - pad - maxW;
+  var top = rect.bottom + 8;
+  var maxH = Math.max(120, window.innerHeight - top - pad);
+  dd.style.left = left + 'px';
+  dd.style.top = top + 'px';
+  dd.style.width = maxW + 'px';
+  dd.style.maxHeight = Math.min(400, maxH) + 'px';
+}
+
 function ncToggleDropdown() {
   var dd = document.getElementById('nc-dropdown');
   var btn = document.getElementById('nc-bell-btn');
@@ -5550,14 +5570,26 @@ function ncToggleDropdown() {
   btn.setAttribute('aria-expanded', ncDropdownOpen ? 'true' : 'false');
   dd.setAttribute('aria-hidden', ncDropdownOpen ? 'false' : 'true');
   if (ncDropdownOpen) {
+    ncPositionDropdown();
+    requestAnimationFrame(function () {
+      ncPositionDropdown();
+    });
     if (ncListCache && ncListCache.notifications) {
       ncApplyNotificationResponse(ncListCache);
     } else {
       api.get('/notifications?limit=15').then(function (data) {
         ncListCache = data;
         ncApplyNotificationResponse(data);
+        requestAnimationFrame(function () {
+          ncPositionDropdown();
+        });
       });
     }
+  } else {
+    dd.style.left = '';
+    dd.style.top = '';
+    dd.style.width = '';
+    dd.style.maxHeight = '';
   }
 }
 
@@ -5631,8 +5663,20 @@ function ncWireNotificationCenter() {
         if (lw) {
           lw.style.display = ncNcCursor ? 'block' : 'none';
         }
+        requestAnimationFrame(function () {
+          if (typeof ncPositionDropdown === 'function') ncPositionDropdown();
+        });
       });
     });
+  }
+  if (!window._ncResizeBound) {
+    window._ncResizeBound = true;
+    window.addEventListener('resize', function () {
+      if (ncDropdownOpen && typeof ncPositionDropdown === 'function') ncPositionDropdown();
+    });
+    window.addEventListener('scroll', function () {
+      if (ncDropdownOpen && typeof ncPositionDropdown === 'function') ncPositionDropdown();
+    }, true);
   }
 }
 
