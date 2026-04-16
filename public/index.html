@@ -1632,72 +1632,182 @@
     margin-bottom: 6px;
   }
 
+  /* Calendario — estudio amplio + filtros (identidad Subir / Configuración) */
+  #creator-dashboard #dash-calendar .calendar-studio {
+    width: 100%;
+    max-width: 1100px;
+  }
+  #creator-dashboard #dash-calendar .calendar-studio-surface {
+    padding: 28px 28px 32px;
+    border-radius: 18px;
+    background: linear-gradient(155deg, rgba(22, 33, 62, 0.55) 0%, rgba(26, 26, 46, 0.4) 42%, rgba(18, 18, 24, 0.75) 100%);
+    border: 1px solid rgba(56, 189, 248, 0.22);
+    box-shadow:
+      0 12px 40px rgba(0, 0, 0, 0.35),
+      inset 0 1px 0 rgba(255, 255, 255, 0.05);
+  }
+  #creator-dashboard #dash-calendar .calendar-toolbar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    margin-bottom: 22px;
+    padding-bottom: 18px;
+    border-bottom: 1px solid rgba(148, 163, 184, 0.12);
+  }
+  #creator-dashboard #dash-calendar .calendar-toolbar-left {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: #94a3b8;
+    font-size: 0.78rem;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+  }
+  #creator-dashboard #dash-calendar .calendar-toolbar-left svg {
+    color: #38bdf8;
+    flex-shrink: 0;
+  }
+  #creator-dashboard #dash-calendar .calendar-filter-pills {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+  #creator-dashboard #dash-calendar .calendar-filter-pill {
+    border: 1px solid rgba(148, 163, 184, 0.22);
+    background: rgba(15, 23, 42, 0.45);
+    color: #94a3b8;
+    font-size: 0.8rem;
+    font-weight: 600;
+    padding: 8px 16px;
+    border-radius: 999px;
+    cursor: pointer;
+    font-family: inherit;
+    transition: border-color 0.2s ease, background 0.2s ease, color 0.2s ease, box-shadow 0.2s ease;
+  }
+  #creator-dashboard #dash-calendar .calendar-filter-pill:hover {
+    border-color: rgba(56, 189, 248, 0.35);
+    color: #e2e8f0;
+  }
+  #creator-dashboard #dash-calendar .calendar-filter-pill.active {
+    border-color: rgba(56, 189, 248, 0.55);
+    background: rgba(56, 189, 248, 0.12);
+    color: #f1f5f9;
+    box-shadow: 0 0 0 1px rgba(56, 189, 248, 0.12);
+  }
   #creator-dashboard .calendar-container {
-    background: #1a1a1a;
+    width: 100%;
+    background: rgba(12, 14, 22, 0.55);
     border-radius: 16px;
-    padding: 20px;
-    border: 1px solid #2a2a2a;
-    max-width: 520px;
+    padding: 22px 20px 26px;
+    border: 1px solid rgba(148, 163, 184, 0.1);
   }
   #creator-dashboard .calendar-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 16px;
+    margin-bottom: 18px;
     color: #ffffff;
+    gap: 12px;
   }
   #creator-dashboard .calendar-header h3 {
-    font-size: 1rem;
+    font-size: 1.15rem;
     font-weight: 700;
     margin: 0;
+    letter-spacing: 0.02em;
   }
-  #creator-dashboard .calendar-header button {
-    background: #2a2a2a;
-    border: none;
-    color: #ffffff;
-    padding: 6px 12px;
-    border-radius: 8px;
+  #creator-dashboard .calendar-nav-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 42px;
+    height: 42px;
+    flex-shrink: 0;
+    background: rgba(15, 23, 42, 0.65);
+    border: 1px solid rgba(56, 189, 248, 0.22);
+    color: #e2e8f0;
+    border-radius: 12px;
     cursor: pointer;
-    font-size: 1.1rem;
-    line-height: 1;
+    transition: background 0.2s ease, border-color 0.2s ease, color 0.2s ease;
   }
-  #creator-dashboard .calendar-header button:hover {
-    background: #3a3a3a;
+  #creator-dashboard .calendar-nav-btn:hover {
+    background: rgba(56, 189, 248, 0.12);
+    border-color: rgba(56, 189, 248, 0.45);
+    color: #ffffff;
+  }
+  #creator-dashboard .calendar-nav-btn svg {
+    width: 20px;
+    height: 20px;
   }
   #creator-dashboard .calendar-weekdays {
     display: grid;
     grid-template-columns: repeat(7, 1fr);
     text-align: center;
-    font-size: 0.7rem;
-    color: #888888;
-    margin-bottom: 10px;
+    font-size: 0.72rem;
+    font-weight: 600;
+    color: #64748b;
+    margin-bottom: 12px;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+  }
+  #creator-dashboard .calendar-weekdays span {
+    padding: 6px 0;
   }
   #creator-dashboard .calendar-days {
     display: grid;
     grid-template-columns: repeat(7, 1fr);
-    gap: 6px;
+    gap: 10px;
+  }
+  #creator-dashboard .calendar-days > .calendar-spacer {
+    min-height: 0;
   }
   #creator-dashboard .calendar-day {
     aspect-ratio: 1;
-    background: #111111;
-    border-radius: 10px;
+    min-height: 52px;
+    background: rgba(15, 23, 42, 0.65);
+    border: 1px solid rgba(148, 163, 184, 0.08);
+    border-radius: 12px;
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    font-size: 0.8rem;
-    color: #aaaaaa;
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: #cbd5e1;
     min-height: 0;
+    transition: opacity 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+  }
+  #creator-dashboard .calendar-day.is-dim {
+    opacity: 0.3;
+  }
+  #creator-dashboard .calendar-day.is-today {
+    box-shadow: 0 0 0 2px rgba(56, 189, 248, 0.55);
+    border-color: rgba(56, 189, 248, 0.35);
   }
   #creator-dashboard .calendar-day.has-content {
-    background: rgba(34, 197, 94, 0.15);
-    color: #22c55e;
-    font-weight: 600;
+    background: rgba(34, 197, 94, 0.12);
+    border-color: rgba(34, 197, 94, 0.35);
+    color: #86efac;
+  }
+  #creator-dashboard .calendar-day.has-content span {
+    color: #4ade80;
   }
   #creator-dashboard .calendar-day span {
-    font-size: 0.65rem;
-    font-weight: 600;
-    margin-top: 2px;
+    font-size: 0.68rem;
+    font-weight: 700;
+    margin-top: 4px;
+    opacity: 0.95;
+  }
+  @media (min-width: 900px) {
+    #creator-dashboard .calendar-day {
+      min-height: 64px;
+      font-size: 1.05rem;
+    }
+    #creator-dashboard .calendar-day span {
+      font-size: 0.72rem;
+    }
   }
 
   #creator-dashboard .page-header h2,
@@ -4501,22 +4611,41 @@
 
       <div id="dash-calendar" style="display:none;">
         <div class="page-header">
-          <h2>📅 Calendario</h2>
-          <p>Contenido programado por día</p>
+          <h2>Calendario</h2>
+          <p>Publicaciones programadas por día</p>
         </div>
 
-        <div class="calendar-container">
-          <div class="calendar-header">
-            <button type="button" onclick="changeMonth(-1)">‹</button>
-            <h3 id="calendar-month-year"></h3>
-            <button type="button" onclick="changeMonth(1)">›</button>
-          </div>
+        <div class="calendar-studio">
+          <div class="calendar-studio-surface">
+            <div class="calendar-toolbar">
+              <div class="calendar-toolbar-left" aria-hidden="true">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+                <span>Vista</span>
+              </div>
+              <div class="calendar-filter-pills" role="group" aria-label="Filtro del calendario">
+                <button type="button" class="calendar-filter-pill active" data-cal-filter="all" onclick="setCalendarFilter('all')">Todo el mes</button>
+                <button type="button" class="calendar-filter-pill" data-cal-filter="scheduled" onclick="setCalendarFilter('scheduled')">Solo con contenido</button>
+              </div>
+            </div>
 
-          <div class="calendar-weekdays">
-            <span>D</span><span>L</span><span>M</span><span>M</span><span>J</span><span>V</span><span>S</span>
-          </div>
+            <div class="calendar-container">
+              <div class="calendar-header">
+                <button type="button" class="calendar-nav-btn" onclick="changeMonth(-1)" aria-label="Mes anterior">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 18-6-6 6-6"/></svg>
+                </button>
+                <h3 id="calendar-month-year"></h3>
+                <button type="button" class="calendar-nav-btn" onclick="changeMonth(1)" aria-label="Mes siguiente">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg>
+                </button>
+              </div>
 
-          <div id="calendar-days" class="calendar-days"></div>
+              <div class="calendar-weekdays">
+                <span>Dom</span><span>Lun</span><span>Mar</span><span>Mié</span><span>Jue</span><span>Vie</span><span>Sáb</span>
+              </div>
+
+              <div id="calendar-days" class="calendar-days"></div>
+            </div>
+          </div>
         </div>
       </div>
 
@@ -7111,6 +7240,16 @@ async function loadCreatorDashboard() {
 
 var currentCalendarDate = new Date();
 var scheduledSummary = {};
+var calendarViewFilter = 'all';
+
+function setCalendarFilter(mode) {
+  if (mode !== 'all' && mode !== 'scheduled') return;
+  calendarViewFilter = mode;
+  document.querySelectorAll('#dash-calendar .calendar-filter-pill').forEach(function (btn) {
+    btn.classList.toggle('active', btn.getAttribute('data-cal-filter') === mode);
+  });
+  renderCalendar();
+}
 
 async function loadScheduledSummary() {
   const res = await api.get('/content/scheduled-summary');
@@ -7127,6 +7266,11 @@ function renderCalendar() {
 
   const startOffset = firstDay.getDay();
   const daysInMonth = lastDay.getDate();
+
+  const today = new Date();
+  const todayY = today.getFullYear();
+  const todayM = today.getMonth();
+  const todayD = today.getDate();
 
   const monthNames = [
     'Enero',
@@ -7150,7 +7294,7 @@ function renderCalendar() {
   container.innerHTML = '';
 
   for (let i = 0; i < startOffset; i++) {
-    container.innerHTML += '<div></div>';
+    container.innerHTML += '<div class="calendar-spacer" aria-hidden="true"></div>';
   }
 
   for (let d = 1; d <= daysInMonth; d++) {
@@ -7161,10 +7305,16 @@ function renderCalendar() {
       '-' +
       String(d).padStart(2, '0');
     const count = scheduledSummary[dateStr] || 0;
+    const isToday = year === todayY && month === todayM && d === todayD;
+    const dim = calendarViewFilter === 'scheduled' && !count;
+    let cls = 'calendar-day';
+    if (count) cls += ' has-content';
+    if (isToday) cls += ' is-today';
+    if (dim) cls += ' is-dim';
 
     container.innerHTML +=
-      '<div class="calendar-day' +
-      (count ? ' has-content' : '') +
+      '<div class="' +
+      cls +
       '">' +
       d +
       (count ? '<span>' + count + '</span>' : '') +
