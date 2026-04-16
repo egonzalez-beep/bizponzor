@@ -257,4 +257,15 @@ try {
   /* exists */
 }
 
+db.exec(`
+  CREATE TABLE IF NOT EXISTS deleted_conversations (
+    id TEXT PRIMARY KEY,
+    user_id TEXT NOT NULL,
+    other_user_id TEXT NOT NULL,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    UNIQUE(user_id, other_user_id)
+  );
+  CREATE INDEX IF NOT EXISTS idx_deleted_conv_user_other ON deleted_conversations(user_id, other_user_id);
+`);
+
 module.exports = db;

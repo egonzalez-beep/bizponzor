@@ -1299,6 +1299,9 @@
   #notification-container .notification.default {
     border-left: 4px solid var(--border-light);
   }
+  #notification-container .notification.error {
+    border-left: 4px solid var(--error);
+  }
   @keyframes slideUpNotif {
     from { opacity: 0; transform: translateY(20px); }
     to { opacity: 1; transform: translateY(0); }
@@ -2045,6 +2048,32 @@
     border-left: 3px solid var(--accent-cyan);
     padding-left: 13px;
   }
+  #fan-dashboard #fan-conversations-list .conversation-item-main {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    cursor: pointer;
+  }
+  #fan-dashboard .delete-chat-btn {
+    background: transparent;
+    border: none;
+    color: var(--text-tertiary);
+    cursor: pointer;
+    font-size: 16px;
+    padding: 6px;
+    margin-left: 4px;
+    border-radius: var(--radius-full);
+    transition: background 0.2s ease, color 0.2s ease;
+    flex-shrink: 0;
+    align-self: center;
+    line-height: 1;
+  }
+  #fan-dashboard .delete-chat-btn:hover {
+    background: var(--surface-hover);
+    color: var(--error);
+  }
   #fan-dashboard #fan-conversations-list .conversation-avatar {
     width: 44px;
     height: 44px;
@@ -2330,6 +2359,32 @@
     background: rgba(139, 92, 246, 0.12);
     border-left: 3px solid var(--accent-cyan);
     padding-left: 13px;
+  }
+  #creator-dashboard .conversation-item-main {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    cursor: pointer;
+  }
+  #creator-dashboard .delete-chat-btn {
+    background: transparent;
+    border: none;
+    color: var(--text-tertiary);
+    cursor: pointer;
+    font-size: 16px;
+    padding: 6px;
+    margin-left: 4px;
+    border-radius: var(--radius-full);
+    transition: background 0.2s ease, color 0.2s ease;
+    flex-shrink: 0;
+    align-self: center;
+    line-height: 1;
+  }
+  #creator-dashboard .delete-chat-btn:hover {
+    background: var(--surface-hover);
+    color: var(--error);
   }
   #creator-dashboard .conversation-avatar {
     width: 44px;
@@ -5166,7 +5221,8 @@ function renderConversationsList(conversations) {
   if (!list) return;
 
   if (!conversations.length) {
-    list.innerHTML = '<div class="conversations-empty">No hay conversaciones aún.</div>';
+    list.innerHTML =
+      '<div class="conversations-empty">No tienes conversaciones activas</div>';
     return;
   }
 
@@ -5187,14 +5243,16 @@ function renderConversationsList(conversations) {
         var t = conv.last_message_at ? formatConversationTime(conv.last_message_at) : '';
         var searchBlob = (handleDisp + ' ' + lm).toLowerCase().slice(0, 400);
         var unread = Number(conv.unread_count) || 0;
+        var uid = escapeHtml(String(conv.user_id));
         return (
-          '<div class="conversation-item" role="button" tabindex="0" data-creator-id="' +
-          escapeHtml(conv.user_id) +
+          '<div class="conversation-item" data-creator-id="' +
+          uid +
           '" data-search="' +
           escapeHtml(searchBlob) +
           '" data-handle-enc="' +
           encodeURIComponent(handleDisp) +
           '">' +
+          '<div class="conversation-item-main" role="button" tabindex="0">' +
           '<div class="conversation-avatar">' +
           escapeHtml(initial) +
           '</div>' +
@@ -5213,6 +5271,10 @@ function renderConversationsList(conversations) {
             ? '<span class="unread-badge">' + (unread > 99 ? '99+' : unread) + '</span>'
             : '') +
           '</div>' +
+          '</div>' +
+          '<button type="button" class="delete-chat-btn" aria-label="Eliminar conversación" onclick="event.stopPropagation(); deleteConversation(\'' +
+          uid +
+          '\')">⋮</button>' +
           '</div>'
         );
       })
@@ -5240,14 +5302,16 @@ function renderConversationsList(conversations) {
           .toLowerCase()
           .slice(0, 500);
         var unreadCount = Number(conv.unread_count) || 0;
+        var uid = escapeHtml(String(conv.user_id));
         return (
-          '<div class="conversation-item" role="button" tabindex="0" data-fan-id="' +
-          escapeHtml(conv.user_id) +
+          '<div class="conversation-item" data-fan-id="' +
+          uid +
           '" data-search="' +
           escapeHtml(searchIdx) +
           '" data-fan-name-enc="' +
           encodeURIComponent(displayName) +
           '">' +
+          '<div class="conversation-item-main" role="button" tabindex="0">' +
           '<div class="conversation-avatar">' +
           escapeHtml(initial) +
           '</div>' +
@@ -5268,6 +5332,10 @@ function renderConversationsList(conversations) {
             ? '<span class="unread-badge">' + (unreadCount > 99 ? '99+' : unreadCount) + '</span>'
             : '') +
           '</div>' +
+          '</div>' +
+          '<button type="button" class="delete-chat-btn" aria-label="Eliminar conversación" onclick="event.stopPropagation(); deleteConversation(\'' +
+          uid +
+          '\')">⋮</button>' +
           '</div>'
         );
       })
@@ -5287,6 +5355,41 @@ async function loadFanConversations() {
 
 async function loadCreatorInbox(silentRefresh) {
   return loadConversations(silentRefresh);
+}
+
+async function deleteConversation(userId) {
+  if (!userId) return;
+  if (!confirm('¿Eliminar esta conversación?')) return;
+  try {
+    var res = await api.post(
+      '/messages/conversations/' + encodeURIComponent(userId) + '/delete',
+      {}
+    );
+    if (res && res.error) {
+      if (typeof showNotification === 'function') showNotification(res.error, 'error');
+      return;
+    }
+    if (typeof showNotification === 'function') showNotification('Conversación eliminada', 'default');
+    if (typeof loadConversations === 'function') await loadConversations(true);
+    if (CURRENT_USER && CURRENT_USER.role === 'fan') {
+      if (
+        typeof window.ACTIVE_FAN_CHAT !== 'undefined' &&
+        String(window.ACTIVE_FAN_CHAT) === String(userId)
+      ) {
+        if (typeof closeFanChat === 'function') closeFanChat();
+      }
+    }
+    if (CURRENT_USER && CURRENT_USER.role === 'creator') {
+      if (typeof activeChatUser !== 'undefined' && String(activeChatUser) === String(userId)) {
+        if (typeof closeChat === 'function') closeChat();
+      }
+    }
+  } catch (err) {
+    console.error(err);
+    if (typeof showNotification === 'function') {
+      showNotification('Error al eliminar conversación', 'error');
+    }
+  }
 }
 
 async function markFanMessagesRead(creatorId) {

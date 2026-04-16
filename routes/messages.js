@@ -171,9 +171,13 @@ router.get('/conversations', auth, (req, res) => {
           FROM subscriptions s
           JOIN users c ON c.id = s.creator_id
           WHERE s.fan_id = ? AND s.status = 'active'
+            AND NOT EXISTS (
+              SELECT 1 FROM deleted_conversations dc
+              WHERE dc.user_id = ? AND dc.other_user_id = c.id
+            )
           ORDER BY (last_message_at IS NULL), datetime(last_message_at) DESC`
         )
-        .all(userId, userId, userId, userId, userId, userId);
+        .all(userId, userId, userId, userId, userId, userId, userId);
 
       return res.json(
         rows.map((conv) => ({
@@ -225,9 +229,14 @@ router.get('/conversations', auth, (req, res) => {
               SELECT 1 FROM subscriptions s
               WHERE s.creator_id = ? AND s.fan_id = u.id AND s.status = 'active'
             )
+            AND NOT EXISTS (
+              SELECT 1 FROM deleted_conversations dc
+              WHERE dc.user_id = ? AND dc.other_user_id = u.id
+            )
           ORDER BY (last_message_at IS NULL), datetime(last_message_at) DESC`
         )
         .all(
+          userId,
           userId,
           userId,
           userId,
@@ -256,6 +265,54 @@ router.get('/conversations', auth, (req, res) => {
   } catch (error) {
     console.error('Error conversaciones:', error);
     res.status(500).json({ error: 'Error al obtener conversaciones' });
+  }
+});
+
+/**
+ * POST /api/messages/conversations/:userId/delete
+ * Soft-delete: el usuario actual deja de ver el hilo; no se borran filas en messages.
+ */
+router.post('/conversations/:userId/delete', auth, (req, res) => {
+  try {
+    const currentUserId = req.user.id;
+    const otherUserId = req.params.userId;
+    if (!otherUserId || otherUserId === currentUserId) {
+      return res.status(400).json({ error: 'Solicitud inválida' });
+    }
+
+    const other = db.prepare('SELECT id, role FROM users WHERE id = ?').get(otherUserId);
+    if (!other) return res.status(404).json({ error: 'Usuario no encontrado' });
+
+    let fanId;
+    let creatorId;
+    if (req.user.role === 'fan' && other.role === 'creator') {
+      fanId = currentUserId;
+      creatorId = otherUserId;
+    } else if (req.user.role === 'creator' && other.role === 'fan') {
+      creatorId = currentUserId;
+      fanId = otherUserId;
+    } else {
+      return res.status(403).json({ error: 'No permitido' });
+    }
+
+    const sub = db
+      .prepare(
+        `SELECT id FROM subscriptions WHERE fan_id = ? AND creator_id = ? AND status = 'active'`
+      )
+      .get(fanId, creatorId);
+    if (!sub) {
+      return res.status(403).json({ error: 'No hay suscripción activa' });
+    }
+
+    db.prepare(
+      `INSERT OR IGNORE INTO deleted_conversations (id, user_id, other_user_id)
+       VALUES (?, ?, ?)`
+    ).run(crypto.randomUUID(), currentUserId, otherUserId);
+
+    return res.json({ success: true });
+  } catch (err) {
+    console.error('Error deleting conversation:', err);
+    return res.status(500).json({ error: 'Error deleting conversation' });
   }
 });
 
