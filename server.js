@@ -6,6 +6,7 @@ const cors = require('cors');
 const path = require('path');
 const crypto = require('crypto');
 const db = require('./db');
+const { createNotification } = require('./lib/createNotification');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -26,6 +27,7 @@ app.use('/api/donations', require('./routes/donations'));
 app.use('/api/messages', require('./routes/messages'));
 app.use('/api/promo', require('./routes/promo'));
 app.use('/api/creator', require('./routes/creatorPromo'));
+app.use('/api/notifications', require('./routes/notifications'));
 
 app.get('/api/health', (req, res) => res.json({ status: 'ok', app: 'BizPonzor' }));
 
@@ -219,7 +221,7 @@ function publishScheduledPosts() {
     const now = new Date().toISOString();
 
     const toPublish = db.prepare(`
-      SELECT id, title FROM content
+      SELECT id, title, creator_id FROM content
       WHERE status = 'scheduled'
       AND scheduled_for IS NOT NULL
       AND scheduled_for <= ?
@@ -241,6 +243,14 @@ function publishScheduledPosts() {
 
     toPublish.forEach((post) => {
       console.log(`[SCHEDULER] Publicado: "${post.title}" (ID: ${post.id})`);
+      const label =
+        post.title && String(post.title).trim() ? String(post.title).trim() : 'Publicación programada';
+      createNotification({
+        userId: post.creator_id,
+        type: 'NEW_CONTENT',
+        metadata: { contentId: post.id, contentLabel: label },
+        dedupeKey: `content-publish-${post.id}`
+      }).catch(() => null);
     });
   } catch (error) {
     console.error('[SCHEDULER] Error:', error.message);
@@ -250,5 +260,23 @@ function publishScheduledPosts() {
 setInterval(publishScheduledPosts, 5 * 60 * 1000);
 
 publishScheduledPosts();
+
+function cleanupOldNotifications() {
+  try {
+    const r = db
+      .prepare(
+        `DELETE FROM notifications WHERE datetime(created_at) < datetime('now', '-90 days')`
+      )
+      .run();
+    if (r.changes > 0) {
+      console.log('[notifications cleanup] eliminadas', r.changes, 'filas (>90 días)');
+    }
+  } catch (e) {
+    console.error('[notifications cleanup]', e.message);
+  }
+}
+
+setInterval(cleanupOldNotifications, 24 * 60 * 60 * 1000);
+cleanupOldNotifications();
 
 app.listen(PORT, () => console.log('BizPonzor corriendo en http://localhost:' + PORT));

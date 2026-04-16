@@ -6,6 +6,7 @@ const fs = require('fs');
 const { v4: uuidv4 } = require('uuid');
 const db = require('../db');
 const authMiddleware = require('../middleware/auth');
+const { createNotification } = require('../lib/createNotification');
 
 const uploadsDir = path.join(__dirname, '../uploads');
 fs.mkdirSync(uploadsDir, { recursive: true });
@@ -145,6 +146,16 @@ router.post('/text', authMiddleware, requireCreator, ensureAuthedUserInDb, (req,
       scheduledFor,
       status
     );
+    if (status === 'published') {
+      const short = body.length > 80 ? body.slice(0, 77) + '...' : body;
+      const label = (title && String(title).trim()) || short;
+      createNotification({
+        userId: req.user.id,
+        type: 'NEW_CONTENT',
+        metadata: { contentId: id, contentLabel: label },
+        dedupeKey: `content-publish-${id}`
+      }).catch(() => null);
+    }
     console.log('[POST] Creado:', {
       id,
       title: title || 'Publicación',
@@ -209,6 +220,15 @@ router.post('/upload', authMiddleware, requireCreator, ensureAuthedUserInDb, (re
       scheduledFor,
       status
     );
+    if (status === 'published') {
+      const label = cleanTitle || (type === 'video' ? 'Nuevo video' : 'Nueva foto');
+      createNotification({
+        userId: req.user.id,
+        type: 'NEW_CONTENT',
+        metadata: { contentId: id, contentLabel: label },
+        dedupeKey: `content-publish-${id}`
+      }).catch(() => null);
+    }
     console.log('[POST] Creado:', {
       id,
       title: cleanTitle || '(sin título)',

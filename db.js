@@ -283,4 +283,21 @@ db.exec(`
   CREATE INDEX IF NOT EXISTS idx_users_id ON users(id);
 `);
 
+db.exec(`
+  CREATE TABLE IF NOT EXISTS notifications (
+    id          TEXT PRIMARY KEY,
+    user_id     TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    type        TEXT NOT NULL,
+    title       TEXT NOT NULL,
+    message     TEXT,
+    metadata    TEXT NOT NULL DEFAULT '{}',
+    is_read     INTEGER NOT NULL DEFAULT 0,
+    read_at     TEXT,
+    dedupe_key  TEXT UNIQUE,
+    created_at  TEXT NOT NULL DEFAULT (datetime('now'))
+  );
+  CREATE INDEX IF NOT EXISTS idx_notifications_user_read ON notifications(user_id, is_read);
+  CREATE INDEX IF NOT EXISTS idx_notifications_user_created ON notifications(user_id, created_at);
+`);
+
 module.exports = db;

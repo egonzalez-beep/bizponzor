@@ -1,6 +1,7 @@
 
 const router = require('express').Router();
 const db = require('../db');
+const { createNotification } = require('../lib/createNotification');
 const {
   getPreApprovalClient,
   mapPreapprovalStatusToDb,
@@ -97,6 +98,17 @@ async function syncSubscriptionFromPreapproval(mpPreapprovalId) {
     ).run(dbStatus, mpId, mpStatus, sub.id);
   }
 
+  if (dbStatus === 'active') {
+    const fan = db.prepare('SELECT name FROM users WHERE id = ?').get(sub.fan_id);
+    const plan = db.prepare('SELECT name FROM plans WHERE id = ?').get(sub.plan_id);
+    createNotification({
+      userId: sub.creator_id,
+      type: 'NEW_SUBSCRIBER',
+      metadata: { fanName: fan?.name, planName: plan?.name },
+      dedupeKey: `sub-active-${sub.id}`
+    }).catch(() => null);
+  }
+
   console.log('[WEBHOOK] Suscripción actualizada', { local_id: sub.id, dbStatus, mpStatus });
 }
 
@@ -128,6 +140,17 @@ async function syncDonationFromPayment(mpPaymentId) {
     db.prepare(
       `UPDATE donations SET status = 'completed', mp_payment_id = ? WHERE id = ?`
     ).run(mpId, extRef);
+    const fan = db.prepare('SELECT name FROM users WHERE id = ?').get(donation.fan_id);
+    createNotification({
+      userId: donation.creator_id,
+      type: 'NEW_DONATION',
+      metadata: {
+        senderName: fan?.name,
+        amount: donation.amount,
+        currency: donation.currency_id || 'MXN'
+      },
+      dedupeKey: `donation-done-${extRef}`
+    }).catch(() => null);
     console.log('[WEBHOOK] Donación completada', { id: extRef });
   } else if (status === 'rejected' || status === 'cancelled' || status === 'refunded') {
     db.prepare(`UPDATE donations SET status = 'failed' WHERE id = ?`).run(extRef);

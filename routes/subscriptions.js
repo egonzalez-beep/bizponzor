@@ -2,6 +2,7 @@ const crypto = require('crypto');
 const router = require('express').Router();
 const { v4: uuidv4 } = require('uuid');
 const db = require('../db');
+const { createNotification } = require('../lib/createNotification');
 const auth = require('../middleware/auth');
 const { MercadoPagoConfig, PreApproval } = require('mercadopago');
 const { normalizePreapprovalPayload } = require('../lib/mpSubscription');
@@ -56,6 +57,13 @@ router.post('/checkout', auth, async (req, res) => {
          VALUES (?,?,?,?,?,?,?)`
       ).run(sub_id, req.user.id, creator_id, plan_id, 'active', 0, nextBilling.toISOString());
       console.log('[checkout] suscripción gratuita activa', { sub_id, fan_id: req.user.id, plan_id });
+      const fan = db.prepare('SELECT name FROM users WHERE id = ?').get(req.user.id);
+      createNotification({
+        userId: creator_id,
+        type: 'NEW_SUBSCRIBER',
+        metadata: { fanName: fan?.name, planName: plan.name },
+        dedupeKey: `sub-free-${sub_id}`
+      }).catch(() => null);
       return res.json({ success: true, sub_id, free: true });
     }
 
@@ -187,6 +195,14 @@ router.post('/activate/:sub_id', auth, (req, res) => {
   db.prepare(
     "UPDATE subscriptions SET status='active', next_billing=?, updated_at=datetime('now') WHERE id=?"
   ).run(nextBilling.toISOString(), sub.id);
+  const fan = db.prepare('SELECT name FROM users WHERE id = ?').get(sub.fan_id);
+  const plan = db.prepare('SELECT name FROM plans WHERE id = ?').get(sub.plan_id);
+  createNotification({
+    userId: sub.creator_id,
+    type: 'NEW_SUBSCRIBER',
+    metadata: { fanName: fan?.name, planName: plan?.name },
+    dedupeKey: `sub-active-${sub.id}`
+  }).catch(() => null);
   res.json({ success: true, status: 'active' });
 });
 
