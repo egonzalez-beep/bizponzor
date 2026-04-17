@@ -10,7 +10,7 @@ const { createNotification } = require('./lib/createNotification');
 const { SKIP_LEGAL } = require('./lib/authConfig');
 
 const app = express();
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 8080;
 
 app.set('trust proxy', 1);
 
@@ -308,4 +308,4 @@ setInterval(() => {
 }, 24 * 60 * 60 * 1000);
 cleanupOldNotifications().catch((err) => console.error('[notifications cleanup]', err));
 
-app.listen(PORT, () => console.log('BizPonzor corriendo en http://localhost:' + PORT));
+app.listen(PORT, '0.0.0.0', () => console.log(`Servidor corriendo en el puerto ${PORT}`));
