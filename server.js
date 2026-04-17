@@ -32,6 +32,7 @@ app.use('/api/messages', require('./routes/messages'));
 app.use('/api/promo', require('./routes/promo'));
 app.use('/api/creator', require('./routes/creatorPromo'));
 app.use('/api/notifications', require('./routes/notifications'));
+app.use('/api/feed', require('./routes/feed'));
 
 app.get('/terms', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'terms.html'));

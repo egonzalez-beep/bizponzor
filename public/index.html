@@ -3498,6 +3498,261 @@
     background: var(--surface-hover);
     transform: scale(1.15);
   }
+
+  /* ─── Fan Feed Pro ─── */
+  #fan-feed.page {
+    min-height: 100vh;
+    background: linear-gradient(180deg, #0c0c0e 0%, #141416 32%, #141416 100%);
+    color: #fafafa;
+    padding: 0 0 48px;
+  }
+  .fan-feed-page {
+    max-width: 560px;
+    margin: 0 auto;
+    padding: 24px 16px 0;
+  }
+  .fan-feed-hero {
+    margin-bottom: 24px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  }
+  .fan-feed-kicker {
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: #38bdf8;
+    margin: 0 0 8px;
+  }
+  .fan-feed-h1 {
+    font-size: 1.65rem;
+    font-weight: 800;
+    letter-spacing: -0.03em;
+    margin: 0 0 8px;
+    line-height: 1.15;
+  }
+  .fan-feed-lead {
+    margin: 0;
+    font-size: 0.9rem;
+    line-height: 1.5;
+    color: #a1a1aa;
+    max-width: 42ch;
+  }
+  .fan-feed-tab-header p {
+    color: #a1a1aa;
+  }
+  .feed-container.fan-feed-container {
+    max-width: 560px;
+    margin: 0 auto;
+  }
+  #fan-dashboard .feed-container.fan-feed-container {
+    padding: 0 4px;
+  }
+  .feed-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+  }
+  .fan-feed-sentinel {
+    height: 1px;
+    margin-top: 8px;
+  }
+  .feed-empty {
+    text-align: center;
+    padding: 48px 20px;
+    color: #71717a;
+    font-size: 0.9rem;
+    line-height: 1.6;
+    border-radius: 16px;
+    border: 1px dashed rgba(255, 255, 255, 0.1);
+    background: rgba(255, 255, 255, 0.02);
+  }
+  .feed-card {
+    border-radius: 16px;
+    overflow: hidden;
+    margin-bottom: 16px;
+    cursor: pointer;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    background: rgba(24, 24, 27, 0.85);
+    border: 1px solid rgba(255, 255, 255, 0.07);
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.35);
+  }
+  .feed-card:hover {
+    transform: scale(1.01);
+    box-shadow: 0 16px 48px rgba(0, 0, 0, 0.45);
+  }
+  .feed-card:focus-visible {
+    outline: 2px solid #38bdf8;
+    outline-offset: 2px;
+  }
+  .feed-card-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 14px 16px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  }
+  .feed-card-avatar {
+    flex-shrink: 0;
+    width: 40px;
+    height: 40px;
+  }
+  .feed-card-meta {
+    flex: 1;
+    min-width: 0;
+  }
+  .feed-card-name {
+    font-weight: 700;
+    font-size: 0.92rem;
+    color: #fafafa;
+    line-height: 1.25;
+  }
+  .feed-card-time {
+    font-size: 0.72rem;
+    color: #71717a;
+    margin-top: 2px;
+  }
+  .feed-card-badges {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    justify-content: flex-end;
+  }
+  .feed-badge {
+    font-size: 0.62rem;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    padding: 4px 8px;
+    border-radius: 999px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: #a1a1aa;
+    background: rgba(255, 255, 255, 0.04);
+  }
+  .feed-badge--disc {
+    color: #a78bfa;
+    border-color: rgba(167, 139, 250, 0.35);
+    background: rgba(139, 92, 246, 0.12);
+  }
+  .feed-badge--ex {
+    color: #fbbf24;
+    border-color: rgba(251, 191, 36, 0.35);
+    background: rgba(251, 191, 36, 0.08);
+  }
+  .feed-preview {
+    position: relative;
+  }
+  .feed-preview--locked {
+    padding: 40px 16px;
+    text-align: center;
+    opacity: 0.85;
+    font-size: 0.9rem;
+    color: #a1a1aa;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    background: rgba(0, 0, 0, 0.25);
+  }
+  .feed-lock-ico {
+    font-size: 1.5rem;
+  }
+  .feed-preview--text {
+    padding: 18px 16px;
+    font-size: 0.88rem;
+    line-height: 1.55;
+    color: #d4d4d8;
+    white-space: pre-wrap;
+    word-break: break-word;
+  }
+  .feed-preview--media {
+    position: relative;
+    background: #0a0a0b;
+    max-height: 420px;
+  }
+  .feed-preview-img,
+  .feed-preview-video {
+    display: block;
+    width: 100%;
+    max-height: 420px;
+    object-fit: cover;
+  }
+  .feed-play-badge {
+    position: absolute;
+    bottom: 12px;
+    right: 12px;
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    background: rgba(0, 0, 0, 0.55);
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.85rem;
+    pointer-events: none;
+  }
+  .feed-preview--placeholder {
+    padding: 48px;
+    text-align: center;
+    font-size: 1.5rem;
+    opacity: 0.5;
+  }
+  .feed-card-title {
+    padding: 12px 16px 0;
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: #f4f4f5;
+    line-height: 1.35;
+  }
+  .feed-card-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 12px 16px 14px;
+    border-top: 1px solid rgba(255, 255, 255, 0.05);
+  }
+  .feed-cta-btn {
+    border: 1px solid rgba(56, 189, 248, 0.35);
+    background: rgba(56, 189, 248, 0.1);
+    color: #7dd3fc;
+    font-size: 0.78rem;
+    font-weight: 700;
+    padding: 8px 14px;
+    border-radius: 999px;
+    cursor: pointer;
+    transition: background 0.15s ease, color 0.15s ease;
+  }
+  .feed-cta-btn:hover {
+    background: rgba(56, 189, 248, 0.2);
+    color: #e0f2fe;
+  }
+  .feed-card .feed-star-row {
+    margin: 0;
+  }
+  .feed-load-more {
+    display: block;
+    width: 100%;
+    margin-top: 8px;
+    padding: 10px;
+    border-radius: 12px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    background: rgba(255, 255, 255, 0.04);
+    color: #a1a1aa;
+    font-size: 0.8rem;
+    font-weight: 600;
+    cursor: pointer;
+  }
+  .feed-load-more:hover {
+    background: rgba(255, 255, 255, 0.07);
+    color: #e4e4e7;
+  }
+  .feed-load-more:disabled {
+    opacity: 0.5;
+    cursor: default;
+  }
+
   .unlock-animation {
     position: fixed;
     inset: 0;
@@ -5668,28 +5923,15 @@
     </div>
     <div class="main-content" id="fan-main">
 
-      <!-- FEED TAB -->
-      <div id="fan-feed">
-        <div class="page-header"><h2>Tu Feed</h2><p>Contenido de los creadores que apoyas</p></div>
-        <div class="content-grid">
-          <div class="content-item"><div class="content-thumb" style="background:#f0f0f0">📸<span class="content-type-badge">FOTO</span></div><div class="content-info"><h4>Sesión Abril 2025</h4><p>Ana Molina · hace 2 días</p><span class="exclusive-badge">Exclusivo</span></div></div>
-          <div class="content-item"><div class="content-thumb" style="background:#e8e8e8">🎬<span class="content-type-badge">VIDEO</span></div><div class="content-info"><h4>BTS Shooting ciudad</h4><p>Ana Molina · hace 5 días</p><span class="exclusive-badge">Exclusivo</span></div></div>
-          <div class="content-item">
-            <div class="content-thumb" style="background:#f5f5f5">
-              🎬<span class="content-type-badge">VIDEO</span>
-              <div class="lock-overlay">🔒</div>
-            </div>
-            <div class="content-info"><h4>Contenido VIP — Suscríbete</h4><p>Ana Molina · hace 3 días</p></div>
-          </div>
-          <div class="content-item"><div class="content-thumb" style="background:#ebebeb">📸<span class="content-type-badge">FOTO</span></div><div class="content-info"><h4>Tutorial de edición</h4><p>Carlos Vega · hace 2 sem</p><span class="exclusive-badge">Exclusivo</span></div></div>
-          <div class="content-item">
-            <div class="content-thumb" style="background:#f2f2f2">
-              📸<span class="content-type-badge">FOTO</span>
-              <div class="lock-overlay">🔒</div>
-            </div>
-            <div class="content-info"><h4>Solo para premium</h4><p>Carlos Vega · hace 1 mes</p></div>
-          </div>
-          <div class="content-item"><div class="content-thumb" style="background:#ededed">🎬<span class="content-type-badge">VIDEO</span></div><div class="content-info"><h4>Street Photography</h4><p>Ana Molina · hace 3 sem</p></div></div>
+      <!-- FEED TAB (Pro: mismo API que vista Inicio) -->
+      <div id="fan-feed-tab">
+        <div class="page-header fan-feed-tab-header">
+          <h2>Tu feed</h2>
+          <p>Suscripciones y descubrimiento en un solo lugar</p>
+        </div>
+        <div class="feed-container fan-feed-container">
+          <div id="fan-feed-list-tab" class="feed-list" aria-live="polite"></div>
+          <div id="fan-feed-sentinel-tab" class="fan-feed-sentinel" aria-hidden="true"></div>
         </div>
       </div>
 
@@ -5785,6 +6027,23 @@
         </div>
       </div>
 
+    </div>
+  </div>
+</div>
+
+<!-- ╔══════════════════════════════╗ -->
+<!-- ║   FAN FEED PRO (vista Inicio)  ║ -->
+<!-- ╚══════════════════════════════╝ -->
+<div id="fan-feed" class="page">
+  <div class="fan-feed-page" id="fanFeedPage">
+    <header class="fan-feed-hero">
+      <p class="fan-feed-kicker">Para ti</p>
+      <h1 class="fan-feed-h1">Inicio</h1>
+      <p class="fan-feed-lead">Lo último de quienes sigues, más un vistazo al resto de la comunidad.</p>
+    </header>
+    <div class="feed-container fan-feed-container fan-feed-container--page">
+      <div id="feedList" class="feed-list" aria-live="polite"></div>
+      <div id="fan-feed-sentinel" class="fan-feed-sentinel" aria-hidden="true"></div>
     </div>
   </div>
 </div>
@@ -6002,6 +6261,10 @@
       closeLandingAuth();
     }
     document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+    if (page !== 'fan-feed' && typeof fanFeedPageIO !== 'undefined' && fanFeedPageIO) {
+      fanFeedPageIO.disconnect();
+      fanFeedPageIO = null;
+    }
     const targetPage = document.getElementById(page);
     if (targetPage) {
       targetPage.classList.add('active');
@@ -6009,6 +6272,10 @@
     window.scrollTo(0, 0);
     updateNavbar(page);
     updateMobileMenuToggle();
+    if (CURRENT_USER && typeof syncSessionAvatarsFromCurrentUser === 'function') {
+      syncSessionAvatarsFromCurrentUser();
+    }
+    if (page === 'fan-feed' && typeof loadFanFeedPage === 'function') loadFanFeedPage();
   }
 
   function closeMobileSidebar() {
@@ -6049,6 +6316,7 @@
         page === 'auth' ||
         page === 'creator-dashboard' ||
         page === 'fan-dashboard' ||
+        page === 'fan-feed' ||
         page === 'creator-profile' ||
         (page === 'landing' && CURRENT_USER);
       nav.classList.toggle('navbar--session', !!sessionNav);
@@ -6062,7 +6330,16 @@
         escapeHtml(CURRENT_USER.name) +
         '</span></div><button class="btn btn-outline btn-sm" onclick="logout()">Salir</button>';
     } else if (CURRENT_USER && CURRENT_USER.role === 'fan') {
+      var fanNavExtra = '';
+      if (page === 'fan-dashboard') {
+        fanNavExtra =
+          '<button type="button" class="btn btn-ghost btn-sm" onclick="showPage(\'fan-feed\')">Inicio</button>';
+      } else if (page === 'fan-feed') {
+        fanNavExtra =
+          '<button type="button" class="btn btn-ghost btn-sm" onclick="showPage(\'fan-dashboard\')">Panel</button>';
+      }
       actions.innerHTML =
+        fanNavExtra +
         '<div class="navbar-user-wrap"><div class="bp-avatar bp-avatar--sm navbar-session-avatar" id="navbar-session-avatar"></div><span class="navbar-user-name">' +
         escapeHtml(CURRENT_USER.name) +
         '</span></div><button class="btn btn-outline btn-sm" onclick="logout()">Salir</button>';
@@ -6276,11 +6553,17 @@
 
   function setFanTab(tab, el) {
     if (tab !== 'messages' && typeof closeFanChat === 'function') closeFanChat();
-    ['feed','messages','subscriptions','discover'].forEach(t => {
-      const e = document.getElementById('fan-' + t);
-      if (e) e.style.display = 'none';
+    var fanTabIds = {
+      feed: 'fan-feed-tab',
+      messages: 'fan-messages',
+      subscriptions: 'fan-subscriptions',
+      discover: 'fan-discover'
+    };
+    Object.keys(fanTabIds).forEach(function (t) {
+      var node = document.getElementById(fanTabIds[t]);
+      if (node) node.style.display = 'none';
     });
-    const target = document.getElementById('fan-' + tab);
+    var target = document.getElementById(fanTabIds[tab]);
     if (!target) {
       console.error('[BizPonzor] fan tab not found:', tab);
       showNotif('⚠️ No se encontró la pestaña: ' + tab);
@@ -9602,19 +9885,240 @@ async function loadFanDashboard() {
   if (typeof ncInitNotificationUi === 'function') ncInitNotificationUi();
 }
 
-async function loadFanFeed() {
-  const subs = await api.get('/subscriptions/my');
-  if (!subs || subs.error || !subs.length) {
-    document.querySelector('#fan-feed .content-grid').innerHTML = '<div style="padding:40px;text-align:center;color:var(--gray-500);grid-column:1/-1;">No tienes suscripciones activas. ¡Descubre creadores!</div>';
+var fanFeedPageState = { offset: 0, loading: false, done: false };
+var fanFeedTabState = { offset: 0, loading: false, done: false };
+var fanFeedPageIO = null;
+var fanFeedTabIO = null;
+
+function fanFeedRelTime(iso) {
+  if (typeof ncRelativeTime === 'function') return ncRelativeTime(iso);
+  try {
+    return new Date(iso).toLocaleString('es');
+  } catch (e) {
+    return '';
+  }
+}
+
+function fanFeedEscAttr(s) {
+  return String(s || '')
+    .replace(/&/g, '&amp;')
+    .replace(/"/g, '&quot;')
+    .replace(/</g, '&lt;');
+}
+
+function renderFanFeedContentPreview(item) {
+  if (item.locked) {
+    return (
+      '<div class="feed-preview feed-preview--locked"><span class="feed-lock-ico" aria-hidden="true">🔒</span><span>Contenido exclusivo</span></div>'
+    );
+  }
+  if (item.type === 'text') {
+    var body = String(item.text_body || '').trim();
+    var excerpt = body.length > 200 ? body.slice(0, 197) + '…' : body;
+    return '<div class="feed-preview feed-preview--text">' + escapeHtml(excerpt) + '</div>';
+  }
+  if (item.file_url && item.type === 'video') {
+    return (
+      '<div class="feed-preview feed-preview--media"><video class="feed-preview-video" src="' +
+      fanFeedEscAttr(item.file_url) +
+      '" muted playsinline preload="metadata"></video><span class="feed-play-badge" aria-hidden="true">▶</span></div>'
+    );
+  }
+  if (item.file_url && item.type === 'photo') {
+    return (
+      '<div class="feed-preview feed-preview--media"><img class="feed-preview-img" src="' +
+      fanFeedEscAttr(item.file_url) +
+      '" alt="" loading="lazy"/></div>'
+    );
+  }
+  return '<div class="feed-preview feed-preview--placeholder" aria-hidden="true">✨</div>';
+}
+
+function renderFanFeedCard(item) {
+  var handle = item.creator_handle || '';
+  var preview = renderFanFeedContentPreview(item);
+  var title = String(item.title || '').trim();
+  var titleBlock = title ? '<div class="feed-card-title">' + escapeHtml(title) + '</div>' : '';
+  var badges = '';
+  if (item.feed_source === 'discovery') {
+    badges += '<span class="feed-badge feed-badge--disc">Descubrimiento</span>';
+  }
+  if (item.is_exclusive) {
+    badges += '<span class="feed-badge feed-badge--ex">Exclusivo</span>';
+  }
+  var cr = item.creator || {
+    id: item.creator_id,
+    name: item.creator_name,
+    email: '',
+    avatar_url: null,
+    avatar_color: null,
+    updated_at: null
+  };
+  var encCreator = encodeURIComponent(JSON.stringify(cr));
+  var starRow =
+    '<div class="content-star-row feed-star-row" data-content-id="' +
+    escapeHtml(item.id) +
+    '" data-starred="' +
+    (item.starred ? '1' : '0') +
+    '"><button type="button" class="content-star-btn' +
+    (item.starred ? ' content-starred' : '') +
+    '" onclick="event.stopPropagation(); toggleContentStar(\'' +
+    String(item.id).replace(/\\/g, '\\\\') +
+    '\', this)">⭐</button><span class="content-star-count">' +
+    (Number(item.stars_count) || 0) +
+    '</span></div>';
+  return (
+    '<article class="feed-card" role="button" tabindex="0" data-creator-handle="' +
+    escapeHtml(handle) +
+    '" onclick="fanFeedCardNavigate(event, this)" onkeydown="fanFeedCardKeydown(event, this)">' +
+    '<div class="feed-card-header">' +
+    '<div class="feed-card-avatar bp-avatar bp-avatar--sm" data-bp-creator="' +
+    encCreator +
+    '"></div>' +
+    '<div class="feed-card-meta">' +
+    '<div class="feed-card-name">' +
+    escapeHtml(item.creator_name || 'Creador') +
+    '</div>' +
+    '<div class="feed-card-time">' +
+    escapeHtml(fanFeedRelTime(item.created_at)) +
+    '</div></div>' +
+    (badges ? '<div class="feed-card-badges">' + badges + '</div>' : '') +
+    '</div>' +
+    preview +
+    titleBlock +
+    '<div class="feed-card-footer">' +
+    '<button type="button" class="feed-cta-btn" data-feed-handle="' +
+    escapeHtml(handle) +
+    '" onclick="event.stopPropagation(); fanFeedGotoFromBtn(this)">Ver perfil</button>' +
+    starRow +
+    '</div></article>'
+  );
+}
+
+function fanFeedPaintAvatars(root) {
+  if (!root || typeof bpPaintAvatar !== 'function') return;
+  root.querySelectorAll('[data-bp-creator]').forEach(function (el) {
+    try {
+      var raw = el.getAttribute('data-bp-creator');
+      if (!raw) return;
+      var u = JSON.parse(decodeURIComponent(raw));
+      bpPaintAvatar(el, u, 'sm');
+    } catch (e) {
+      console.warn('[feed] avatar', e);
+    }
+  });
+}
+
+function fanFeedGotoFromBtn(btn) {
+  var h = btn && btn.getAttribute('data-feed-handle');
+  if (h && typeof openCreatorProfile === 'function') openCreatorProfile(h);
+}
+
+function fanFeedCardNavigate(ev, el) {
+  if (ev.target.closest('button, a')) return;
+  var h = el.getAttribute('data-creator-handle');
+  if (h && typeof openCreatorProfile === 'function') openCreatorProfile(h);
+}
+
+function fanFeedCardKeydown(ev, el) {
+  if (ev.key !== 'Enter' && ev.key !== ' ') return;
+  ev.preventDefault();
+  fanFeedCardNavigate(ev, el);
+}
+
+function fanFeedBindInfinite(which) {
+  var sentinel =
+    which === 'page' ? document.getElementById('fan-feed-sentinel') : document.getElementById('fan-feed-sentinel-tab');
+  var container =
+    which === 'page' ? document.getElementById('feedList') : document.getElementById('fan-feed-list-tab');
+  var prevIo = which === 'page' ? fanFeedPageIO : fanFeedTabIO;
+  if (prevIo) {
+    prevIo.disconnect();
+    if (which === 'page') fanFeedPageIO = null;
+    else fanFeedTabIO = null;
+  }
+  if (!sentinel || !container) return;
+  var st = which === 'page' ? fanFeedPageState : fanFeedTabState;
+  var io = new IntersectionObserver(
+    function (entries) {
+      entries.forEach(function (en) {
+        if (!en.isIntersecting) return;
+        if (st.loading || st.done) return;
+        void fanFeedFetchBatch(st, container, false);
+      });
+    },
+    { root: null, rootMargin: '180px', threshold: 0 }
+  );
+  io.observe(sentinel);
+  if (which === 'page') fanFeedPageIO = io;
+  else fanFeedTabIO = io;
+}
+
+async function fanFeedFetchBatch(stateObj, container, reset) {
+  if (!container) return;
+  if (!TOKEN || !CURRENT_USER || CURRENT_USER.role !== 'fan') {
+    container.innerHTML =
+      '<div class="feed-empty">Inicia sesión como fan para ver el feed.</div>';
     return;
   }
-  const allContent = [];
-  for (const sub of subs) {
-    const content = await api.get('/content/feed/' + sub.creator_id);
-    if (Array.isArray(content)) content.forEach(c => allContent.push({ ...c, creator_name: sub.creator_name }));
+  if (stateObj.loading) return;
+  if (!reset && stateObj.done) return;
+  stateObj.loading = true;
+  if (reset) {
+    stateObj.offset = 0;
+    stateObj.done = false;
+    container.innerHTML =
+      '<div class="feed-empty" style="border:none;background:transparent;color:#71717a;">Cargando…</div>';
   }
-  allContent.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
-  renderFanContent(document.querySelector('#fan-feed .content-grid'), allContent);
+  try {
+    var data = await api.get('/feed?limit=12&offset=' + stateObj.offset);
+    if (!data || data.error) {
+      if (reset) {
+        container.innerHTML =
+          '<div class="feed-empty">No se pudo cargar el feed. ' + escapeHtml(data && data.error ? String(data.error) : '') + '</div>';
+      }
+      return;
+    }
+    var items = data.items || [];
+    if (reset) {
+      if (!items.length) {
+        container.innerHTML =
+          '<div class="feed-empty">Aún no hay publicaciones. Explora creadores en la pestaña Descubrir o vuelve más tarde.</div>';
+      } else {
+        container.innerHTML = items.map(renderFanFeedCard).join('');
+        fanFeedPaintAvatars(container);
+      }
+    } else if (items.length) {
+      container.insertAdjacentHTML('beforeend', items.map(renderFanFeedCard).join(''));
+      fanFeedPaintAvatars(container);
+    }
+    if (data.nextOffset == null) {
+      stateObj.done = true;
+    } else {
+      stateObj.offset = data.nextOffset;
+    }
+    if (!items.length && !reset) {
+      stateObj.done = true;
+    }
+  } finally {
+    stateObj.loading = false;
+  }
+}
+
+async function loadFanFeed() {
+  fanFeedTabState = { offset: 0, loading: false, done: false };
+  var c = document.getElementById('fan-feed-list-tab');
+  if (!c) return;
+  await fanFeedFetchBatch(fanFeedTabState, c, true);
+  fanFeedBindInfinite('tab');
+}
+
+async function loadFanFeedPage() {
+  fanFeedPageState = { offset: 0, loading: false, done: false };
+  var c = document.getElementById('feedList');
+  if (!c) return;
+  await fanFeedFetchBatch(fanFeedPageState, c, true);
+  fanFeedBindInfinite('page');
 }
 
 async function toggleContentStar(contentId, btnEl) {
