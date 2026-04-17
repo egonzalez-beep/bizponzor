@@ -2984,6 +2984,30 @@
     color: var(--text-tertiary);
     opacity: 0.55;
   }
+  #fan-dashboard #fan-chat-messages .chat-msg-row {
+    display: flex;
+    align-items: flex-end;
+    gap: 8px;
+    width: 100%;
+  }
+  #fan-dashboard #fan-chat-messages .chat-msg-row--other {
+    align-self: flex-start;
+  }
+  #fan-dashboard #fan-chat-messages .chat-msg-row--me {
+    align-self: flex-end;
+    justify-content: flex-end;
+  }
+  #fan-dashboard #fan-chat-messages .chat-msg-avatar-wrap {
+    flex-shrink: 0;
+    width: 32px;
+    height: 32px;
+  }
+  #fan-dashboard #fan-chat-messages .chat-msg-row--other .chat-bubble {
+    max-width: min(70%, calc(100% - 40px));
+  }
+  #fan-dashboard #fan-chat-messages .chat-msg-row--me .chat-bubble {
+    max-width: 70%;
+  }
   #fan-dashboard #fan-chat-messages .chat-empty-sub {
     display: block;
     font-size: 0.75rem;
@@ -3702,6 +3726,30 @@
   #creator-dashboard .chat-bubble.other .chat-time {
     color: var(--text-tertiary);
     opacity: 0.55;
+  }
+  #creator-dashboard .chat-msg-row {
+    display: flex;
+    align-items: flex-end;
+    gap: 8px;
+    width: 100%;
+  }
+  #creator-dashboard .chat-msg-row--other {
+    align-self: flex-start;
+  }
+  #creator-dashboard .chat-msg-row--me {
+    align-self: flex-end;
+    justify-content: flex-end;
+  }
+  #creator-dashboard .chat-msg-avatar-wrap {
+    flex-shrink: 0;
+    width: 32px;
+    height: 32px;
+  }
+  #creator-dashboard .chat-msg-row--other .chat-bubble {
+    max-width: min(70%, calc(100% - 40px));
+  }
+  #creator-dashboard .chat-msg-row--me .chat-bubble {
+    max-width: 70%;
   }
   #creator-dashboard .chat-input-container {
     position: relative;
@@ -7291,6 +7339,43 @@ async function loadFanConversation() {
   }
 }
 
+function normalizeChatSender(m) {
+  if (m.sender && typeof m.sender === 'object') {
+    return {
+      id: m.sender.id != null ? m.sender.id : m.sender_id,
+      name: m.sender.name || 'Usuario',
+      avatar_url: m.sender.avatar_url || null,
+      avatar_color: m.sender.avatar_color != null ? m.sender.avatar_color : null,
+      updated_at: m.sender.updated_at != null ? m.sender.updated_at : null
+    };
+  }
+  return {
+    id: m.sender_id,
+    name: m.sender_name || 'Usuario',
+    avatar_url: null,
+    avatar_color: null,
+    updated_at: null
+  };
+}
+
+function paintChatMessageAvatar(wrapEl, sender) {
+  bpPaintAvatar(
+    wrapEl,
+    {
+      id: sender.id,
+      name: sender.name,
+      email: '',
+      avatar_url: sender.avatar_url,
+      avatar_color: sender.avatar_color,
+      updated_at: sender.updated_at
+    },
+    'sm',
+    'chat-msg-avatar'
+  );
+  const img = wrapEl.querySelector('img');
+  if (img) img.alt = 'Avatar de ' + (sender.name || 'usuario');
+}
+
 function renderFanChatMessages(messages) {
   const container = document.getElementById('fan-chat-messages');
   if (!container || !CURRENT_USER) return;
@@ -7299,24 +7384,34 @@ function renderFanChatMessages(messages) {
       '<div class="chat-empty-state">💬 Aún no hay mensajes<span class="chat-empty-sub">Escribe abajo para comenzar</span></div>';
     return;
   }
-  container.innerHTML = messages
-    .map(function (m) {
-      const isMe = m.sender_id === CURRENT_USER.id;
-      const date = m.created_at ? new Date(m.created_at) : null;
-      const timeStr = date
+  container.innerHTML = '';
+  const frag = document.createDocumentFragment();
+  for (var i = 0; i < messages.length; i++) {
+    const m = messages[i];
+    const isMe = m.sender_id === CURRENT_USER.id;
+    const row = document.createElement('div');
+    row.className = 'chat-msg-row ' + (isMe ? 'chat-msg-row--me' : 'chat-msg-row--other');
+    if (!isMe) {
+      const avWrap = document.createElement('div');
+      avWrap.className = 'chat-msg-avatar-wrap';
+      paintChatMessageAvatar(avWrap, normalizeChatSender(m));
+      row.appendChild(avWrap);
+    }
+    const bubble = document.createElement('div');
+    bubble.className = 'chat-bubble ' + (isMe ? 'me' : 'other');
+    if (m.content) bubble.appendChild(document.createTextNode(m.content));
+    const timeEl = document.createElement('div');
+    timeEl.className = 'chat-time';
+    const date = m.created_at ? new Date(m.created_at) : null;
+    timeEl.textContent =
+      date && !isNaN(date.getTime())
         ? date.toLocaleTimeString('es-MX', { hour: '2-digit', minute: '2-digit' })
         : '';
-      return (
-        '<div class="chat-bubble ' +
-        (isMe ? 'me' : 'other') +
-        '">' +
-        escapeHtml(m.content || '') +
-        '<div class="chat-time">' +
-        escapeHtml(timeStr) +
-        '</div></div>'
-      );
-    })
-    .join('');
+    bubble.appendChild(timeEl);
+    row.appendChild(bubble);
+    frag.appendChild(row);
+  }
+  container.appendChild(frag);
   container.scrollTop = container.scrollHeight;
 }
 
@@ -7690,24 +7785,34 @@ function renderChatMessages(messages) {
       '<div class="chat-empty-state">💬 Aún no hay mensajes<span class="chat-empty-sub">Inicia la conversación</span></div>';
     return;
   }
-  container.innerHTML = messages
-    .map(function (m) {
-      const isMe = m.sender_id === CURRENT_USER.id;
-      const date = m.created_at ? new Date(m.created_at) : null;
-      const timeStr = date
+  container.innerHTML = '';
+  const frag = document.createDocumentFragment();
+  for (var j = 0; j < messages.length; j++) {
+    const m = messages[j];
+    const isMe = m.sender_id === CURRENT_USER.id;
+    const row = document.createElement('div');
+    row.className = 'chat-msg-row ' + (isMe ? 'chat-msg-row--me' : 'chat-msg-row--other');
+    if (!isMe) {
+      const avWrap = document.createElement('div');
+      avWrap.className = 'chat-msg-avatar-wrap';
+      paintChatMessageAvatar(avWrap, normalizeChatSender(m));
+      row.appendChild(avWrap);
+    }
+    const bubble = document.createElement('div');
+    bubble.className = 'chat-bubble ' + (isMe ? 'me' : 'other');
+    if (m.content) bubble.appendChild(document.createTextNode(m.content));
+    const timeEl = document.createElement('div');
+    timeEl.className = 'chat-time';
+    const date = m.created_at ? new Date(m.created_at) : null;
+    timeEl.textContent =
+      date && !isNaN(date.getTime())
         ? date.toLocaleTimeString('es-MX', { hour: '2-digit', minute: '2-digit' })
         : '';
-      return (
-        '<div class="chat-bubble ' +
-        (isMe ? 'me' : 'other') +
-        '">' +
-        escapeHtml(m.content || '') +
-        '<div class="chat-time">' +
-        escapeHtml(timeStr) +
-        '</div></div>'
-      );
-    })
-    .join('');
+    bubble.appendChild(timeEl);
+    row.appendChild(bubble);
+    frag.appendChild(row);
+  }
+  container.appendChild(frag);
   container.scrollTop = container.scrollHeight;
 }
 

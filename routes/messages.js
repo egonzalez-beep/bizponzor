@@ -116,11 +116,22 @@ router.get('/conversation/:userId', auth, (req, res) => {
       return res.status(403).json({ error: 'No hay suscripción activa' });
     }
 
-    const messages = db
+    const rows = db
       .prepare(
-        `SELECT m.*, u.handle, u.name as sender_name
+        `SELECT
+           m.id,
+           m.sender_id,
+           m.receiver_id,
+           m.content,
+           m.created_at,
+           m.read_at,
+           u.id AS sender_user_id,
+           u.name AS sender_name,
+           u.avatar_url AS sender_avatar_url,
+           u.avatar_color AS sender_avatar_color,
+           u.updated_at AS sender_updated_at
          FROM messages m
-         JOIN users u ON u.id = m.sender_id
+         LEFT JOIN users u ON m.sender_id = u.id
          WHERE
            (m.sender_id = ? AND m.receiver_id = ?)
            OR
@@ -128,6 +139,25 @@ router.get('/conversation/:userId', auth, (req, res) => {
          ORDER BY datetime(m.created_at) ASC`
       )
       .all(myId, otherUserId, otherUserId, myId);
+
+    const messages = rows.map((row) => {
+      const missing = !row.sender_user_id;
+      return {
+        id: row.id,
+        sender_id: row.sender_id,
+        receiver_id: row.receiver_id,
+        content: row.content,
+        created_at: row.created_at,
+        read_at: row.read_at,
+        sender: {
+          id: missing ? 'deleted' : row.sender_user_id,
+          name: missing ? 'Usuario eliminado' : row.sender_name || 'Usuario',
+          avatar_url: row.sender_avatar_url || null,
+          avatar_color: row.sender_avatar_color || null,
+          updated_at: row.sender_updated_at || null
+        }
+      };
+    });
 
     res.json(messages);
   } catch (error) {
