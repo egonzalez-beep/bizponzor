@@ -294,6 +294,42 @@ db.exec(`
   CREATE INDEX IF NOT EXISTS idx_users_id ON users(id);
 `);
 
+(function migrateUniqueActiveSubscriptionsFanCreator() {
+  try {
+    const dups = db
+      .prepare(
+        `SELECT fan_id, creator_id, COUNT(*) AS n
+         FROM subscriptions
+         WHERE status = 'active'
+         GROUP BY fan_id, creator_id
+         HAVING n > 1`
+      )
+      .all();
+    for (let i = 0; i < dups.length; i++) {
+      const d = dups[i];
+      const rows = db
+        .prepare(
+          `SELECT id, created_at FROM subscriptions
+           WHERE fan_id = ? AND creator_id = ? AND status = 'active'
+           ORDER BY datetime(created_at) ASC, id ASC`
+        )
+        .all(d.fan_id, d.creator_id);
+      for (let j = 1; j < rows.length; j++) {
+        db.prepare(`UPDATE subscriptions SET status = 'cancelled', updated_at = datetime('now') WHERE id = ?`).run(
+          rows[j].id
+        );
+      }
+    }
+    db.exec(`
+      CREATE UNIQUE INDEX IF NOT EXISTS idx_subscriptions_unique_active_fan_creator
+      ON subscriptions(fan_id, creator_id)
+      WHERE status = 'active';
+    `);
+  } catch (e) {
+    console.error('[db] unique active subscription (fan+creator):', e.message);
+  }
+})();
+
 ['username', 'terms_accepted_at', 'privacy_accepted_at', 'terms_version', 'privacy_version', 'accepted_ip', 'reset_token', 'reset_token_expires'].forEach((col) => {
   const types = {
     username: 'TEXT',

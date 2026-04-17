@@ -37,6 +37,15 @@ router.post('/checkout', auth, async (req, res) => {
     if (!plan) return res.status(404).json({ error: 'Plan no encontrado' });
     if (!creator) return res.status(404).json({ error: 'Creador no encontrado' });
 
+    const existingActive = db
+      .prepare(
+        `SELECT id FROM subscriptions WHERE fan_id = ? AND creator_id = ? AND status = 'active'`
+      )
+      .get(req.user.id, creator_id);
+    if (existingActive) {
+      return res.status(400).json({ error: 'Ya estás suscrito a este creador' });
+    }
+
     if (!req.user || !isValidEmail(req.user.email)) {
       console.error('[MP] Email inválido:', req.user?.email);
 
@@ -52,10 +61,17 @@ router.post('/checkout', auth, async (req, res) => {
       const sub_id = uuidv4();
       const nextBilling = new Date();
       nextBilling.setMonth(nextBilling.getMonth() + 1);
-      db.prepare(
-        `INSERT INTO subscriptions (id, fan_id, creator_id, plan_id, status, amount, next_billing)
-         VALUES (?,?,?,?,?,?,?)`
-      ).run(sub_id, req.user.id, creator_id, plan_id, 'active', 0, nextBilling.toISOString());
+      try {
+        db.prepare(
+          `INSERT INTO subscriptions (id, fan_id, creator_id, plan_id, status, amount, next_billing)
+           VALUES (?,?,?,?,?,?,?)`
+        ).run(sub_id, req.user.id, creator_id, plan_id, 'active', 0, nextBilling.toISOString());
+      } catch (insertErr) {
+        if (String(insertErr.message || '').includes('UNIQUE') || insertErr.code === 'SQLITE_CONSTRAINT_UNIQUE') {
+          return res.status(400).json({ error: 'Ya estás suscrito a este creador' });
+        }
+        throw insertErr;
+      }
       console.log('[checkout] suscripción gratuita activa', { sub_id, fan_id: req.user.id, plan_id });
       const fan = db.prepare('SELECT name FROM users WHERE id = ?').get(req.user.id);
       createNotification({
@@ -114,10 +130,17 @@ router.post('/checkout', auth, async (req, res) => {
 
     const sub_id = uuidv4();
 
-    db.prepare(
-      `INSERT INTO subscriptions (id, fan_id, creator_id, plan_id, status, amount)
-       VALUES (?,?,?,?,?,?)`
-    ).run(sub_id, req.user.id, creator_id, plan_id, 'pending', amount);
+    try {
+      db.prepare(
+        `INSERT INTO subscriptions (id, fan_id, creator_id, plan_id, status, amount)
+         VALUES (?,?,?,?,?,?)`
+      ).run(sub_id, req.user.id, creator_id, plan_id, 'pending', amount);
+    } catch (insertErr) {
+      if (String(insertErr.message || '').includes('UNIQUE') || insertErr.code === 'SQLITE_CONSTRAINT_UNIQUE') {
+        return res.status(400).json({ error: 'Ya estás suscrito a este creador' });
+      }
+      throw insertErr;
+    }
 
     const preApprovalClient = new PreApproval(
       new MercadoPagoConfig({

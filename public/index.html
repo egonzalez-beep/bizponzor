@@ -2962,6 +2962,22 @@
     border-radius: var(--radius-sm);
     min-height: 52px;
   }
+  #creator-profile-inner #profile-btn-subscribe:disabled {
+    opacity: 0.55;
+    cursor: not-allowed;
+  }
+  #creator-profile-inner .profile-subscribed-cta {
+    margin-top: 4px;
+    margin-bottom: 8px;
+    padding: 10px 12px;
+    font-size: 0.88rem;
+    font-weight: 700;
+    color: #86efac;
+    background: rgba(34, 197, 94, 0.12);
+    border: 1px solid rgba(34, 197, 94, 0.35);
+    border-radius: var(--radius-sm);
+    text-align: center;
+  }
   #creator-profile-inner .content-item {
     border-radius: var(--radius);
     box-shadow: var(--shadow);
@@ -5824,6 +5840,7 @@
             <button type="button" class="btn btn-primary btn-full" id="profile-btn-donate" onclick="openDonateModal()">Donar</button>
             <button type="button" class="btn btn-primary btn-full" id="profile-btn-subscribe" onclick="subscribeFromProfile()">Suscribirse</button>
           </div>
+          <div id="profile-subscribed-cta" class="profile-subscribed-cta" style="display:none;" role="status">✔ Ya estás suscrito</div>
           <div id="profile-single-plan-slot"></div>
           <div class="promo-box" style="margin-top:14px;padding-top:14px;border-top:1px solid rgba(255,255,255,0.12);">
             <button type="button" class="btn btn-ghost" style="padding:6px 0;font-size:0.8rem;color:#38bdf8;" onclick="togglePromo('profile')">¿Tienes un código promocional?</button>
@@ -6510,6 +6527,35 @@ async function submitDonation(evt) {
   showNotif('❌ No se pudo iniciar el pago');
 }
 
+async function updateProfileSubscribeButtonState(creatorId) {
+  const btn = document.getElementById('profile-btn-subscribe');
+  const hint = document.getElementById('profile-subscribed-cta');
+  if (!btn || !hint) return;
+  if (!CURRENT_USER || CURRENT_USER.role !== 'fan' || !creatorId) {
+    btn.disabled = false;
+    hint.style.display = 'none';
+    return;
+  }
+  try {
+    const subs = await api.get('/subscriptions/my');
+    const active =
+      Array.isArray(subs) &&
+      subs.some(function (s) {
+        return s.creator_id === creatorId && s.status === 'active';
+      });
+    if (active) {
+      btn.disabled = true;
+      hint.style.display = 'block';
+    } else {
+      btn.disabled = false;
+      hint.style.display = 'none';
+    }
+  } catch (e) {
+    btn.disabled = false;
+    hint.style.display = 'none';
+  }
+}
+
 async function subscribeFromProfile() {
   if (!CURRENT_USER) {
     showAuth('login');
@@ -6517,6 +6563,11 @@ async function subscribeFromProfile() {
   }
   if (CURRENT_USER.role !== 'fan') {
     showNotif('Solo los fans pueden suscribirse');
+    return;
+  }
+  const subBtn = document.getElementById('profile-btn-subscribe');
+  if (subBtn && subBtn.disabled) {
+    showNotif('✔ Ya estás suscrito a este creador');
     return;
   }
   const p = window.PROFILE_SELECTED_PLAN;
@@ -6542,6 +6593,7 @@ async function subscribeFromProfile() {
     if (activate.success) {
       showNotif('🎉 ¡Suscripción activada!');
       closeModal();
+      void updateProfileSubscribeButtonState(p.creatorId);
     }
   }
 }
@@ -9704,6 +9756,7 @@ async function openCreatorProfile(handle) {
   if (grid && Array.isArray(content)) renderFanContent(grid, content, { profile: true });
   const plans = await api.get('/plans/' + creator.id);
   fillCreatorProfileSidebar(creator, plans);
+  void updateProfileSubscribeButtonState(creator.id);
   void updateProfileMessageSection(creator.id);
   void updatePromoAccessBanner();
   showPage('creator-profile');
@@ -9773,6 +9826,7 @@ async function simulatePayment() {
       showNotif('🎉 ¡Suscripción activada! Bienvenido/a al plan ' + selectedPlan.planName);
       if (typeof showUnlockAnimation === 'function') showUnlockAnimation();
       btn.textContent = 'Pagar →'; btn.disabled = false;
+      void updateProfileSubscribeButtonState(selectedPlan.creatorId);
       setTimeout(() => loadFanDashboard(), 1000);
     }
   }
