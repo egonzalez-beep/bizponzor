@@ -6331,10 +6331,7 @@
         '</span></div><button class="btn btn-outline btn-sm" onclick="logout()">Salir</button>';
     } else if (CURRENT_USER && CURRENT_USER.role === 'fan') {
       var fanNavExtra = '';
-      if (page === 'fan-dashboard') {
-        fanNavExtra =
-          '<button type="button" class="btn btn-ghost btn-sm" onclick="showPage(\'fan-feed\')">Inicio</button>';
-      } else if (page === 'fan-feed') {
+      if (page === 'fan-feed') {
         fanNavExtra =
           '<button type="button" class="btn btn-ghost btn-sm" onclick="showPage(\'fan-dashboard\')">Panel</button>';
       }

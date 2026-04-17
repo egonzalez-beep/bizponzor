@@ -3,6 +3,49 @@ const { v4: uuidv4 } = require('uuid');
 const db = require('../db');
 const auth = require('../middleware/auth');
 
+/** Evita FOREIGN KEY al canjear si el JWT existe pero la fila en `users` no (p. ej. móvil / réplica). */
+function ensureFanUserRow(req) {
+  const userId = req.user?.id;
+  if (!userId) return false;
+  const exists = db.prepare('SELECT id FROM users WHERE id = ?').get(userId);
+  if (exists) return true;
+
+  const emailRaw = req.user.email;
+  const name = req.user.name || 'Usuario';
+  const email = emailRaw ? String(emailRaw).trim().toLowerCase() : '';
+
+  if (email) {
+    const byEmail = db.prepare('SELECT id FROM users WHERE email = ?').get(email);
+    if (byEmail && byEmail.id !== userId) {
+      console.error('[promo/redeem] fan repair blocked: email belongs to another id', {
+        tokenUserId: userId,
+        dbUserId: byEmail.id,
+        email
+      });
+      return false;
+    }
+  }
+
+  const safeHandle = '@fan_' + uuidv4().replace(/-/g, '').slice(0, 14);
+  const passwordPlaceholder = 'TOKEN_ONLY_' + uuidv4();
+
+  try {
+    db.prepare('INSERT INTO users (id, name, email, password, role, handle) VALUES (?, ?, ?, ?, ?, ?)').run(
+      userId,
+      name,
+      email || userId + '@token.local',
+      passwordPlaceholder,
+      'fan',
+      safeHandle
+    );
+    console.warn('[promo/redeem] inserted missing fan row for FK', { userId });
+    return true;
+  } catch (e) {
+    console.error('[promo/redeem] fan repair insert failed', e);
+    return false;
+  }
+}
+
 /**
  * POST /api/promo/redeem
  * Body: { code, creator_id }
@@ -12,11 +55,26 @@ router.post('/redeem', auth, (req, res) => {
     return res.status(403).json({ success: false, error: 'Solo los fans pueden canjear códigos' });
   }
 
+  if (!ensureFanUserRow(req)) {
+    return res.json({
+      success: false,
+      error: 'No pudimos sincronizar tu cuenta. Cierra sesión e inicia sesión de nuevo.'
+    });
+  }
+
   const { code, creator_id } = req.body;
   const fanId = req.user.id;
 
   if (!creator_id || typeof creator_id !== 'string') {
     return res.json({ success: false, error: 'creator_id requerido' });
+  }
+
+  const creatorOk = db.prepare("SELECT id FROM users WHERE id = ? AND role = 'creator'").get(creator_id);
+  if (!creatorOk) {
+    return res.json({
+      success: false,
+      error: 'Creador no encontrado. Recarga el perfil e inténtalo de nuevo.'
+    });
   }
 
   const codeNorm = String(code || '')
@@ -109,7 +167,16 @@ router.post('/redeem', auth, (req, res) => {
     const result = tx();
     return res.json(result);
   } catch (err) {
-    return res.json({ success: false, error: err.message || 'Error al canjear' });
+    const msg = String(err && err.message ? err.message : err);
+    if (/FOREIGN KEY|constraint failed/i.test(msg)) {
+      console.error('[promo/redeem] constraint', msg);
+      return res.json({
+        success: false,
+        error:
+          'No se pudo completar el canje. Cierra sesión, vuelve a entrar e inténtalo de nuevo. Si persiste, contacta soporte.'
+      });
+    }
+    return res.json({ success: false, error: msg || 'Error al canjear' });
   }
 });
 
