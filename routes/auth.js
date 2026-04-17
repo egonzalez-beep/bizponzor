@@ -10,6 +10,9 @@ const db = require('../db');
 const { avatarMulter } = require('../lib/avatarUpload');
 const { handleAvatarUpload } = require('../lib/handleAvatarUpload');
 const { TERMS_VERSION, PRIVACY_VERSION, SKIP_LEGAL } = require('../lib/authConfig');
+const { getClientIp } = require('../lib/getClientIp');
+const { isReservedUsername } = require('../lib/reservedUsernames');
+const { loginRateAllowed, loginRateRecordFailure, loginRateReset } = require('../lib/loginRateLimit');
 
 function normalizeUsername(raw) {
   const s = String(raw || '')
@@ -19,12 +22,28 @@ function normalizeUsername(raw) {
   return s.slice(0, 30);
 }
 
-function clientIp(req) {
-  const x = req.headers['x-forwarded-for'];
-  if (typeof x === 'string' && x.trim()) return x.split(',')[0].trim().slice(0, 64);
-  if (req.ip) return String(req.ip).slice(0, 64);
-  if (req.socket && req.socket.remoteAddress) return String(req.socket.remoteAddress).slice(0, 64);
-  return '';
+/** Respuesta /me sin datos sensibles; campos base siempre presentes. */
+function buildMePayload(user, extras) {
+  const base = {
+    id: user.id,
+    name: user.name,
+    username: user.username != null ? user.username : null,
+    email: user.email,
+    avatar_url: user.avatar_url || null,
+    updated_at: user.updated_at || null,
+    role: user.role,
+    handle: user.handle || null,
+    bio: user.bio || null,
+    category: user.category || null,
+    location: user.location || null,
+    banner_url: user.banner_url || null,
+    avatar_color: user.avatar_color || null,
+    social_instagram: user.social_instagram || null,
+    social_facebook: user.social_facebook || null,
+    social_tiktok: user.social_tiktok || null,
+    social_other: user.social_other || null
+  };
+  return extras && typeof extras === 'object' ? { ...base, ...extras } : base;
 }
 
 const uploadsDir = path.join(__dirname, '../uploads');
@@ -128,6 +147,9 @@ router.post('/register', async (req, res) => {
     if (username.length < 3) {
       return res.status(400).json({ error: 'El usuario debe tener al menos 3 caracteres (letras, números o _)' });
     }
+    if (isReservedUsername(username)) {
+      return res.status(400).json({ error: 'Username no disponible' });
+    }
     if (String(password).length < 8) {
       return res.status(400).json({ error: 'La contraseña debe tener al menos 8 caracteres' });
     }
@@ -150,7 +172,7 @@ router.post('/register', async (req, res) => {
       return res.status(409).json({ error: 'Ese nombre de usuario ya está en uso' });
     }
 
-    const hash = await bcrypt.hash(String(password), 10);
+    const hashedPassword = await bcrypt.hash(String(password), 10);
     const id = uuidv4();
     const userHandle = handle && String(handle).trim() ? String(handle).trim() : '@' + username;
 
@@ -160,7 +182,7 @@ router.post('/register', async (req, res) => {
     }
 
     const now = new Date().toISOString();
-    const ip = clientIp(req);
+    const clientIp = getClientIp(req);
 
     console.log('[auth/register] creating user', { id, email, role, username, handle: userHandle });
     db.prepare(
@@ -174,7 +196,7 @@ router.post('/register', async (req, res) => {
       id,
       String(name).trim().slice(0, 120),
       String(email).trim().toLowerCase(),
-      hash,
+      hashedPassword,
       role,
       userHandle,
       username,
@@ -182,7 +204,7 @@ router.post('/register', async (req, res) => {
       now,
       TERMS_VERSION,
       PRIVACY_VERSION,
-      ip || null
+      clientIp || null
     );
 
     if (role === 'creator') {
@@ -210,12 +232,21 @@ router.post('/register', async (req, res) => {
 
 router.post('/login', async (req, res) => {
   try {
+    const ip = getClientIp(req) || 'unknown';
+    if (!loginRateAllowed(ip)) {
+      return res.status(429).json({ error: 'Demasiados intentos. Espera unos minutos.' });
+    }
+
     const { email, password } = req.body;
     const normalized = String(email || '').trim().toLowerCase();
     const user = db.prepare('SELECT * FROM users WHERE email = ?').get(normalized);
-    if (!user || !(await bcrypt.compare(String(password || ''), user.password))) {
-      return res.status(401).json({ error: 'Credenciales incorrectas' });
+    const ok = user && (await bcrypt.compare(String(password || ''), user.password));
+    if (!ok) {
+      loginRateRecordFailure(ip);
+      return res.status(401).json({ error: 'Credenciales inválidas' });
     }
+    loginRateReset(ip);
+
     console.log('[auth/login] success', { id: user.id, email: user.email, role: user.role });
     const token = jwt.sign(
       { id: user.id, name: user.name, email: user.email, role: user.role },
@@ -231,7 +262,8 @@ router.post('/login', async (req, res) => {
         role: user.role,
         handle: user.handle,
         username: user.username || null,
-        avatar_url: user.avatar_url
+        avatar_url: user.avatar_url,
+        updated_at: user.updated_at || null
       }
     });
   } catch (e) {
@@ -255,7 +287,7 @@ router.post('/forgot-password', (req, res) => {
     if (user) {
       db.prepare('UPDATE users SET reset_token = ?, reset_token_expires = ? WHERE id = ?').run(token, expiresIso, user.id);
       if (process.env.NODE_ENV !== 'production') {
-        console.log('[auth/forgot-password] dev token for', email, '→', token);
+        console.log('[auth/forgot-password] Reset token (solo no-producción):', token);
       }
     }
     res.json({
@@ -287,10 +319,10 @@ router.post('/reset-password', async (req, res) => {
     if (!exp || Date.now() > exp) {
       return res.status(400).json({ error: 'El enlace expiró. Solicita uno nuevo.' });
     }
-    const hash = await bcrypt.hash(String(password), 10);
+    const hashedPassword = await bcrypt.hash(String(password), 10);
     db.prepare(
       'UPDATE users SET password = ?, reset_token = NULL, reset_token_expires = NULL, updated_at = datetime(\'now\') WHERE id = ?'
-    ).run(hash, row.id);
+    ).run(hashedPassword, row.id);
     res.json({ success: true, message: 'Contraseña actualizada. Ya puedes iniciar sesión.' });
   } catch (e) {
     console.error('[auth/reset-password]', e);
@@ -307,7 +339,7 @@ router.get('/me', require('../middleware/auth'), (req, res) => {
   if (!user) return res.status(404).json({ error: 'Usuario no encontrado' });
 
   if (user.role !== 'creator') {
-    return res.json(user);
+    return res.json(buildMePayload(user));
   }
 
   const mpRow = db.prepare('SELECT mp_user_id FROM mercado_pago_accounts WHERE user_id = ?').get(user.id);
@@ -329,12 +361,13 @@ router.get('/me', require('../middleware/auth'), (req, res) => {
   const userForOnboarding = { ...user, mp_user_id, has_plan: hasPlan };
   const onboarding = getOnboardingStatus(userForOnboarding, stats);
 
-  res.json({
-    ...user,
-    mp_user_id,
-    has_plan: hasPlan,
-    onboarding
-  });
+  res.json(
+    buildMePayload(user, {
+      mp_user_id,
+      has_plan: hasPlan,
+      onboarding
+    })
+  );
 });
 
 router.put('/profile', require('../middleware/auth'), (req, res) => {

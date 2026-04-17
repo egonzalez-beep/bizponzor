@@ -7,6 +7,7 @@ const path = require('path');
 const crypto = require('crypto');
 const db = require('./db');
 const { createNotification } = require('./lib/createNotification');
+const { SKIP_LEGAL } = require('./lib/authConfig');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -46,6 +47,10 @@ app.get('/reset-password', (req, res) => {
 });
 
 app.get('/api/health', (req, res) => res.json({ status: 'ok', app: 'BizPonzor' }));
+
+app.get('/api/config', (req, res) => {
+  res.json({ skipLegal: SKIP_LEGAL });
+});
 
 const MP_OAUTH_REDIRECT_URI =
   process.env.MP_REDIRECT_URI || 'https://bizponzor-production.up.railway.app/mp/callback';

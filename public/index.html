@@ -4594,14 +4594,18 @@
               <label class="form-label" for="landing-reg-password2">Confirmar contraseña</label>
               <input type="password" class="form-input landing-form-input" id="landing-reg-password2" placeholder="Repite tu contraseña" autocomplete="new-password" />
             </div>
-            <label class="landing-legal-row">
-              <input type="checkbox" id="landing-terms" />
-              <span>Acepto los <a href="/terms" target="_blank" rel="noopener noreferrer">Términos y Condiciones</a></span>
-            </label>
-            <label class="landing-legal-row">
-              <input type="checkbox" id="landing-privacy" />
-              <span>He leído el <a href="/privacy" target="_blank" rel="noopener noreferrer">Aviso de Privacidad</a></span>
-            </label>
+            <div id="termsContainer">
+              <label class="landing-legal-row">
+                <input type="checkbox" id="landing-terms" />
+                <span>Acepto los <a href="/terms" target="_blank" rel="noopener noreferrer">Términos y Condiciones</a></span>
+              </label>
+            </div>
+            <div id="privacyContainer">
+              <label class="landing-legal-row">
+                <input type="checkbox" id="landing-privacy" />
+                <span>He leído el <a href="/privacy" target="_blank" rel="noopener noreferrer">Aviso de Privacidad</a></span>
+              </label>
+            </div>
             <button type="button" class="btn btn-primary btn-full landing-auth-cta" onclick="simulateRegister(event)">Crear mi cuenta gratis</button>
             <div class="landing-auth-switch">¿Ya tienes cuenta? <a tabindex="0" role="button" onclick="switchLandingAuthView('login')">Inicia sesión</a></div>
           </div>
@@ -4849,11 +4853,11 @@
           <label class="form-label">Confirmar contraseña</label>
           <input type="password" class="form-input" id="reg-password-confirm" placeholder="Repite tu contraseña" autocomplete="new-password" />
         </div>
-        <div class="form-group" style="display:flex;align-items:flex-start;gap:10px;font-size:0.82rem;color:#A3A3A3;">
+        <div id="authTermsContainer" class="form-group" style="display:flex;align-items:flex-start;gap:10px;font-size:0.82rem;color:#A3A3A3;">
           <input type="checkbox" id="auth-terms" style="margin-top:3px;" />
           <label for="auth-terms" style="margin:0;font-weight:400;cursor:pointer;">Acepto los <a href="/terms" target="_blank" rel="noopener noreferrer" style="color:#fff;font-weight:600;">Términos y Condiciones</a></label>
         </div>
-        <div class="form-group" style="display:flex;align-items:flex-start;gap:10px;font-size:0.82rem;color:#A3A3A3;">
+        <div id="authPrivacyContainer" class="form-group" style="display:flex;align-items:flex-start;gap:10px;font-size:0.82rem;color:#A3A3A3;">
           <input type="checkbox" id="auth-privacy" style="margin-top:3px;" />
           <label for="auth-privacy" style="margin:0;font-weight:400;cursor:pointer;">He leído el <a href="/privacy" target="_blank" rel="noopener noreferrer" style="color:#fff;font-weight:600;">Aviso de Privacidad</a></label>
         </div>
@@ -6165,6 +6169,22 @@
 //  BIZPONZOR — API CLIENT (conectado al backend real)
 // ═══════════════════════════════════════════════════════
 const API = '/api';
+window.SKIP_LEGAL = false;
+function applySkipLegalUi(skip) {
+  window.SKIP_LEGAL = !!skip;
+  ['termsContainer', 'privacyContainer', 'authTermsContainer', 'authPrivacyContainer'].forEach(function (id) {
+    var el = document.getElementById(id);
+    if (el) el.style.display = skip ? 'none' : '';
+  });
+}
+fetch(API + '/config')
+  .then(function (r) {
+    return r.json();
+  })
+  .then(function (cfg) {
+    if (cfg && typeof cfg.skipLegal === 'boolean') applySkipLegalUi(cfg.skipLegal);
+  })
+  .catch(function () {});
 let TOKEN = localStorage.getItem('bp_token') || null;
 let CURRENT_USER = JSON.parse(localStorage.getItem('bp_user') || 'null');
 var optsProfileStarRefresh = false;
@@ -8314,7 +8334,8 @@ async function simulateRegister(ev) {
     showNotif('⚠️ Las contraseñas no coinciden');
     return;
   }
-  if (!termsAccepted || !privacyAccepted) {
+  var skipUi = window.SKIP_LEGAL === true;
+  if (!skipUi && (!termsAccepted || !privacyAccepted)) {
     showNotif('⚠️ Debes aceptar términos y privacidad');
     return;
   }
@@ -8330,8 +8351,8 @@ async function simulateRegister(ev) {
     password: password,
     passwordConfirm: passwordConfirm,
     role: currentRole,
-    termsAccepted: termsAccepted,
-    privacyAccepted: privacyAccepted
+    termsAccepted: skipUi ? true : termsAccepted,
+    privacyAccepted: skipUi ? true : privacyAccepted
   });
   if (btn) {
     btn.textContent = prevBtn || 'Crear mi cuenta';
