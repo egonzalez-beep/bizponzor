@@ -323,7 +323,7 @@ function sendCreatorPublicFeed(req, res) {
       }
       return {
         ...c,
-        file_url: locked ? null : c.file_url,
+        file_url: locked ? null : null,
         text_body: null,
         locked
       };

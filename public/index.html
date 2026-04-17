@@ -1585,6 +1585,45 @@
     background: #6B7280;
     text-transform: none;
   }
+  /* Contenido protegido: fricción ante clic derecho / arrastre (JS + overlay) */
+  .protected-content {
+    user-select: none;
+    -webkit-user-select: none;
+  }
+  .media-wrapper {
+    position: relative;
+  }
+  .media-wrapper .media-overlay {
+    position: absolute;
+    inset: 0;
+    z-index: 3;
+    background: transparent;
+    cursor: pointer;
+  }
+  #media-modal .media-wrapper .media-overlay {
+    pointer-events: none;
+  }
+  .content-thumb.media-wrapper .content-type-badge,
+  .content-thumb.media-wrapper .lock-overlay {
+    z-index: 4;
+  }
+  .feed-preview--media .feed-play-badge {
+    z-index: 5;
+  }
+  .feed-preview--media.media-wrapper.protected-content::after {
+    content: 'BizPonZor';
+    position: absolute;
+    bottom: 8px;
+    right: 8px;
+    opacity: 0.35;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    color: rgba(255, 255, 255, 0.9);
+    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.8);
+    z-index: 4;
+    pointer-events: none;
+  }
   .lock-overlay {
     position: absolute; inset: 0;
     background: rgba(10,10,10,0.65); backdrop-filter: blur(4px);
@@ -6242,7 +6281,6 @@
       <div class="media-modal-media" id="media-modal-media"></div>
       <div class="media-modal-actions">
         <a class="media-link" id="media-modal-open" href="#" target="_blank" rel="noopener noreferrer">↗ Abrir en nueva pestaña</a>
-        <a class="media-link" id="media-modal-download" href="#" download>⬇ Descargar</a>
       </div>
     </div>
   </div>
@@ -6662,6 +6700,13 @@
 //  BIZPONZOR — API CLIENT (conectado al backend real)
 // ═══════════════════════════════════════════════════════
 const API = '/api';
+
+/** Proxy de media: validación en servidor; oculta rutas /uploads/. Requiere ?token= si el contenido es exclusivo. */
+function bpContentMediaUrl(contentId) {
+  if (!contentId) return '';
+  var q = typeof TOKEN === 'string' && TOKEN ? '?token=' + encodeURIComponent(TOKEN) : '';
+  return API + '/media/' + encodeURIComponent(contentId) + q;
+}
 window.SKIP_LEGAL = false;
 function applySkipLegalUi(skip) {
   window.SKIP_LEGAL = !!skip;
@@ -6690,31 +6735,39 @@ function openMediaModal(url, type) {
   const modal = document.getElementById('media-modal');
   const slot = document.getElementById('media-modal-media');
   const openLink = document.getElementById('media-modal-open');
-  const downloadLink = document.getElementById('media-modal-download');
 
-  // Clear previous
   slot.innerHTML = '';
 
-  // Set links
-  openLink.href = url;
-  downloadLink.href = url;
+  if (openLink) openLink.href = url;
 
-  const mediaType = (type === 'video') ? 'video' : 'image';
+  const wrap = document.createElement('div');
+  wrap.className = 'media-wrapper protected-content';
+  wrap.style.cssText = 'position:relative;max-height:85vh;margin:0 auto;';
+
+  const mediaType = type === 'video' ? 'video' : 'image';
   if (mediaType === 'video') {
     const v = document.createElement('video');
     v.src = url;
     v.controls = true;
+    v.setAttribute('controlsList', 'nodownload');
     v.playsInline = true;
     v.autoplay = true;
     v.preload = 'metadata';
-    slot.appendChild(v);
+    v.draggable = false;
+    wrap.appendChild(v);
   } else {
     const img = document.createElement('img');
     img.src = url;
     img.alt = 'Contenido';
     img.loading = 'eager';
-    slot.appendChild(img);
+    img.draggable = false;
+    wrap.appendChild(img);
   }
+  const ov = document.createElement('div');
+  ov.className = 'media-overlay';
+  ov.setAttribute('aria-hidden', 'true');
+  wrap.appendChild(ov);
+  slot.appendChild(wrap);
 
   modal.classList.add('open');
   document.body.style.overflow = 'hidden';
@@ -9601,8 +9654,9 @@ function renderContentGrid(container, items) {
       const bJson = JSON.stringify(c.text_body || '');
       thumb = `<div class="content-thumb ${aspect}" onclick='openTextModal(${tJson}, ${bJson})'>📝<span class="content-type-badge text-type-badge">📝 Texto</span></div>`;
     } else if (c.file_url) {
-      const vidHint = isVid ? '<span style="position:absolute;bottom:10px;right:10px;background:rgba(0,0,0,0.60);padding:6px 10px;border-radius:999px;color:white;font-size:0.75rem;font-weight:700;z-index:2;">▶ Ver</span>' : '';
-      thumb = `<div class="content-thumb ${aspect}" onclick="openMediaModal('${c.file_url}','${c.type}')">${isVid ? `<video class="thumb-fill-media" src="${c.file_url}" muted preload="metadata"></video>` : `<img class="thumb-fill-media" src="${c.file_url}" alt="">`}<span class="content-type-badge">${isVid ? 'VIDEO' : 'FOTO'}</span>${vidHint}</div>`;
+      const vidHint = isVid ? '<span style="position:absolute;bottom:10px;right:10px;background:rgba(0,0,0,0.60);padding:6px 10px;border-radius:999px;color:white;font-size:0.75rem;font-weight:700;z-index:5;">▶ Ver</span>' : '';
+      const src = bpContentMediaUrl(c.id);
+      thumb = `<div class="content-thumb ${aspect} media-wrapper protected-content" onclick="openMediaModal(${JSON.stringify(src)}, ${JSON.stringify(c.type)})">${isVid ? `<video class="thumb-fill-media" src="${src}" muted preload="metadata" playsinline draggable="false"></video>` : `<img class="thumb-fill-media" src="${src}" alt="" draggable="false" />`}<div class="media-overlay" aria-hidden="true"></div><span class="content-type-badge">${isVid ? 'VIDEO' : 'FOTO'}</span>${vidHint}</div>`;
     } else {
       thumb = `<div class="content-thumb ${aspect}">${isVid ? '🎬' : '📸'}<span class="content-type-badge">${isVid ? 'VIDEO' : 'FOTO'}</span></div>`;
     }
@@ -9636,8 +9690,7 @@ function renderContentGrid(container, items) {
         ${c.is_exclusive ? '<span class="exclusive-badge">Exclusivo</span>' : ''}
         ${starRow}
         ${!isText && c.file_url ? `<div style="display:flex;gap:10px;align-items:center;margin-top:6px;">
-          <a href="${c.file_url}" target="_blank" rel="noopener noreferrer" style="font-size:0.75rem;color:var(--gray-500);text-decoration:underline;">Abrir</a>
-          <a href="${c.file_url}" download style="font-size:0.75rem;color:var(--gray-500);text-decoration:underline;">Descargar</a>
+          <a href=${JSON.stringify(bpContentMediaUrl(c.id))} target="_blank" rel="noopener noreferrer" style="font-size:0.75rem;color:var(--gray-500);text-decoration:underline;">Abrir</a>
         </div>` : ''}
         <button onclick="deleteContent('${c.id}')" style="background:none;border:none;color:var(--gray-400);cursor:pointer;font-size:0.75rem;margin-top:4px;">🗑 Eliminar</button>
       </div>
@@ -9914,18 +9967,25 @@ function renderFanFeedContentPreview(item) {
     var excerpt = body.length > 200 ? body.slice(0, 197) + '…' : body;
     return '<div class="feed-preview feed-preview--text">' + escapeHtml(excerpt) + '</div>';
   }
-  if (item.file_url && item.type === 'video') {
+  if (item.id && item.type === 'video') {
+    var vsrc = bpContentMediaUrl(item.id);
     return (
-      '<div class="feed-preview feed-preview--media"><video class="feed-preview-video" src="' +
-      fanFeedEscAttr(item.file_url) +
-      '" muted playsinline preload="metadata"></video><span class="feed-play-badge" aria-hidden="true">▶</span></div>'
+      '<div class="feed-preview feed-preview--media media-wrapper protected-content">' +
+      '<video class="feed-preview-video" src="' +
+      fanFeedEscAttr(vsrc) +
+      '" muted playsinline preload="metadata" draggable="false"></video>' +
+      '<div class="media-overlay" aria-hidden="true"></div>' +
+      '<span class="feed-play-badge" aria-hidden="true">▶</span></div>'
     );
   }
-  if (item.file_url && item.type === 'photo') {
+  if (item.id && item.type === 'photo') {
+    var psrc = bpContentMediaUrl(item.id);
     return (
-      '<div class="feed-preview feed-preview--media"><img class="feed-preview-img" src="' +
-      fanFeedEscAttr(item.file_url) +
-      '" alt="" loading="lazy"/></div>'
+      '<div class="feed-preview feed-preview--media media-wrapper protected-content">' +
+      '<img class="feed-preview-img" src="' +
+      fanFeedEscAttr(psrc) +
+      '" alt="" loading="lazy" draggable="false"/>' +
+      '<div class="media-overlay" aria-hidden="true"></div></div>'
     );
   }
   return '<div class="feed-preview feed-preview--placeholder" aria-hidden="true">✨</div>';
@@ -10192,9 +10252,10 @@ function renderFanContent(container, items, opts) {
       }
     } else if (locked) {
       thumbInner = `<div class="content-thumb ${aspect}">${isVid ? '🎬' : '📸'}<span class="content-type-badge">${isVid ? 'VIDEO' : 'FOTO'}</span><div class="lock-overlay">🔒</div></div>`;
-    } else if (c.file_url) {
-      const vidHint = isVid ? '<span style="position:absolute;bottom:10px;right:10px;background:rgba(0,0,0,0.60);padding:6px 10px;border-radius:999px;color:white;font-size:0.75rem;font-weight:700;z-index:2;">▶ Ver</span>' : '';
-      thumbInner = `<div class="content-thumb ${aspect}" onclick="openMediaModal('${c.file_url}','${c.type}')">${isVid ? `<video class="thumb-fill-media" src="${c.file_url}" muted preload="metadata"></video>` : `<img class="thumb-fill-media" src="${c.file_url}" alt="">`}<span class="content-type-badge">${isVid ? 'VIDEO' : 'FOTO'}</span>${vidHint}</div>`;
+    } else if (!locked && (c.type === 'photo' || c.type === 'video')) {
+      const vidHint = isVid ? '<span style="position:absolute;bottom:10px;right:10px;background:rgba(0,0,0,0.60);padding:6px 10px;border-radius:999px;color:white;font-size:0.75rem;font-weight:700;z-index:5;">▶ Ver</span>' : '';
+      const src = bpContentMediaUrl(c.id);
+      thumbInner = `<div class="content-thumb ${aspect} media-wrapper protected-content" onclick="openMediaModal(${JSON.stringify(src)}, ${JSON.stringify(c.type)})">${isVid ? `<video class="thumb-fill-media" src="${src}" muted preload="metadata" playsinline draggable="false"></video>` : `<img class="thumb-fill-media" src="${src}" alt="" draggable="false" />`}<div class="media-overlay" aria-hidden="true"></div><span class="content-type-badge">${isVid ? 'VIDEO' : 'FOTO'}</span>${vidHint}</div>`;
     } else {
       thumbInner = `<div class="content-thumb ${aspect}">${isVid ? '🎬' : '📸'}<span class="content-type-badge">${isVid ? 'VIDEO' : 'FOTO'}</span></div>`;
     }
@@ -10215,9 +10276,8 @@ function renderFanContent(container, items, opts) {
         <p>${c.creator_name ? escapeHtml(c.creator_name) + ' · ' : ''}${new Date(c.created_at).toLocaleDateString('es')}</p>
         ${c.is_exclusive ? '<span class="exclusive-badge">Exclusivo</span>' : ''}
         ${starRow}
-        ${!locked && !isText && c.file_url ? `<div style="display:flex;gap:10px;align-items:center;margin-top:6px;">
-          <a href="${c.file_url}" target="_blank" rel="noopener noreferrer" style="font-size:0.75rem;color:var(--gray-500);text-decoration:underline;">Abrir</a>
-          <a href="${c.file_url}" download style="font-size:0.75rem;color:var(--gray-500);text-decoration:underline;">Descargar</a>
+        ${!locked && !isText && (c.type === 'photo' || c.type === 'video') ? `<div style="display:flex;gap:10px;align-items:center;margin-top:6px;">
+          <a href=${JSON.stringify(bpContentMediaUrl(c.id))} target="_blank" rel="noopener noreferrer" style="font-size:0.75rem;color:var(--gray-500);text-decoration:underline;">Abrir</a>
         </div>` : ''}
       </div>
     </div>`;
@@ -10602,6 +10662,12 @@ async function loadEarnings() {
 
 // Override publish button
 document.addEventListener('DOMContentLoaded', () => {
+  document.addEventListener('contextmenu', function (e) {
+    if (e.target.closest('.protected-content')) e.preventDefault();
+  });
+  document.addEventListener('dragstart', function (e) {
+    if (e.target.closest('.protected-content')) e.preventDefault();
+  });
   initEmojiPickerPanels();
   if (typeof ncWireNotificationCenter === 'function') ncWireNotificationCenter();
   (function syncUploadAccessFromDom() {
