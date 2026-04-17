@@ -384,6 +384,218 @@
     background: rgba(255,255,255,0.08);
   }
 
+  /* ─── LANDING INLINE AUTH (premium) ─── */
+  .hero-inline-wrap {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    position: relative;
+    z-index: 1;
+    transition: gap 0.28s ease;
+  }
+  .hero-inline-col--main {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+  }
+  .landing-auth-panel {
+    width: 100%;
+    max-width: 440px;
+    margin: 0 auto;
+    max-height: 0;
+    overflow: hidden;
+    opacity: 0;
+    transform: translateY(14px);
+    transition:
+      max-height 0.32s ease,
+      opacity 0.26s ease,
+      transform 0.26s ease,
+      margin 0.26s ease;
+    pointer-events: none;
+    position: relative;
+    z-index: 2;
+  }
+  #landing.landing-auth-open .landing-auth-panel {
+    max-height: 1200px;
+    opacity: 1;
+    transform: translateY(0);
+    margin-top: 28px;
+    pointer-events: auto;
+    overflow: visible;
+  }
+  #landing.landing-auth-open .hero {
+    min-height: auto;
+    padding-bottom: 48px;
+  }
+  #landing.landing-auth-open .hero-content-3d {
+    transform: scale(0.98);
+    transition: transform 0.28s ease;
+  }
+  @media (min-width: 960px) {
+    #landing.landing-auth-open .hero-inline-wrap {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(300px, 420px);
+      gap: 32px 48px;
+      align-items: center;
+      max-width: 1180px;
+      margin: 0 auto;
+      padding: 0 24px;
+      box-sizing: border-box;
+    }
+    #landing.landing-auth-open .hero-inline-col--main {
+      justify-content: flex-start;
+    }
+    #landing.landing-auth-open .hero-content-3d {
+      align-items: flex-start;
+      text-align: left;
+      max-width: 560px;
+      margin: 0;
+    }
+    #landing.landing-auth-open .hero-cta {
+      justify-content: flex-start;
+    }
+    #landing.landing-auth-open .landing-auth-panel {
+      max-height: none;
+      margin-top: 0;
+    }
+  }
+  .landing-auth-card {
+    position: relative;
+    border-radius: 22px;
+    padding: 28px 26px 26px;
+    background: rgba(18, 18, 22, 0.72);
+    backdrop-filter: blur(18px);
+    -webkit-backdrop-filter: blur(18px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow:
+      0 4px 0 rgba(255, 255, 255, 0.04) inset,
+      0 24px 56px rgba(0, 0, 0, 0.45),
+      0 0 0 1px rgba(139, 92, 246, 0.12);
+    color: #fff;
+  }
+  .landing-auth-close {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    width: 40px;
+    height: 40px;
+    border: none;
+    border-radius: 12px;
+    background: rgba(255, 255, 255, 0.06);
+    color: rgba(255, 255, 255, 0.85);
+    font-size: 1.25rem;
+    line-height: 1;
+    cursor: pointer;
+    transition: background 0.18s ease, color 0.18s ease;
+  }
+  .landing-auth-close:hover {
+    background: rgba(255, 255, 255, 0.12);
+    color: #fff;
+  }
+  .landing-auth-title {
+    font-size: 1.35rem;
+    font-weight: 800;
+    letter-spacing: -0.03em;
+    margin: 0 0 8px;
+    padding-right: 36px;
+    color: #fafafa;
+  }
+  .landing-auth-lead {
+    font-size: 0.88rem;
+    color: rgba(255, 255, 255, 0.62);
+    margin: 0 0 20px;
+    line-height: 1.45;
+  }
+  #landing .landing-role-selector {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 20px;
+  }
+  #landing .landing-role-selector .role-option {
+    flex: 1;
+    border: 1.5px solid rgba(255, 255, 255, 0.14);
+    border-radius: 14px;
+    padding: 12px 10px;
+    text-align: center;
+    cursor: pointer;
+    transition: border-color 0.18s ease, background 0.18s ease;
+    color: rgba(255, 255, 255, 0.75);
+    background: rgba(0, 0, 0, 0.2);
+  }
+  #landing .landing-role-selector .role-option.selected {
+    border-color: rgba(167, 139, 250, 0.85);
+    background: rgba(139, 92, 246, 0.18);
+    color: #fff;
+  }
+  #landing .landing-role-selector .role-icon {
+    font-size: 1.35rem;
+    margin-bottom: 4px;
+  }
+  #landing .landing-role-selector .role-name {
+    font-size: 0.78rem;
+    font-weight: 700;
+  }
+  #landing .landing-role-selector .role-desc {
+    font-size: 0.68rem;
+    color: rgba(255, 255, 255, 0.5);
+    margin-top: 2px;
+  }
+  #landing .landing-form-input {
+    min-height: 46px;
+    padding: 12px 16px;
+    border-radius: 12px;
+    border: 1.5px solid rgba(255, 255, 255, 0.12);
+    background: rgba(0, 0, 0, 0.35);
+    color: #fff;
+    font-size: 0.95rem;
+    width: 100%;
+    box-sizing: border-box;
+    transition: border-color 0.18s ease, box-shadow 0.18s ease;
+  }
+  #landing .landing-form-input::placeholder {
+    color: rgba(255, 255, 255, 0.38);
+  }
+  #landing .landing-form-input:focus {
+    outline: none;
+    border-color: rgba(167, 139, 250, 0.75);
+    box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.22);
+  }
+  #landing .landing-auth-panel .form-label {
+    color: rgba(255, 255, 255, 0.72);
+    font-size: 0.72rem;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+  }
+  .landing-auth-cta {
+    margin-top: 6px;
+    min-height: 50px;
+    font-size: 0.98rem;
+    font-weight: 700;
+    border-radius: 14px;
+    transition: transform 0.18s ease, box-shadow 0.18s ease;
+  }
+  .landing-auth-cta:hover:not(:disabled) {
+    transform: translateY(-1px);
+    box-shadow: 0 12px 32px rgba(139, 92, 246, 0.35);
+  }
+  .landing-auth-switch {
+    text-align: center;
+    margin-top: 18px;
+    font-size: 0.86rem;
+    color: rgba(255, 255, 255, 0.55);
+  }
+  .landing-auth-switch a {
+    color: #e9d5ff;
+    font-weight: 600;
+    cursor: pointer;
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+  .landing-auth-switch a:hover {
+    color: #fff;
+  }
+
   /* Features + carrusel 3D */
   .features {
     padding: 100px 24px;
@@ -4305,17 +4517,70 @@
       <span class="hero-orb hero-orb--b"></span>
       <span class="hero-orb hero-orb--c"></span>
     </div>
-    <div class="hero-content-3d">
-      <div class="hero-badge" role="status">
-        <span class="hero-badge-dot" aria-hidden="true"></span>
-        <span class="hero-badge-text">0% DE COMISIÓN POR TIEMPO LIMITADO</span>
+    <div class="hero-inline-wrap" id="hero-inline-wrap">
+      <div class="hero-inline-col hero-inline-col--main">
+        <div class="hero-content-3d">
+          <div class="hero-badge" role="status">
+            <span class="hero-badge-dot" aria-hidden="true"></span>
+            <span class="hero-badge-text">0% DE COMISIÓN POR TIEMPO LIMITADO</span>
+          </div>
+          <h1>Apoya a los creadores que más te inspiran</h1>
+          <p class="hero-subtitle">La plataforma donde los creadores construyen comunidades, comparten contenido exclusivo y reciben apoyo directo de sus fans.</p>
+          <div class="hero-cta">
+            <button type="button" class="btn btn-primary" onclick="openLandingAuth('register', 'creator')">Empezar como creador</button>
+            <button type="button" class="btn btn-outline" onclick="scrollToLandingCreators()">Explorar creadores</button>
+          </div>
+        </div>
       </div>
-      <h1>Apoya a los creadores que más te inspiran</h1>
-      <p class="hero-subtitle">La plataforma donde los creadores construyen comunidades, comparten contenido exclusivo y reciben apoyo directo de sus fans.</p>
-      <div class="hero-cta">
-        <button class="btn btn-primary" onclick="showAuth('register')">Empezar como creador</button>
-        <button class="btn btn-outline" onclick="showAuth('register')">Explorar creadores</button>
-      </div>
+      <aside class="landing-auth-panel" id="landing-auth-panel" aria-hidden="true">
+        <div class="landing-auth-card">
+          <button type="button" class="landing-auth-close" onclick="closeLandingAuth()" aria-label="Cerrar formulario">✕</button>
+          <div id="landing-register-view">
+            <h2 class="landing-auth-title">Crea tu cuenta gratis</h2>
+            <p class="landing-auth-lead">Únete en segundos. Elige cómo quieres usar BizPonzor.</p>
+            <div class="landing-role-selector role-selector" role="group" aria-label="Tipo de cuenta">
+              <div class="role-option selected" id="landing-role-creator" onclick="selectRole('creator')">
+                <div class="role-icon">🎬</div>
+                <div class="role-name">Creador</div>
+                <div class="role-desc">Contenido y suscripciones</div>
+              </div>
+              <div class="role-option" id="landing-role-fan" onclick="selectRole('fan')">
+                <div class="role-icon">⭐</div>
+                <div class="role-name">Fan</div>
+                <div class="role-desc">Apoya y descubre</div>
+              </div>
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="landing-reg-name">Nombre completo</label>
+              <input type="text" class="form-input landing-form-input" id="landing-reg-name" placeholder="Tu nombre" autocomplete="name" />
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="landing-reg-email">Correo electrónico</label>
+              <input type="email" class="form-input landing-form-input" id="landing-reg-email" placeholder="tu@email.com" autocomplete="email" />
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="landing-reg-password">Contraseña</label>
+              <input type="password" class="form-input landing-form-input" id="landing-reg-password" placeholder="Mínimo 8 caracteres" autocomplete="new-password" />
+            </div>
+            <button type="button" class="btn btn-primary btn-full landing-auth-cta" onclick="simulateRegister(event)">Crear mi cuenta gratis</button>
+            <div class="landing-auth-switch">¿Ya tienes cuenta? <a tabindex="0" role="button" onclick="switchLandingAuthView('login')">Inicia sesión</a></div>
+          </div>
+          <div id="landing-login-view" style="display: none">
+            <h2 class="landing-auth-title">Bienvenido de nuevo</h2>
+            <p class="landing-auth-lead">Ingresa con tu cuenta BizPonzor.</p>
+            <div class="form-group">
+              <label class="form-label" for="landing-login-email">Correo electrónico</label>
+              <input type="email" class="form-input landing-form-input" id="landing-login-email" placeholder="tu@email.com" autocomplete="email" />
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="landing-login-password">Contraseña</label>
+              <input type="password" class="form-input landing-form-input" id="landing-login-password" placeholder="••••••••" autocomplete="current-password" />
+            </div>
+            <button type="button" class="btn btn-primary btn-full landing-auth-cta" onclick="simulateLogin(event)">Entrar a BizPonzor</button>
+            <div class="landing-auth-switch">¿No tienes cuenta? <a tabindex="0" role="button" onclick="switchLandingAuthView('register')">Crear cuenta gratis</a></div>
+          </div>
+        </div>
+      </aside>
     </div>
   </section>
 
@@ -4470,7 +4735,7 @@
   <section class="cta-section">
     <h2>Empieza hoy mismo.<br>Es gratis.</h2>
     <p>Crea tu perfil en minutos y comienza a monetizar tu contenido con tu comunidad.</p>
-    <button class="btn btn-primary" style="font-size:1rem;padding:16px 36px;" onclick="showAuth('register')">Crear mi cuenta gratis →</button>
+    <button type="button" class="btn btn-primary" style="font-size:1rem;padding:16px 36px;" onclick="openLandingAuth('register', 'creator')">Crear mi cuenta gratis →</button>
   </section>
 
   <footer>
@@ -4503,7 +4768,7 @@
           <label class="form-label">Contraseña</label>
           <input type="password" class="form-input" placeholder="••••••••">
         </div>
-        <button class="btn btn-primary btn-full" onclick="simulateLogin()" style="margin-top:8px;">Entrar a BizPonzor</button>
+        <button class="btn btn-primary btn-full" onclick="simulateLogin(event)" style="margin-top:8px;">Entrar a BizPonzor</button>
         <div style="text-align:center;margin-top:14px;">
           <a style="font-size:0.8rem;color:var(--gray-500);cursor:pointer;">¿Olvidaste tu contraseña?</a>
         </div>
@@ -4535,7 +4800,7 @@
           <label class="form-label">Contraseña</label>
           <input type="password" class="form-input" placeholder="Mínimo 8 caracteres">
         </div>
-        <button class="btn btn-primary btn-full" onclick="simulateRegister()" style="margin-top:8px;">Crear mi cuenta</button>
+        <button class="btn btn-primary btn-full" onclick="simulateRegister(event)" style="margin-top:8px;">Crear mi cuenta</button>
       </div>
 
       <div class="auth-switch">
@@ -5450,6 +5715,9 @@
       if (typeof stopProfileChatPolling === 'function') stopProfileChatPolling();
       if (typeof clearProfileChatState === 'function') clearProfileChatState();
     }
+    if (page === 'landing' && typeof closeLandingAuth === 'function') {
+      closeLandingAuth();
+    }
     document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
     const targetPage = document.getElementById(page);
     if (targetPage) {
@@ -5521,8 +5789,61 @@
   }
 
   function showAuth(tab) {
-    showPage('auth');
-    switchAuthTab(tab);
+    showPage('landing');
+    openLandingAuth(tab, tab === 'login' ? null : 'creator');
+  }
+
+  function scrollToLandingCreators() {
+    const el = document.querySelector('#landing .creators-section');
+    if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+
+  function openLandingAuth(tab, roleHint) {
+    const landing = document.getElementById('landing');
+    if (!landing) return;
+    const wrap = document.getElementById('hero-inline-wrap');
+    if (wrap) wrap.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    landing.classList.add('landing-auth-open');
+    window.isLandingAuthOpen = true;
+    const panel = document.getElementById('landing-auth-panel');
+    if (panel) panel.setAttribute('aria-hidden', 'false');
+    const t = tab === 'login' ? 'login' : 'register';
+    switchLandingAuthView(t);
+    if (t === 'register') {
+      selectRole(roleHint === 'fan' ? 'fan' : 'creator');
+    }
+    requestAnimationFrame(function () {
+      setTimeout(function () {
+        if (t === 'login') {
+          const inp = document.getElementById('landing-login-email');
+          if (inp) inp.focus();
+        } else {
+          const inp = document.getElementById('landing-reg-name');
+          if (inp) inp.focus();
+        }
+        if (window.matchMedia && window.matchMedia('(max-width: 768px)').matches && panel) {
+          panel.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        }
+      }, 280);
+    });
+  }
+
+  function closeLandingAuth() {
+    const landing = document.getElementById('landing');
+    if (!landing) return;
+    landing.classList.remove('landing-auth-open');
+    window.isLandingAuthOpen = false;
+    const panel = document.getElementById('landing-auth-panel');
+    if (panel) panel.setAttribute('aria-hidden', 'true');
+  }
+
+  function switchLandingAuthView(mode) {
+    const reg = document.getElementById('landing-register-view');
+    const log = document.getElementById('landing-login-view');
+    if (!reg || !log) return;
+    const isLogin = mode === 'login';
+    reg.style.display = isLogin ? 'none' : 'block';
+    log.style.display = isLogin ? 'block' : 'none';
   }
 
   function switchAuthTab(tab) {
@@ -5538,8 +5859,14 @@
 
   function selectRole(role) {
     currentRole = role;
-    document.getElementById('role-creator').classList.toggle('selected', role === 'creator');
-    document.getElementById('role-fan').classList.toggle('selected', role === 'fan');
+    const rc = document.getElementById('role-creator');
+    const rf = document.getElementById('role-fan');
+    if (rc) rc.classList.toggle('selected', role === 'creator');
+    if (rf) rf.classList.toggle('selected', role === 'fan');
+    const lrc = document.getElementById('landing-role-creator');
+    const lrf = document.getElementById('landing-role-fan');
+    if (lrc) lrc.classList.toggle('selected', role === 'creator');
+    if (lrf) lrf.classList.toggle('selected', role === 'fan');
   }
 
   function unmountCreatorProfileFromEmbed() {
@@ -7846,25 +8173,75 @@ async function markCreatorMessageRead(el) {
 }
 
 // ─── AUTH ───────────────────────────────────────────────
-async function simulateLogin() {
-  const email = document.querySelector('#login-form input[type=email]').value;
-  const password = document.querySelector('#login-form input[type=password]').value;
+async function simulateLogin(ev) {
+  var btn = ev && ev.currentTarget ? ev.currentTarget : null;
+  var landingEl = document.getElementById('landing');
+  var loginView = document.getElementById('landing-login-view');
+  var useLanding =
+    landingEl &&
+    landingEl.classList.contains('landing-auth-open') &&
+    loginView &&
+    window.getComputedStyle(loginView).display !== 'none';
+  var email = '';
+  var password = '';
+  if (useLanding) {
+    var le = document.getElementById('landing-login-email');
+    var lp = document.getElementById('landing-login-password');
+    email = le ? String(le.value).trim() : '';
+    password = lp ? lp.value : '';
+  } else {
+    var lf = document.getElementById('login-form');
+    if (lf) {
+      var em = lf.querySelector('input[type=email]');
+      var pw = lf.querySelector('input[type=password]');
+      email = em ? String(em.value).trim() : '';
+      password = pw ? pw.value : '';
+    }
+  }
   if (!email || !password) { showNotif('⚠️ Ingresa email y contraseña'); return; }
-  const btn = event.target; btn.textContent = 'Entrando...'; btn.disabled = true;
+  var prevBtn = btn ? btn.textContent : '';
+  if (btn) { btn.textContent = 'Entrando...'; btn.disabled = true; }
   const res = await api.post('/auth/login', { email, password });
-  btn.textContent = 'Entrar a BizPonzor'; btn.disabled = false;
+  if (btn) { btn.textContent = prevBtn || 'Entrar a BizPonzor'; btn.disabled = false; }
   if (res.error) { showNotif('❌ ' + res.error); return; }
   setSession(res);
 }
 
-async function simulateRegister() {
-  const name = document.getElementById('reg-name').value;
-  const email = document.querySelector('#register-form input[type=email]').value;
-  const password = document.querySelector('#register-form input[type=password]').value;
+async function simulateRegister(ev) {
+  var btn = ev && ev.currentTarget ? ev.currentTarget : null;
+  var landingEl = document.getElementById('landing');
+  var regView = document.getElementById('landing-register-view');
+  var useLanding =
+    landingEl &&
+    landingEl.classList.contains('landing-auth-open') &&
+    regView &&
+    window.getComputedStyle(regView).display !== 'none';
+  var name = '';
+  var email = '';
+  var password = '';
+  if (useLanding) {
+    var n = document.getElementById('landing-reg-name');
+    var e = document.getElementById('landing-reg-email');
+    var p = document.getElementById('landing-reg-password');
+    name = n ? String(n.value).trim() : '';
+    email = e ? String(e.value).trim() : '';
+    password = p ? p.value : '';
+  } else {
+    var rn = document.getElementById('reg-name');
+    name = rn ? String(rn.value).trim() : '';
+    var rf = document.getElementById('register-form');
+    if (rf) {
+      var em = rf.querySelector('input[type=email]');
+      var pw = rf.querySelector('input[type=password]');
+      email = em ? String(em.value).trim() : '';
+      password = pw ? pw.value : '';
+    }
+  }
   if (!name || !email || !password) { showNotif('⚠️ Completa todos los campos'); return; }
-  const btn = event.target; btn.textContent = 'Creando cuenta...'; btn.disabled = true;
+  var prevBtn = btn ? btn.textContent : '';
+  if (btn) { btn.textContent = 'Creando cuenta...'; btn.disabled = true; }
   const res = await api.post('/auth/register', { name, email, password, role: currentRole });
-  btn.textContent = 'Crear mi cuenta'; btn.disabled = false;
+  if (btn) { btn.textContent = prevBtn || 'Crear mi cuenta'; btn.disabled = false; }
   if (res.error) { showNotif('❌ ' + res.error); return; }
   setSession(res);
 }
@@ -7875,7 +8252,8 @@ function setSession(res) {
   localStorage.setItem('bp_token', TOKEN);
   localStorage.setItem('bp_user', JSON.stringify(CURRENT_USER));
   showNotif('✅ Bienvenido/a, ' + CURRENT_USER.name + '!');
-  
+  if (typeof closeLandingAuth === 'function') closeLandingAuth();
+
   closeModal();
   
   document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
