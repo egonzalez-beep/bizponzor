@@ -13,7 +13,7 @@ function requireCreator(req, res, next) {
 /**
  * POST /api/creator/promo-codes
  */
-router.post('/promo-codes', auth, requireCreator, (req, res) => {
+router.post('/promo-codes', auth, requireCreator, async (req, res) => {
   try {
     const { code, duration_days, max_uses } = req.body;
     const codeNorm = String(code || '')
@@ -28,11 +28,13 @@ router.post('/promo-codes', auth, requireCreator, (req, res) => {
     const max = Math.min(10000, Math.max(1, parseInt(max_uses, 10) || 1));
 
     const id = uuidv4();
-    db.prepare(
-      `INSERT INTO promo_codes (
+    await db
+      .prepare(
+        `INSERT INTO promo_codes (
         id, creator_id, code, discount_percent, duration_days, max_uses, used_count, expires_at, is_active
       ) VALUES (?, ?, ?, 100, ?, ?, 0, NULL, 1)`
-    ).run(id, req.user.id, codeNorm, days, max);
+      )
+      .run(id, req.user.id, codeNorm, days, max);
 
     res.json({
       success: true,
@@ -52,8 +54,8 @@ router.post('/promo-codes', auth, requireCreator, (req, res) => {
 /**
  * GET /api/creator/promo-codes
  */
-router.get('/promo-codes', auth, requireCreator, (req, res) => {
-  const rows = db
+router.get('/promo-codes', auth, requireCreator, async (req, res) => {
+  const rows = await db
     .prepare(
       `SELECT id, code, used_count, max_uses, duration_days, expires_at, is_active, created_at
        FROM promo_codes
@@ -67,14 +69,14 @@ router.get('/promo-codes', auth, requireCreator, (req, res) => {
 /**
  * GET /api/creator/promo-codes/:codeId/redemptions
  */
-router.get('/promo-codes/:codeId/redemptions', auth, requireCreator, (req, res) => {
+router.get('/promo-codes/:codeId/redemptions', auth, requireCreator, async (req, res) => {
   const { codeId } = req.params;
-  const promo = db.prepare('SELECT id, creator_id FROM promo_codes WHERE id = ?').get(codeId);
+  const promo = await db.prepare('SELECT id, creator_id FROM promo_codes WHERE id = ?').get(codeId);
   if (!promo || promo.creator_id !== req.user.id) {
     return res.status(404).json({ error: 'Código no encontrado' });
   }
 
-  const rows = db
+  const rows = await db
     .prepare(
       `SELECT
          u.email AS fan_email,

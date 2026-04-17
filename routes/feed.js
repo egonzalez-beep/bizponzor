@@ -6,7 +6,7 @@ const auth = require('../middleware/auth');
  * GET /api/feed?limit=&offset=
  * Fans: contenido de creadores con suscripción activa + descubrimiento (posts no exclusivos).
  */
-router.get('/', auth, (req, res) => {
+router.get('/', auth, async (req, res) => {
   try {
     if (!req.user || req.user.role !== 'fan') {
       return res.status(403).json({ error: 'Solo para fans' });
@@ -16,7 +16,7 @@ router.get('/', auth, (req, res) => {
     const limit = Math.min(40, Math.max(1, parseInt(String(req.query.limit || '15'), 10) || 15));
     const offset = Math.max(0, parseInt(String(req.query.offset || '0'), 10) || 0);
 
-    const subscribedRows = db
+    const subscribedRows = await db
       .prepare(
         `SELECT c.*,
           u.name AS creator_name,
@@ -37,7 +37,7 @@ router.get('/', auth, (req, res) => {
       )
       .all(fanId, fanId);
 
-    const discoveryRows = db
+    const discoveryRows = await db
       .prepare(
         `SELECT c.*,
           u.name AS creator_name,

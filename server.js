@@ -110,11 +110,13 @@ app.get('/mp/callback', async (req, res) => {
 
     const mpUserId = data.user_id != null && data.user_id !== '' ? String(data.user_id) : null;
 
+    const expiresAtIso = new Date(Date.now() + expiresInSec * 1000).toISOString();
+
     const upsertMp = db.prepare(`
       INSERT INTO mercado_pago_accounts
       (user_id, access_token, refresh_token, public_key, mp_user_id, expires_at)
-      VALUES (?, ?, ?, ?, ?, datetime('now', '+' || ? || ' seconds'))
-      ON CONFLICT(user_id) DO UPDATE SET
+      VALUES (?, ?, ?, ?, ?, ?)
+      ON CONFLICT (user_id) DO UPDATE SET
         access_token = excluded.access_token,
         refresh_token = excluded.refresh_token,
         public_key = excluded.public_key,
@@ -122,13 +124,13 @@ app.get('/mp/callback', async (req, res) => {
         expires_at = excluded.expires_at
     `);
 
-    upsertMp.run(
+    await upsertMp.run(
       userId,
       data.access_token,
       data.refresh_token ?? null,
       data.public_key ?? null,
       mpUserId,
-      expiresInSec
+      expiresAtIso
     );
 
     console.log('MP conectado y guardado para user:', userId);
@@ -143,7 +145,7 @@ app.get('/mp/callback', async (req, res) => {
   }
 });
 
-app.post('/content/:id/star', (req, res) => {
+app.post('/content/:id/star', async (req, res) => {
   try {
     const contentId = req.params.id;
     const userId = req.body.userId;
@@ -152,17 +154,17 @@ app.post('/content/:id/star', (req, res) => {
       return res.status(400).json({ error: 'Usuario requerido' });
     }
 
-    const existing = db
+    const existing = await db
       .prepare('SELECT * FROM stars WHERE user_id = ? AND content_id = ?')
       .get(userId, contentId);
 
     if (existing) {
-      db.prepare('DELETE FROM stars WHERE user_id = ? AND content_id = ?').run(userId, contentId);
+      await db.prepare('DELETE FROM stars WHERE user_id = ? AND content_id = ?').run(userId, contentId);
 
       return res.json({ starred: false });
     }
 
-    db.prepare('INSERT INTO stars (id, user_id, content_id) VALUES (?, ?, ?)').run(
+    await db.prepare('INSERT INTO stars (id, user_id, content_id) VALUES (?, ?, ?)').run(
       crypto.randomUUID(),
       userId,
       contentId
@@ -187,7 +189,7 @@ app.post('/create-payment', async (req, res) => {
       SELECT access_token FROM mercado_pago_accounts WHERE user_id = ?
     `);
 
-    const account = stmt.get(creatorId);
+    const account = await stmt.get(creatorId);
 
     if (!account) {
       return res.status(404).json({ error: 'Creador no tiene cuenta conectada' });
@@ -239,11 +241,11 @@ app.post('/create-payment', async (req, res) => {
 
 app.get('*', (req, res) => res.sendFile(path.join(__dirname, 'public', 'index.html')));
 
-function publishScheduledPosts() {
+async function publishScheduledPosts() {
   try {
     const now = new Date().toISOString();
 
-    const toPublish = db.prepare(`
+    const toPublish = await db.prepare(`
       SELECT id, title, creator_id FROM content
       WHERE status = 'scheduled'
       AND scheduled_for IS NOT NULL
@@ -260,7 +262,7 @@ function publishScheduledPosts() {
       AND scheduled_for <= ?
     `);
 
-    const result = updateStmt.run(now);
+    const result = await updateStmt.run(now);
 
     console.log(`[SCHEDULER] Publicadas ${result.changes} publicaciones programadas`);
 
@@ -280,13 +282,15 @@ function publishScheduledPosts() {
   }
 }
 
-setInterval(publishScheduledPosts, 5 * 60 * 1000);
+setInterval(() => {
+  publishScheduledPosts().catch((e) => console.error('[SCHEDULER]', e));
+}, 5 * 60 * 1000);
 
-publishScheduledPosts();
+publishScheduledPosts().catch((e) => console.error('[SCHEDULER]', e));
 
-function cleanupOldNotifications() {
+async function cleanupOldNotifications() {
   try {
-    const r = db
+    const r = await db
       .prepare(
         `DELETE FROM notifications WHERE datetime(created_at) < datetime('now', '-90 days')`
       )
@@ -299,7 +303,9 @@ function cleanupOldNotifications() {
   }
 }
 
-setInterval(cleanupOldNotifications, 24 * 60 * 60 * 1000);
-cleanupOldNotifications();
+setInterval(() => {
+  cleanupOldNotifications().catch((err) => console.error('[notifications cleanup]', err));
+}, 24 * 60 * 60 * 1000);
+cleanupOldNotifications().catch((err) => console.error('[notifications cleanup]', err));
 
 app.listen(PORT, () => console.log('BizPonzor corriendo en http://localhost:' + PORT));

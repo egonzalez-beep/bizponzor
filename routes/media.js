@@ -30,9 +30,9 @@ function resolveSafeFile(absPath) {
  * GET /api/media/:contentId?token= (opcional si contenido público)
  * Sirve el archivo con validación de acceso (exclusivo = suscripción activa o dueño).
  */
-router.get('/:contentId', (req, res) => {
+router.get('/:contentId', async (req, res) => {
   const contentId = req.params.contentId;
-  const content = db.prepare('SELECT * FROM content WHERE id = ?').get(contentId);
+  const content = await db.prepare('SELECT * FROM content WHERE id = ?').get(contentId);
   if (!content) {
     return res.status(404).json({ error: 'No encontrado' });
   }
@@ -56,7 +56,7 @@ router.get('/:contentId', (req, res) => {
       if (!userId || role !== 'fan') {
         return res.status(403).json({ error: 'Contenido exclusivo' });
       }
-      const sub = db
+      const sub = await db
         .prepare(
           "SELECT id FROM subscriptions WHERE fan_id = ? AND creator_id = ? AND status = 'active'"
         )

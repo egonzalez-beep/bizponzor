@@ -165,10 +165,10 @@ router.post('/register', async (req, res) => {
       return res.status(400).json({ error: 'Rol inválido' });
     }
 
-    if (db.prepare('SELECT id FROM users WHERE email = ?').get(String(email).trim().toLowerCase())) {
+    if (await db.prepare('SELECT id FROM users WHERE email = ?').get(String(email).trim().toLowerCase())) {
       return res.status(409).json({ error: 'Email ya registrado' });
     }
-    if (db.prepare('SELECT id FROM users WHERE username = ?').get(username)) {
+    if (await db.prepare('SELECT id FROM users WHERE username = ?').get(username)) {
       return res.status(409).json({ error: 'Ese nombre de usuario ya está en uso' });
     }
 
@@ -176,7 +176,7 @@ router.post('/register', async (req, res) => {
     const id = uuidv4();
     const userHandle = handle && String(handle).trim() ? String(handle).trim() : '@' + username;
 
-    const handleTaken = db.prepare('SELECT id FROM users WHERE handle = ?').get(userHandle);
+    const handleTaken = await db.prepare('SELECT id FROM users WHERE handle = ?').get(userHandle);
     if (handleTaken) {
       return res.status(409).json({ error: 'No se pudo asignar el alias; prueba otro usuario' });
     }
@@ -185,14 +185,16 @@ router.post('/register', async (req, res) => {
     const clientIp = getClientIp(req);
 
     console.log('[auth/register] creating user', { id, email, role, username, handle: userHandle });
-    db.prepare(
-      `INSERT INTO users (
+    await db
+      .prepare(
+        `INSERT INTO users (
         id, name, email, password, role, handle,
         username,
         terms_accepted_at, privacy_accepted_at, terms_version, privacy_version, accepted_ip,
         updated_at
       ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, datetime('now'))`
-    ).run(
+      )
+      .run(
       id,
       String(name).trim().slice(0, 120),
       String(email).trim().toLowerCase(),
@@ -214,7 +216,10 @@ router.post('/register', async (req, res) => {
         { id: uuidv4(), name: 'VIP', price: 25, features: JSON.stringify(['Todo lo del plan Premium','Menciones en stories','Acceso anticipado','Contenido personalizado']), is_featured: 0 }
       ];
       const stmt = db.prepare('INSERT INTO plans (id, creator_id, name, price, features, is_featured) VALUES (?,?,?,?,?,?)');
-      plans.forEach((p) => stmt.run(p.id, id, p.name, p.price, p.features, p.is_featured));
+      for (let i = 0; i < plans.length; i++) {
+        const p = plans[i];
+        await stmt.run(p.id, id, p.name, p.price, p.features, p.is_featured);
+      }
     }
     const emailNorm = String(email).trim().toLowerCase();
     const nameTrim = String(name).trim().slice(0, 120);
@@ -239,7 +244,7 @@ router.post('/login', async (req, res) => {
 
     const { email, password } = req.body;
     const normalized = String(email || '').trim().toLowerCase();
-    const user = db.prepare('SELECT * FROM users WHERE email = ?').get(normalized);
+    const user = await db.prepare('SELECT * FROM users WHERE email = ?').get(normalized);
     const ok = user && (await bcrypt.compare(String(password || ''), user.password));
     if (!ok) {
       loginRateRecordFailure(ip);
@@ -271,7 +276,7 @@ router.post('/login', async (req, res) => {
   }
 });
 
-router.post('/forgot-password', (req, res) => {
+router.post('/forgot-password', async (req, res) => {
   try {
     const email = String(req.body.email || '')
       .trim()
@@ -279,13 +284,13 @@ router.post('/forgot-password', (req, res) => {
     if (!email) {
       return res.status(400).json({ error: 'Correo requerido' });
     }
-    const user = db.prepare('SELECT id, email FROM users WHERE email = ?').get(email);
+    const user = await db.prepare('SELECT id, email FROM users WHERE email = ?').get(email);
     const token = crypto.randomBytes(32).toString('hex');
     const expiresMs = Date.now() + 3600000;
     const expiresIso = new Date(expiresMs).toISOString();
 
     if (user) {
-      db.prepare('UPDATE users SET reset_token = ?, reset_token_expires = ? WHERE id = ?').run(token, expiresIso, user.id);
+      await db.prepare('UPDATE users SET reset_token = ?, reset_token_expires = ? WHERE id = ?').run(token, expiresIso, user.id);
       if (process.env.NODE_ENV !== 'production') {
         console.log('[auth/forgot-password] Reset token (solo no-producción):', token);
       }
@@ -311,7 +316,7 @@ router.post('/reset-password', async (req, res) => {
     if (passwordConfirm != null && String(password) !== String(passwordConfirm)) {
       return res.status(400).json({ error: 'Las contraseñas no coinciden' });
     }
-    const row = db.prepare('SELECT id, reset_token_expires FROM users WHERE reset_token = ?').get(String(token));
+    const row = await db.prepare('SELECT id, reset_token_expires FROM users WHERE reset_token = ?').get(String(token));
     if (!row) {
       return res.status(400).json({ error: 'Enlace inválido o expirado' });
     }
@@ -320,9 +325,11 @@ router.post('/reset-password', async (req, res) => {
       return res.status(400).json({ error: 'El enlace expiró. Solicita uno nuevo.' });
     }
     const hashedPassword = await bcrypt.hash(String(password), 10);
-    db.prepare(
-      'UPDATE users SET password = ?, reset_token = NULL, reset_token_expires = NULL, updated_at = datetime(\'now\') WHERE id = ?'
-    ).run(hashedPassword, row.id);
+    await db
+      .prepare(
+        'UPDATE users SET password = ?, reset_token = NULL, reset_token_expires = NULL, updated_at = datetime(\'now\') WHERE id = ?'
+      )
+      .run(hashedPassword, row.id);
     res.json({ success: true, message: 'Contraseña actualizada. Ya puedes iniciar sesión.' });
   } catch (e) {
     console.error('[auth/reset-password]', e);
@@ -330,8 +337,8 @@ router.post('/reset-password', async (req, res) => {
   }
 });
 
-router.get('/me', require('../middleware/auth'), (req, res) => {
-  const user = db
+router.get('/me', require('../middleware/auth'), async (req, res) => {
+  const user = await db
     .prepare(
       'SELECT id, name, email, role, handle, username, bio, category, location, avatar_url, banner_url, avatar_color, social_instagram, social_facebook, social_tiktok, social_other, updated_at FROM users WHERE id = ?'
     )
@@ -342,20 +349,22 @@ router.get('/me', require('../middleware/auth'), (req, res) => {
     return res.json(buildMePayload(user));
   }
 
-  const mpRow = db.prepare('SELECT mp_user_id FROM mercado_pago_accounts WHERE user_id = ?').get(user.id);
+  const mpRow = await db.prepare('SELECT mp_user_id FROM mercado_pago_accounts WHERE user_id = ?').get(user.id);
   const mp_user_id =
     mpRow && mpRow.mp_user_id != null && String(mpRow.mp_user_id).trim() !== ''
       ? String(mpRow.mp_user_id)
       : null;
 
-  const hasPlan = !!db
+  const hasPlan = !!(await db
     .prepare('SELECT 1 FROM plans WHERE creator_id = ? AND active = 1 AND price > 0 LIMIT 1')
-    .get(user.id);
+    .get(user.id));
 
-  const total_posts = db.prepare('SELECT COUNT(*) AS n FROM content WHERE creator_id = ?').get(user.id).n;
-  const total_subscribers = db
+  const postsRow = await db.prepare('SELECT COUNT(*) AS n FROM content WHERE creator_id = ?').get(user.id);
+  const total_posts = Number(postsRow?.n ?? 0);
+  const subsRow = await db
     .prepare("SELECT COUNT(*) AS n FROM subscriptions WHERE creator_id = ? AND status = 'active'")
-    .get(user.id).n;
+    .get(user.id);
+  const total_subscribers = Number(subsRow?.n ?? 0);
 
   const stats = { total_posts, total_subscribers };
   const userForOnboarding = { ...user, mp_user_id, has_plan: hasPlan };
@@ -370,7 +379,7 @@ router.get('/me', require('../middleware/auth'), (req, res) => {
   );
 });
 
-router.put('/profile', require('../middleware/auth'), (req, res) => {
+router.put('/profile', require('../middleware/auth'), async (req, res) => {
   const { handle, bio, category, location, avatar_color, social_instagram, social_facebook, social_tiktok, social_other } =
     req.body;
   const cleanedHandle = (handle || '').trim();
@@ -382,14 +391,16 @@ router.put('/profile', require('../middleware/auth'), (req, res) => {
     return res.status(400).json({ error: 'Usa solo letras, numeros, punto o guion bajo (min 3)' });
   }
   const normalizedHandle = '@' + handleCore;
-  const handleTaken = db.prepare('SELECT id FROM users WHERE handle = ? AND id != ?').get(normalizedHandle, req.user.id);
+  const handleTaken = await db.prepare('SELECT id FROM users WHERE handle = ? AND id != ?').get(normalizedHandle, req.user.id);
   if (handleTaken) return res.status(409).json({ error: 'Ese alias ya está en uso' });
   const bioStr = typeof bio === 'string' ? bio.slice(0, 200) : '';
   const locStr = typeof location === 'string' ? location.trim().slice(0, 120) : '';
   const s = (v) => (typeof v === 'string' ? v.trim().slice(0, 500) : '');
-  db.prepare(
-    'UPDATE users SET handle=?, bio=?, category=?, location=?, avatar_color=?, social_instagram=?, social_facebook=?, social_tiktok=?, social_other=? WHERE id=?'
-  ).run(
+  await db
+    .prepare(
+      'UPDATE users SET handle=?, bio=?, category=?, location=?, avatar_color=?, social_instagram=?, social_facebook=?, social_tiktok=?, social_other=? WHERE id=?'
+    )
+    .run(
     normalizedHandle,
     bioStr,
     category || '',
@@ -415,10 +426,10 @@ router.post('/avatar', require('../middleware/auth'), (req, res, next) => {
   });
 });
 
-router.post('/banner', require('../middleware/auth'), uploadBanner.single('banner'), (req, res) => {
+router.post('/banner', require('../middleware/auth'), uploadBanner.single('banner'), async (req, res) => {
   if (!req.file) return res.status(400).json({ error: 'Archivo requerido' });
   const banner_url = '/uploads/' + req.file.filename;
-  db.prepare('UPDATE users SET banner_url = ? WHERE id = ?').run(banner_url, req.user.id);
+  await db.prepare('UPDATE users SET banner_url = ? WHERE id = ?').run(banner_url, req.user.id);
   res.json({ banner_url });
 });
 

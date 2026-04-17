@@ -7,10 +7,7 @@ const {
   mapPreapprovalStatusToDb,
   normalizePreapprovalPayload
 } = require('../lib/mpSubscription');
-const {
-  getPaymentClient,
-  normalizeMpPayload
-} = require('../lib/mpPreference');
+const { getPaymentClient, normalizeMpPayload } = require('../lib/mpPreference');
 
 /**
  * Extrae topic e id de notificaciones MP (GET query o POST body).
@@ -66,10 +63,8 @@ async function syncSubscriptionFromPreapproval(mpPreapprovalId) {
     nextBilling = nb.toISOString();
   }
 
-  const sub = db
-    .prepare(
-      `SELECT * FROM subscriptions WHERE id = ? OR mp_subscription_id = ? LIMIT 1`
-    )
+  const sub = await db
+    .prepare(`SELECT * FROM subscriptions WHERE id = ? OR mp_subscription_id = ? LIMIT 1`)
     .get(externalRef, mpId);
 
   if (!sub) {
@@ -78,29 +73,33 @@ async function syncSubscriptionFromPreapproval(mpPreapprovalId) {
   }
 
   if (dbStatus === 'active' && nextBilling) {
-    db.prepare(
-      `UPDATE subscriptions
+    await db
+      .prepare(
+        `UPDATE subscriptions
        SET status = ?,
            mp_subscription_id = ?,
            mp_preapproval_status = ?,
            next_billing = ?,
            updated_at = datetime('now')
        WHERE id = ?`
-    ).run(dbStatus, mpId, mpStatus, nextBilling, sub.id);
+      )
+      .run(dbStatus, mpId, mpStatus, nextBilling, sub.id);
   } else {
-    db.prepare(
-      `UPDATE subscriptions
+    await db
+      .prepare(
+        `UPDATE subscriptions
        SET status = ?,
            mp_subscription_id = ?,
            mp_preapproval_status = ?,
            updated_at = datetime('now')
        WHERE id = ?`
-    ).run(dbStatus, mpId, mpStatus, sub.id);
+      )
+      .run(dbStatus, mpId, mpStatus, sub.id);
   }
 
   if (dbStatus === 'active') {
-    const fan = db.prepare('SELECT name FROM users WHERE id = ?').get(sub.fan_id);
-    const plan = db.prepare('SELECT name FROM plans WHERE id = ?').get(sub.plan_id);
+    const fan = await db.prepare('SELECT name FROM users WHERE id = ?').get(sub.fan_id);
+    const plan = await db.prepare('SELECT name FROM plans WHERE id = ?').get(sub.plan_id);
     createNotification({
       userId: sub.creator_id,
       type: 'NEW_SUBSCRIBER',
@@ -132,15 +131,13 @@ async function syncDonationFromPayment(mpPaymentId) {
 
   if (!extRef) return;
 
-  const donation = db.prepare('SELECT * FROM donations WHERE id = ?').get(extRef);
+  const donation = await db.prepare('SELECT * FROM donations WHERE id = ?').get(extRef);
   if (!donation) return;
   if (donation.status === 'completed') return;
 
   if (status === 'approved') {
-    db.prepare(
-      `UPDATE donations SET status = 'completed', mp_payment_id = ? WHERE id = ?`
-    ).run(mpId, extRef);
-    const fan = db.prepare('SELECT name FROM users WHERE id = ?').get(donation.fan_id);
+    await db.prepare(`UPDATE donations SET status = 'completed', mp_payment_id = ? WHERE id = ?`).run(mpId, extRef);
+    const fan = await db.prepare('SELECT name FROM users WHERE id = ?').get(donation.fan_id);
     createNotification({
       userId: donation.creator_id,
       type: 'NEW_DONATION',
@@ -153,7 +150,7 @@ async function syncDonationFromPayment(mpPaymentId) {
     }).catch(() => null);
     console.log('[WEBHOOK] Donación completada', { id: extRef });
   } else if (status === 'rejected' || status === 'cancelled' || status === 'refunded') {
-    db.prepare(`UPDATE donations SET status = 'failed' WHERE id = ?`).run(extRef);
+    await db.prepare(`UPDATE donations SET status = 'failed' WHERE id = ?`).run(extRef);
     console.log('[WEBHOOK] Donación no aprobada', { id: extRef, status });
   }
 }

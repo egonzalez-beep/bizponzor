@@ -15,6 +15,12 @@ const isValidEmail = (email) => {
   return typeof email === 'string' && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
 };
 
+function isUniqueConstraint(err) {
+  const code = err && err.code;
+  const msg = String((err && err.message) || '');
+  return code === '23505' || code === 'SQLITE_CONSTRAINT_UNIQUE' || /UNIQUE/i.test(msg);
+}
+
 /**
  * POST /api/subscriptions/checkout
  * Crea fila pending en DB y luego PreApproval en Mercado Pago (suscripción recurrente real).
@@ -27,20 +33,14 @@ router.post('/checkout', auth, async (req, res) => {
     }
 
     const { plan_id, creator_id } = req.body;
-    const plan = db
-      .prepare('SELECT * FROM plans WHERE id=? AND creator_id=? AND active=1')
-      .get(plan_id, creator_id);
-    const creator = db
-      .prepare('SELECT id, name FROM users WHERE id=? AND role=?')
-      .get(creator_id, 'creator');
+    const plan = await db.prepare('SELECT * FROM plans WHERE id=? AND creator_id=? AND active=1').get(plan_id, creator_id);
+    const creator = await db.prepare('SELECT id, name FROM users WHERE id=? AND role=?').get(creator_id, 'creator');
 
     if (!plan) return res.status(404).json({ error: 'Plan no encontrado' });
     if (!creator) return res.status(404).json({ error: 'Creador no encontrado' });
 
-    const existingActive = db
-      .prepare(
-        `SELECT id FROM subscriptions WHERE fan_id = ? AND creator_id = ? AND status = 'active'`
-      )
+    const existingActive = await db
+      .prepare(`SELECT id FROM subscriptions WHERE fan_id = ? AND creator_id = ? AND status = 'active'`)
       .get(req.user.id, creator_id);
     if (existingActive) {
       return res.status(400).json({ error: 'Ya estás suscrito a este creador' });
@@ -62,18 +62,20 @@ router.post('/checkout', auth, async (req, res) => {
       const nextBilling = new Date();
       nextBilling.setMonth(nextBilling.getMonth() + 1);
       try {
-        db.prepare(
-          `INSERT INTO subscriptions (id, fan_id, creator_id, plan_id, status, amount, next_billing)
+        await db
+          .prepare(
+            `INSERT INTO subscriptions (id, fan_id, creator_id, plan_id, status, amount, next_billing)
            VALUES (?,?,?,?,?,?,?)`
-        ).run(sub_id, req.user.id, creator_id, plan_id, 'active', 0, nextBilling.toISOString());
+          )
+          .run(sub_id, req.user.id, creator_id, plan_id, 'active', 0, nextBilling.toISOString());
       } catch (insertErr) {
-        if (String(insertErr.message || '').includes('UNIQUE') || insertErr.code === 'SQLITE_CONSTRAINT_UNIQUE') {
+        if (isUniqueConstraint(insertErr)) {
           return res.status(400).json({ error: 'Ya estás suscrito a este creador' });
         }
         throw insertErr;
       }
       console.log('[checkout] suscripción gratuita activa', { sub_id, fan_id: req.user.id, plan_id });
-      const fan = db.prepare('SELECT name FROM users WHERE id = ?').get(req.user.id);
+      const fan = await db.prepare('SELECT name FROM users WHERE id = ?').get(req.user.id);
       createNotification({
         userId: creator_id,
         type: 'NEW_SUBSCRIBER',
@@ -99,30 +101,31 @@ router.post('/checkout', auth, async (req, res) => {
       action: 'init_checkout'
     });
 
-    const account = db.prepare(`
+    const account = await db.prepare(`
       SELECT user_id, access_token, mp_user_id
       FROM mercado_pago_accounts
       WHERE user_id = ?
     `).get(creator_id);
 
-    console.log('[MP] Account Check:', account ? {
-      user_id: account.user_id,
-      mp_user_id: account.mp_user_id,
-      has_token: !!account.access_token,
-      token_hash: account.access_token
-        ? crypto.createHash('sha256')
-          .update(account.access_token)
-          .digest('hex')
-          .substring(0, 10)
+    console.log(
+      '[MP] Account Check:',
+      account
+        ? {
+            user_id: account.user_id,
+            mp_user_id: account.mp_user_id,
+            has_token: !!account.access_token,
+            token_hash: account.access_token
+              ? crypto
+                  .createHash('sha256')
+                  .update(account.access_token)
+                  .digest('hex')
+                  .substring(0, 10)
+              : null
+          }
         : null
-    } : null);
+    );
 
-    if (
-      !account ||
-      !account.access_token ||
-      typeof account.access_token !== 'string' ||
-      account.access_token.length < 20
-    ) {
+    if (!account || !account.access_token || typeof account.access_token !== 'string' || account.access_token.length < 20) {
       return res.status(400).json({
         error: 'El creador no tiene una cuenta de Mercado Pago válida'
       });
@@ -131,12 +134,12 @@ router.post('/checkout', auth, async (req, res) => {
     const sub_id = uuidv4();
 
     try {
-      db.prepare(
-        `INSERT INTO subscriptions (id, fan_id, creator_id, plan_id, status, amount)
-         VALUES (?,?,?,?,?,?)`
-      ).run(sub_id, req.user.id, creator_id, plan_id, 'pending', amount);
+      await db
+        .prepare(`INSERT INTO subscriptions (id, fan_id, creator_id, plan_id, status, amount)
+         VALUES (?,?,?,?,?,?)`)
+        .run(sub_id, req.user.id, creator_id, plan_id, 'pending', amount);
     } catch (insertErr) {
-      if (String(insertErr.message || '').includes('UNIQUE') || insertErr.code === 'SQLITE_CONSTRAINT_UNIQUE') {
+      if (isUniqueConstraint(insertErr)) {
         return res.status(400).json({ error: 'Ya estás suscrito a este creador' });
       }
       throw insertErr;
@@ -173,14 +176,13 @@ router.post('/checkout', auth, async (req, res) => {
       const rawMp = await preApprovalClient.create({ body });
       const mpResponse = normalizePreapprovalPayload(rawMp) || rawMp;
       const mpId = mpResponse.id;
-      const checkoutUrl =
-        mpResponse.init_point || mpResponse.sandbox_init_point;
+      const checkoutUrl = mpResponse.init_point || mpResponse.sandbox_init_point;
 
       if (mpId) {
-        db.prepare(
-          `UPDATE subscriptions SET mp_subscription_id = ?, mp_preapproval_status = ?
-           WHERE id = ?`
-        ).run(String(mpId), mpResponse.status || 'pending', sub_id);
+        await db
+          .prepare(`UPDATE subscriptions SET mp_subscription_id = ?, mp_preapproval_status = ?
+           WHERE id = ?`)
+          .run(String(mpId), mpResponse.status || 'pending', sub_id);
       }
 
       console.log('[MP] Suscripción usando token del creador:', creator_id);
@@ -210,16 +212,16 @@ router.post('/checkout', auth, async (req, res) => {
   }
 });
 
-router.post('/activate/:sub_id', auth, (req, res) => {
-  const sub = db.prepare('SELECT * FROM subscriptions WHERE id=?').get(req.params.sub_id);
+router.post('/activate/:sub_id', auth, async (req, res) => {
+  const sub = await db.prepare('SELECT * FROM subscriptions WHERE id=?').get(req.params.sub_id);
   if (!sub) return res.status(404).json({ error: 'No encontrado' });
   const nextBilling = new Date();
   nextBilling.setMonth(nextBilling.getMonth() + 1);
-  db.prepare(
-    "UPDATE subscriptions SET status='active', next_billing=?, updated_at=datetime('now') WHERE id=?"
-  ).run(nextBilling.toISOString(), sub.id);
-  const fan = db.prepare('SELECT name FROM users WHERE id = ?').get(sub.fan_id);
-  const plan = db.prepare('SELECT name FROM plans WHERE id = ?').get(sub.plan_id);
+  await db
+    .prepare("UPDATE subscriptions SET status='active', next_billing=?, updated_at=datetime('now') WHERE id=?")
+    .run(nextBilling.toISOString(), sub.id);
+  const fan = await db.prepare('SELECT name FROM users WHERE id = ?').get(sub.fan_id);
+  const plan = await db.prepare('SELECT name FROM plans WHERE id = ?').get(sub.plan_id);
   createNotification({
     userId: sub.creator_id,
     type: 'NEW_SUBSCRIBER',
@@ -230,11 +232,11 @@ router.post('/activate/:sub_id', auth, (req, res) => {
 });
 
 /** GET /api/subscriptions/my-subscribers — solo creador; lista activa con fan_handle para notificaciones/UI */
-router.get('/my-subscribers', auth, (req, res) => {
+router.get('/my-subscribers', auth, async (req, res) => {
   if (req.user.role !== 'creator') {
     return res.status(403).json({ error: 'Solo creadores' });
   }
-  const subs = db
+  const subs = await db
     .prepare(
       `SELECT s.*, u.name as fan_name, u.email as fan_email, u.handle as fan_handle,
               p.name as plan_name, p.price
@@ -247,9 +249,9 @@ router.get('/my-subscribers', auth, (req, res) => {
   res.json(subs);
 });
 
-router.get('/my', auth, (req, res) => {
+router.get('/my', auth, async (req, res) => {
   if (req.user.role === 'fan') {
-    const subs = db
+    const subs = await db
       .prepare(
         `SELECT s.*, u.name as creator_name, u.handle, u.avatar_url, p.name as plan_name, p.price
          FROM subscriptions s
@@ -260,7 +262,7 @@ router.get('/my', auth, (req, res) => {
       .all(req.user.id);
     res.json(subs);
   } else {
-    const subs = db
+    const subs = await db
       .prepare(
         `SELECT s.*, u.name as fan_name, u.email as fan_email, p.name as plan_name, p.price
          FROM subscriptions s
@@ -273,33 +275,24 @@ router.get('/my', auth, (req, res) => {
   }
 });
 
-router.post('/cancel/:id', auth, (req, res) => {
-  db.prepare("UPDATE subscriptions SET status='cancelled' WHERE id=? AND fan_id=?").run(
-    req.params.id,
-    req.user.id
-  );
+router.post('/cancel/:id', auth, async (req, res) => {
+  await db.prepare("UPDATE subscriptions SET status='cancelled' WHERE id=? AND fan_id=?").run(req.params.id, req.user.id);
   res.json({ success: true });
 });
 
-router.get('/stats', auth, (req, res) => {
+router.get('/stats', auth, async (req, res) => {
   if (req.user.role !== 'creator') return res.status(403).json({ error: 'Solo creadores' });
-  const total = db
-    .prepare(
-      "SELECT COUNT(*) as count FROM subscriptions WHERE creator_id=? AND status='active'"
-    )
+  const total = await db
+    .prepare("SELECT COUNT(*) as count FROM subscriptions WHERE creator_id=? AND status='active'")
     .get(req.user.id);
-  const revenue = db
-    .prepare(
-      "SELECT SUM(amount) as total FROM subscriptions WHERE creator_id=? AND status='active'"
-    )
+  const revenue = await db
+    .prepare("SELECT SUM(amount) as total FROM subscriptions WHERE creator_id=? AND status='active'")
     .get(req.user.id);
-  const content = db
-    .prepare('SELECT COUNT(*) as count FROM content WHERE creator_id=?')
-    .get(req.user.id);
+  const content = await db.prepare('SELECT COUNT(*) as count FROM content WHERE creator_id=?').get(req.user.id);
   res.json({
-    subscribers: total.count,
+    subscribers: Number(total.count),
     monthly_revenue: revenue.total || 0,
-    content_count: content.count
+    content_count: Number(content.count)
   });
 });
 

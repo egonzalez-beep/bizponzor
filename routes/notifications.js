@@ -22,10 +22,10 @@ function rowToApi(n) {
 }
 
 /** GET /api/notifications/unread-count (antes de GET / para claridad) */
-router.get('/unread-count', auth, (req, res) => {
+router.get('/unread-count', auth, async (req, res) => {
   try {
     const userId = req.user.id;
-    const row = db
+    const row = await db
       .prepare(
         `SELECT COUNT(*) as c FROM notifications
          WHERE user_id = ?
@@ -33,7 +33,7 @@ router.get('/unread-count', auth, (req, res) => {
            AND datetime(created_at) >= datetime('now', '-30 days')`
       )
       .get(userId);
-    res.json({ unreadCount: row ? row.c : 0 });
+    res.json({ unreadCount: row ? Number(row.c) : 0 });
   } catch (e) {
     console.error('[notifications unread-count]', e);
     res.status(500).json({ error: e.message || 'Error interno' });
@@ -41,10 +41,10 @@ router.get('/unread-count', auth, (req, res) => {
 });
 
 /** PATCH /api/notifications/read-all */
-router.patch('/read-all', auth, (req, res) => {
+router.patch('/read-all', auth, async (req, res) => {
   try {
     const userId = req.user.id;
-    const r = db
+    const r = await db
       .prepare(
         `UPDATE notifications
          SET is_read = 1, read_at = datetime('now')
@@ -61,13 +61,13 @@ router.patch('/read-all', auth, (req, res) => {
 });
 
 /** GET /api/notifications?cursor=&limit=15 */
-router.get('/', auth, (req, res) => {
+router.get('/', auth, async (req, res) => {
   try {
     const userId = req.user.id;
     const limit = Math.min(Math.max(parseInt(req.query.limit, 10) || 15, 1), 30);
     const cursor = req.query.cursor ? String(req.query.cursor).trim() : '';
 
-    const unreadRow = db
+    const unreadRow = await db
       .prepare(
         `SELECT COUNT(*) as c FROM notifications
          WHERE user_id = ?
@@ -75,12 +75,12 @@ router.get('/', auth, (req, res) => {
            AND datetime(created_at) >= datetime('now', '-30 days')`
       )
       .get(userId);
-    const unreadCount = unreadRow ? unreadRow.c : 0;
+    const unreadCount = unreadRow ? Number(unreadRow.c) : 0;
 
     const fetchLimit = limit + 1;
     let rows;
     if (cursor) {
-      rows = db
+      rows = await db
         .prepare(
           `SELECT * FROM notifications
            WHERE user_id = ?
@@ -91,7 +91,7 @@ router.get('/', auth, (req, res) => {
         )
         .all(userId, cursor, fetchLimit);
     } else {
-      rows = db
+      rows = await db
         .prepare(
           `SELECT * FROM notifications
            WHERE user_id = ?
@@ -119,15 +119,15 @@ router.get('/', auth, (req, res) => {
 });
 
 /** PATCH /api/notifications/:id/read */
-router.patch('/:id/read', auth, (req, res) => {
+router.patch('/:id/read', auth, async (req, res) => {
   try {
     const userId = req.user.id;
     const id = req.params.id;
-    const n = db.prepare('SELECT id FROM notifications WHERE id = ? AND user_id = ?').get(id, userId);
+    const n = await db.prepare('SELECT id FROM notifications WHERE id = ? AND user_id = ?').get(id, userId);
     if (!n) return res.status(404).json({ error: 'No encontrado' });
-    db.prepare(
-      `UPDATE notifications SET is_read = 1, read_at = datetime('now') WHERE id = ? AND user_id = ?`
-    ).run(id, userId);
+    await db
+      .prepare(`UPDATE notifications SET is_read = 1, read_at = datetime('now') WHERE id = ? AND user_id = ?`)
+      .run(id, userId);
     res.json({ success: true });
   } catch (e) {
     console.error('[notifications read one]', e);

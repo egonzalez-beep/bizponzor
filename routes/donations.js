@@ -33,7 +33,7 @@ router.post('/checkout', auth, async (req, res) => {
         error: `El monto mínimo de donación es $${MIN_DONATION} MXN`
       });
     }
-    const creator = db
+    const creator = await db
       .prepare("SELECT id, name FROM users WHERE id=? AND role='creator'")
       .get(creator_id);
     if (!creator) return res.status(404).json({ error: 'Creador no encontrado' });
@@ -45,7 +45,7 @@ router.post('/checkout', auth, async (req, res) => {
       action: 'init_checkout'
     });
 
-    const account = db.prepare(`
+    const account = await db.prepare(`
       SELECT user_id, access_token, mp_user_id
       FROM mercado_pago_accounts
       WHERE user_id = ?
@@ -72,10 +72,12 @@ router.post('/checkout', auth, async (req, res) => {
     }
 
     const donationId = uuidv4();
-    db.prepare(
-      `INSERT INTO donations (id, fan_id, creator_id, amount, currency_id, status)
+    await db
+      .prepare(
+        `INSERT INTO donations (id, fan_id, creator_id, amount, currency_id, status)
        VALUES (?,?,?,?,?,?)`
-    ).run(donationId, req.user.id, creator_id, amt, 'MXN', 'pending');
+      )
+      .run(donationId, req.user.id, creator_id, amt, 'MXN', 'pending');
 
     const preferenceClient = getPreferenceClient();
     if (!preferenceClient) {
@@ -117,7 +119,7 @@ router.post('/checkout', auth, async (req, res) => {
     const pref = normalizeMpPayload(raw) || raw;
     const prefId = pref.id;
     if (prefId) {
-      db.prepare('UPDATE donations SET mp_preference_id = ? WHERE id = ?').run(
+      await db.prepare('UPDATE donations SET mp_preference_id = ? WHERE id = ?').run(
         String(prefId),
         donationId
       );
@@ -134,11 +136,11 @@ router.post('/checkout', auth, async (req, res) => {
   }
 });
 
-function listReceivedDonations(req, res) {
+async function listReceivedDonations(req, res) {
   if (req.user.role !== 'creator') {
     return res.status(403).json({ error: 'Solo creadores' });
   }
-  const rows = db
+  const rows = await db
     .prepare(
       `SELECT d.id, d.amount, d.currency_id, d.status, d.created_at,
               u.name as fan_name, u.email as fan_email
@@ -155,11 +157,11 @@ router.get('/my', auth, listReceivedDonations);
 /** Alias solicitado por el cliente (misma respuesta que GET /donations/my) */
 router.get('/received', auth, listReceivedDonations);
 
-router.get('/summary', auth, (req, res) => {
+router.get('/summary', auth, async (req, res) => {
   if (req.user.role !== 'creator') {
     return res.status(403).json({ error: 'Solo creadores' });
   }
-  const total = db
+  const total = await db
     .prepare(
       `SELECT COALESCE(SUM(amount), 0) as total FROM donations
        WHERE creator_id = ? AND status = 'completed'`

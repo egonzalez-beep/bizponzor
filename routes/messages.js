@@ -4,18 +4,18 @@ const crypto = require('crypto');
 const db = require('../db');
 const auth = require('../middleware/auth');
 
-router.post('/:id/read', auth, (req, res) => {
+router.post('/:id/read', auth, async (req, res) => {
   try {
     const messageId = req.params.id;
     const userId = req.user.id;
 
-    const message = db.prepare('SELECT receiver_id FROM messages WHERE id = ?').get(messageId);
+    const message = await db.prepare('SELECT receiver_id FROM messages WHERE id = ?').get(messageId);
 
     if (!message || message.receiver_id !== userId) {
       return res.status(403).json({ error: 'No autorizado' });
     }
 
-    db.prepare(`
+    await db.prepare(`
       UPDATE messages SET read_at = datetime('now')
       WHERE id = ? AND read_at IS NULL
     `).run(messageId);
@@ -27,7 +27,7 @@ router.post('/:id/read', auth, (req, res) => {
   }
 });
 
-router.post('/', auth, (req, res) => {
+router.post('/', auth, async (req, res) => {
   try {
     const senderId = req.user.id;
     const { receiverId, content } = req.body;
@@ -45,7 +45,7 @@ router.post('/', auth, (req, res) => {
       return res.status(400).json({ error: 'No puedes enviarte mensajes a ti mismo' });
     }
 
-    const receiver = db.prepare('SELECT id, role FROM users WHERE id = ?').get(receiverId);
+    const receiver = await db.prepare('SELECT id, role FROM users WHERE id = ?').get(receiverId);
     if (!receiver) {
       return res.status(404).json({ error: 'Destinatario no existe' });
     }
@@ -62,7 +62,7 @@ router.post('/', auth, (req, res) => {
       return res.status(400).json({ error: 'Solo mensajes entre fan y creador' });
     }
 
-    const subscription = db
+    const subscription = await db
       .prepare(
         `SELECT id FROM subscriptions
          WHERE fan_id = ? AND creator_id = ? AND status = 'active'`
@@ -73,10 +73,12 @@ router.post('/', auth, (req, res) => {
       return res.status(403).json({ error: 'Debes estar suscrito para enviar mensajes' });
     }
 
-    db.prepare(
-      `INSERT INTO messages (id, sender_id, receiver_id, content)
+    await db
+      .prepare(
+        `INSERT INTO messages (id, sender_id, receiver_id, content)
        VALUES (?, ?, ?, ?)`
-    ).run(crypto.randomUUID(), senderId, receiverId, text.slice(0, 8000));
+      )
+      .run(crypto.randomUUID(), senderId, receiverId, text.slice(0, 8000));
 
     return res.json({ success: true });
   } catch (error) {
@@ -85,12 +87,12 @@ router.post('/', auth, (req, res) => {
   }
 });
 
-router.get('/conversation/:userId', auth, (req, res) => {
+router.get('/conversation/:userId', auth, async (req, res) => {
   try {
     const otherUserId = req.params.userId;
     const myId = req.user.id;
 
-    const other = db.prepare('SELECT id, role FROM users WHERE id = ?').get(otherUserId);
+    const other = await db.prepare('SELECT id, role FROM users WHERE id = ?').get(otherUserId);
     if (!other) {
       return res.status(404).json({ error: 'Usuario no encontrado' });
     }
@@ -107,7 +109,7 @@ router.get('/conversation/:userId', auth, (req, res) => {
       return res.status(403).json({ error: 'Conversación no permitida' });
     }
 
-    const sub = db
+    const sub = await db
       .prepare(
         `SELECT id FROM subscriptions WHERE fan_id = ? AND creator_id = ? AND status = 'active'`
       )
@@ -116,7 +118,7 @@ router.get('/conversation/:userId', auth, (req, res) => {
       return res.status(403).json({ error: 'No hay suscripción activa' });
     }
 
-    const rows = db
+    const rows = await db
       .prepare(
         `SELECT
            m.id,
@@ -170,13 +172,13 @@ router.get('/conversation/:userId', auth, (req, res) => {
  * GET /api/messages/conversations
  * Lista conversaciones en una sola query (fan: por suscripciones activas; creador: hilos con mensajes + sub activa).
  */
-router.get('/conversations', auth, (req, res) => {
+router.get('/conversations', auth, async (req, res) => {
   try {
     const userId = req.user.id;
     const userRole = req.user.role;
 
     if (userRole === 'fan') {
-      const rows = db
+      const rows = await db
         .prepare(
           `SELECT 
             c.id AS user_id,
@@ -222,7 +224,7 @@ router.get('/conversations', auth, (req, res) => {
     }
 
     if (userRole === 'creator') {
-      const rows = db
+      const rows = await db
         .prepare(
           `SELECT 
             u.id AS user_id,
@@ -302,7 +304,7 @@ router.get('/conversations', auth, (req, res) => {
  * POST /api/messages/conversations/:userId/delete
  * Soft-delete: el usuario actual deja de ver el hilo; no se borran filas en messages.
  */
-router.post('/conversations/:userId/delete', auth, (req, res) => {
+router.post('/conversations/:userId/delete', auth, async (req, res) => {
   try {
     const currentUserId = req.user.id;
     const otherUserId = req.params.userId;
@@ -310,7 +312,7 @@ router.post('/conversations/:userId/delete', auth, (req, res) => {
       return res.status(400).json({ error: 'Solicitud inválida' });
     }
 
-    const other = db.prepare('SELECT id, role FROM users WHERE id = ?').get(otherUserId);
+    const other = await db.prepare('SELECT id, role FROM users WHERE id = ?').get(otherUserId);
     if (!other) return res.status(404).json({ error: 'Usuario no encontrado' });
 
     let fanId;
@@ -325,7 +327,7 @@ router.post('/conversations/:userId/delete', auth, (req, res) => {
       return res.status(403).json({ error: 'No permitido' });
     }
 
-    const sub = db
+    const sub = await db
       .prepare(
         `SELECT id FROM subscriptions WHERE fan_id = ? AND creator_id = ? AND status = 'active'`
       )
@@ -334,10 +336,12 @@ router.post('/conversations/:userId/delete', auth, (req, res) => {
       return res.status(403).json({ error: 'No hay suscripción activa' });
     }
 
-    db.prepare(
-      `INSERT OR IGNORE INTO deleted_conversations (id, user_id, other_user_id)
+    await db
+      .prepare(
+        `INSERT OR IGNORE INTO deleted_conversations (id, user_id, other_user_id)
        VALUES (?, ?, ?)`
-    ).run(crypto.randomUUID(), currentUserId, otherUserId);
+      )
+      .run(crypto.randomUUID(), currentUserId, otherUserId);
 
     return res.json({ success: true });
   } catch (err) {
@@ -346,7 +350,7 @@ router.post('/conversations/:userId/delete', auth, (req, res) => {
   }
 });
 
-router.get('/:userId', auth, (req, res) => {
+router.get('/:userId', auth, async (req, res) => {
   try {
     const userId = req.params.userId;
     const loggedUserId = req.user.id;
@@ -355,12 +359,12 @@ router.get('/:userId', auth, (req, res) => {
       return res.status(403).json({ error: 'No autorizado' });
     }
 
-    const user = db.prepare('SELECT role FROM users WHERE id = ?').get(userId);
+    const user = await db.prepare('SELECT role FROM users WHERE id = ?').get(userId);
     if (!user || user.role !== 'creator') {
       return res.status(403).json({ error: 'Solo los creadores pueden ver mensajes' });
     }
 
-    const messages = db
+    const messages = await db
       .prepare(
         `SELECT m.*, u.handle, u.email, u.name as sender_name
          FROM messages m

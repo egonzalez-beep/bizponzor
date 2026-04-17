@@ -9,7 +9,7 @@
 function requireActiveFanSubscription(paramName = 'creatorId') {
   const db = require('../db');
 
-  return (req, res, next) => {
+  return async (req, res, next) => {
     try {
       if (!req.user) {
         return res.status(401).json({ error: 'Autenticación requerida' });
@@ -26,7 +26,7 @@ function requireActiveFanSubscription(paramName = 'creatorId') {
         return res.status(400).json({ error: 'Falta creator_id' });
       }
 
-      const row = db
+      const row = await db
         .prepare(
           `SELECT id FROM subscriptions
            WHERE fan_id = ? AND creator_id = ? AND status = 'active'
@@ -56,7 +56,7 @@ function requireActiveFanSubscription(paramName = 'creatorId') {
 /**
  * Exige que el fan tenga al menos una suscripción activa (cualquier creador).
  */
-function requireAnyActiveFanSubscription(req, res, next) {
+async function requireAnyActiveFanSubscription(req, res, next) {
   const db = require('../db');
 
   try {
@@ -70,10 +70,8 @@ function requireAnyActiveFanSubscription(req, res, next) {
       return res.status(403).json({ error: 'Solo fans o creadores' });
     }
 
-    const row = db
-      .prepare(
-        `SELECT id FROM subscriptions WHERE fan_id = ? AND status = 'active' LIMIT 1`
-      )
+    const row = await db
+      .prepare(`SELECT id FROM subscriptions WHERE fan_id = ? AND status = 'active' LIMIT 1`)
       .get(req.user.id);
 
     if (!row) {
