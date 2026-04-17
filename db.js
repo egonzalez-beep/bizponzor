@@ -294,6 +294,24 @@ db.exec(`
   CREATE INDEX IF NOT EXISTS idx_users_id ON users(id);
 `);
 
+['username', 'terms_accepted_at', 'privacy_accepted_at', 'terms_version', 'privacy_version', 'accepted_ip', 'reset_token', 'reset_token_expires'].forEach((col) => {
+  const types = {
+    username: 'TEXT',
+    terms_accepted_at: 'TEXT',
+    privacy_accepted_at: 'TEXT',
+    terms_version: 'TEXT',
+    privacy_version: 'TEXT',
+    accepted_ip: 'TEXT',
+    reset_token: 'TEXT',
+    reset_token_expires: 'TEXT'
+  };
+  try {
+    db.exec(`ALTER TABLE users ADD COLUMN ${col} ${types[col]};`);
+  } catch (e) {
+    /* exists */
+  }
+});
+
 db.exec(`
   CREATE TABLE IF NOT EXISTS notifications (
     id          TEXT PRIMARY KEY,

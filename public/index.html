@@ -595,6 +595,29 @@
   .landing-auth-switch a:hover {
     color: #fff;
   }
+  #landing .landing-legal-row {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    margin-bottom: 14px;
+    font-size: 0.82rem;
+    line-height: 1.45;
+    color: rgba(255, 255, 255, 0.72);
+  }
+  #landing .landing-legal-row input[type='checkbox'] {
+    margin-top: 3px;
+    width: 18px;
+    height: 18px;
+    flex-shrink: 0;
+    accent-color: #a78bfa;
+    cursor: pointer;
+  }
+  #landing .landing-legal-row a {
+    color: #c4b5fd;
+    font-weight: 600;
+    text-decoration: underline;
+    text-underline-offset: 2px;
+  }
 
   /* Features + carrusel 3D */
   .features {
@@ -4555,6 +4578,11 @@
               <input type="text" class="form-input landing-form-input" id="landing-reg-name" placeholder="Tu nombre" autocomplete="name" />
             </div>
             <div class="form-group">
+              <label class="form-label" for="landing-reg-username">Nombre de usuario</label>
+              <input type="text" class="form-input landing-form-input" id="landing-reg-username" placeholder="ej. ana_creadora" autocomplete="username" autocapitalize="off" spellcheck="false" />
+              <div class="landing-auth-lead" style="margin:6px 0 0;font-size:0.78rem">Solo letras, números y guión bajo. Mínimo 3 caracteres. No podrás cambiarlo después.</div>
+            </div>
+            <div class="form-group">
               <label class="form-label" for="landing-reg-email">Correo electrónico</label>
               <input type="email" class="form-input landing-form-input" id="landing-reg-email" placeholder="tu@email.com" autocomplete="email" />
             </div>
@@ -4562,6 +4590,18 @@
               <label class="form-label" for="landing-reg-password">Contraseña</label>
               <input type="password" class="form-input landing-form-input" id="landing-reg-password" placeholder="Mínimo 8 caracteres" autocomplete="new-password" />
             </div>
+            <div class="form-group">
+              <label class="form-label" for="landing-reg-password2">Confirmar contraseña</label>
+              <input type="password" class="form-input landing-form-input" id="landing-reg-password2" placeholder="Repite tu contraseña" autocomplete="new-password" />
+            </div>
+            <label class="landing-legal-row">
+              <input type="checkbox" id="landing-terms" />
+              <span>Acepto los <a href="/terms" target="_blank" rel="noopener noreferrer">Términos y Condiciones</a></span>
+            </label>
+            <label class="landing-legal-row">
+              <input type="checkbox" id="landing-privacy" />
+              <span>He leído el <a href="/privacy" target="_blank" rel="noopener noreferrer">Aviso de Privacidad</a></span>
+            </label>
             <button type="button" class="btn btn-primary btn-full landing-auth-cta" onclick="simulateRegister(event)">Crear mi cuenta gratis</button>
             <div class="landing-auth-switch">¿Ya tienes cuenta? <a tabindex="0" role="button" onclick="switchLandingAuthView('login')">Inicia sesión</a></div>
           </div>
@@ -4577,6 +4617,7 @@
               <input type="password" class="form-input landing-form-input" id="landing-login-password" placeholder="••••••••" autocomplete="current-password" />
             </div>
             <button type="button" class="btn btn-primary btn-full landing-auth-cta" onclick="simulateLogin(event)">Entrar a BizPonzor</button>
+            <div class="landing-auth-switch">¿Olvidaste tu contraseña? <a href="/forgot-password" target="_blank" rel="noopener noreferrer">Recuperar</a></div>
             <div class="landing-auth-switch">¿No tienes cuenta? <a tabindex="0" role="button" onclick="switchLandingAuthView('register')">Crear cuenta gratis</a></div>
           </div>
         </div>
@@ -4770,7 +4811,7 @@
         </div>
         <button class="btn btn-primary btn-full" onclick="simulateLogin(event)" style="margin-top:8px;">Entrar a BizPonzor</button>
         <div style="text-align:center;margin-top:14px;">
-          <a style="font-size:0.8rem;color:var(--gray-500);cursor:pointer;">¿Olvidaste tu contraseña?</a>
+          <a href="/forgot-password" target="_blank" rel="noopener noreferrer" style="font-size:0.8rem;color:#A3A3A3;">¿Olvidaste tu contraseña?</a>
         </div>
       </div>
 
@@ -4793,12 +4834,28 @@
           <input type="text" class="form-input" placeholder="Tu nombre" id="reg-name">
         </div>
         <div class="form-group">
+          <label class="form-label">Nombre de usuario</label>
+          <input type="text" class="form-input" id="reg-username" placeholder="solo letras, números y _" autocomplete="username" autocapitalize="off" spellcheck="false" />
+        </div>
+        <div class="form-group">
           <label class="form-label">Correo electrónico</label>
-          <input type="email" class="form-input" placeholder="tu@email.com">
+          <input type="email" class="form-input" id="reg-email" placeholder="tu@email.com" autocomplete="email" />
         </div>
         <div class="form-group">
           <label class="form-label">Contraseña</label>
-          <input type="password" class="form-input" placeholder="Mínimo 8 caracteres">
+          <input type="password" class="form-input" id="reg-password" placeholder="Mínimo 8 caracteres" autocomplete="new-password" />
+        </div>
+        <div class="form-group">
+          <label class="form-label">Confirmar contraseña</label>
+          <input type="password" class="form-input" id="reg-password-confirm" placeholder="Repite tu contraseña" autocomplete="new-password" />
+        </div>
+        <div class="form-group" style="display:flex;align-items:flex-start;gap:10px;font-size:0.82rem;color:#A3A3A3;">
+          <input type="checkbox" id="auth-terms" style="margin-top:3px;" />
+          <label for="auth-terms" style="margin:0;font-weight:400;cursor:pointer;">Acepto los <a href="/terms" target="_blank" rel="noopener noreferrer" style="color:#fff;font-weight:600;">Términos y Condiciones</a></label>
+        </div>
+        <div class="form-group" style="display:flex;align-items:flex-start;gap:10px;font-size:0.82rem;color:#A3A3A3;">
+          <input type="checkbox" id="auth-privacy" style="margin-top:3px;" />
+          <label for="auth-privacy" style="margin:0;font-weight:400;cursor:pointer;">He leído el <a href="/privacy" target="_blank" rel="noopener noreferrer" style="color:#fff;font-weight:600;">Aviso de Privacidad</a></label>
         </div>
         <button class="btn btn-primary btn-full" onclick="simulateRegister(event)" style="margin-top:8px;">Crear mi cuenta</button>
       </div>
@@ -5097,6 +5154,15 @@
                 <label class="form-label">Nombre de usuario</label>
                 <input type="text" class="form-input" id="settings-name" placeholder="Tu nombre" disabled>
                 <div class="settings-hint">Este nombre no se puede editar</div>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Correo electrónico</label>
+                <input type="email" class="form-input" id="settings-email" readonly disabled style="opacity:0.92;cursor:default;">
+              </div>
+              <div class="form-group">
+                <label class="form-label">Usuario (único)</label>
+                <input type="text" class="form-input" id="settings-username" readonly disabled style="opacity:0.92;cursor:default;">
+                <div class="settings-hint">No editable tras el registro</div>
               </div>
               <div class="form-group">
                 <label class="form-label">Alias creativo</label>
@@ -8217,32 +8283,64 @@ async function simulateRegister(ev) {
     regView &&
     window.getComputedStyle(regView).display !== 'none';
   var name = '';
+  var username = '';
   var email = '';
   var password = '';
+  var passwordConfirm = '';
+  var termsAccepted = false;
+  var privacyAccepted = false;
   if (useLanding) {
-    var n = document.getElementById('landing-reg-name');
-    var e = document.getElementById('landing-reg-email');
-    var p = document.getElementById('landing-reg-password');
-    name = n ? String(n.value).trim() : '';
-    email = e ? String(e.value).trim() : '';
-    password = p ? p.value : '';
+    name = (document.getElementById('landing-reg-name') && String(document.getElementById('landing-reg-name').value).trim()) || '';
+    username = (document.getElementById('landing-reg-username') && String(document.getElementById('landing-reg-username').value).trim()) || '';
+    email = (document.getElementById('landing-reg-email') && String(document.getElementById('landing-reg-email').value).trim()) || '';
+    password = (document.getElementById('landing-reg-password') && document.getElementById('landing-reg-password').value) || '';
+    passwordConfirm = (document.getElementById('landing-reg-password2') && document.getElementById('landing-reg-password2').value) || '';
+    termsAccepted = !!(document.getElementById('landing-terms') && document.getElementById('landing-terms').checked);
+    privacyAccepted = !!(document.getElementById('landing-privacy') && document.getElementById('landing-privacy').checked);
   } else {
-    var rn = document.getElementById('reg-name');
-    name = rn ? String(rn.value).trim() : '';
-    var rf = document.getElementById('register-form');
-    if (rf) {
-      var em = rf.querySelector('input[type=email]');
-      var pw = rf.querySelector('input[type=password]');
-      email = em ? String(em.value).trim() : '';
-      password = pw ? pw.value : '';
-    }
+    name = (document.getElementById('reg-name') && String(document.getElementById('reg-name').value).trim()) || '';
+    username = (document.getElementById('reg-username') && String(document.getElementById('reg-username').value).trim()) || '';
+    email = (document.getElementById('reg-email') && String(document.getElementById('reg-email').value).trim()) || '';
+    password = (document.getElementById('reg-password') && document.getElementById('reg-password').value) || '';
+    passwordConfirm = (document.getElementById('reg-password-confirm') && document.getElementById('reg-password-confirm').value) || '';
+    termsAccepted = !!(document.getElementById('auth-terms') && document.getElementById('auth-terms').checked);
+    privacyAccepted = !!(document.getElementById('auth-privacy') && document.getElementById('auth-privacy').checked);
   }
-  if (!name || !email || !password) { showNotif('⚠️ Completa todos los campos'); return; }
+  if (!name || !username || !email || !password) {
+    showNotif('⚠️ Completa todos los campos');
+    return;
+  }
+  if (password !== passwordConfirm) {
+    showNotif('⚠️ Las contraseñas no coinciden');
+    return;
+  }
+  if (!termsAccepted || !privacyAccepted) {
+    showNotif('⚠️ Debes aceptar términos y privacidad');
+    return;
+  }
   var prevBtn = btn ? btn.textContent : '';
-  if (btn) { btn.textContent = 'Creando cuenta...'; btn.disabled = true; }
-  const res = await api.post('/auth/register', { name, email, password, role: currentRole });
-  if (btn) { btn.textContent = prevBtn || 'Crear mi cuenta'; btn.disabled = false; }
-  if (res.error) { showNotif('❌ ' + res.error); return; }
+  if (btn) {
+    btn.textContent = 'Creando cuenta...';
+    btn.disabled = true;
+  }
+  const res = await api.post('/auth/register', {
+    name: name,
+    username: username,
+    email: email,
+    password: password,
+    passwordConfirm: passwordConfirm,
+    role: currentRole,
+    termsAccepted: termsAccepted,
+    privacyAccepted: privacyAccepted
+  });
+  if (btn) {
+    btn.textContent = prevBtn || 'Crear mi cuenta';
+    btn.disabled = false;
+  }
+  if (res.error) {
+    showNotif('❌ ' + res.error);
+    return;
+  }
   setSession(res);
 }
 
@@ -8540,6 +8638,10 @@ async function loadProfileSettings() {
   const res = await api.get('/auth/me');
   if (res.error) return;
   document.getElementById('settings-name').value = res.name || '';
+  var se = document.getElementById('settings-email');
+  if (se) se.value = res.email || '';
+  var su = document.getElementById('settings-username');
+  if (su) su.value = res.username || '';
   document.getElementById('settings-handle').value = res.handle || '@' + res.name.toLowerCase();
   document.getElementById('settings-category').value = res.category || '📸 Fotografía & Lifestyle';
   document.getElementById('settings-bio').value = res.bio || '';

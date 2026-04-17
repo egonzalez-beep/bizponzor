@@ -11,6 +11,8 @@ const { createNotification } = require('./lib/createNotification');
 const app = express();
 const PORT = process.env.PORT || 3000;
 
+app.set('trust proxy', 1);
+
 app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -29,6 +31,19 @@ app.use('/api/messages', require('./routes/messages'));
 app.use('/api/promo', require('./routes/promo'));
 app.use('/api/creator', require('./routes/creatorPromo'));
 app.use('/api/notifications', require('./routes/notifications'));
+
+app.get('/terms', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'terms.html'));
+});
+app.get('/privacy', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'privacy.html'));
+});
+app.get('/forgot-password', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'forgot-password.html'));
+});
+app.get('/reset-password', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'reset-password.html'));
+});
 
 app.get('/api/health', (req, res) => res.json({ status: 'ok', app: 'BizPonzor' }));
 
