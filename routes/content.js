@@ -6,7 +6,38 @@ const fs = require('fs');
 const { v4: uuidv4 } = require('uuid');
 const db = require('../db');
 const authMiddleware = require('../middleware/auth');
-const { createNotification } = require('../lib/createNotification');
+const { createNotification, fireAndForget } = require('../lib/createNotification');
+
+function notifyFansNewContent(creatorId, contentId, previewText) {
+  const creator = db.prepare('SELECT id, name, handle FROM users WHERE id = ?').get(creatorId);
+  if (!creator) return;
+  const fans = db
+    .prepare(`SELECT fan_id FROM subscriptions WHERE creator_id = ? AND status = 'active'`)
+    .all(creatorId);
+  const preview =
+    previewText && String(previewText).trim()
+      ? String(previewText).trim().slice(0, 200)
+      : 'Nuevo contenido';
+  const metadata = {
+    creatorId,
+    creatorName: creator.name || 'Creador',
+    creatorHandle: creator.handle ? String(creator.handle).trim() : '',
+    contentId,
+    previewText: preview
+  };
+  for (let i = 0; i < fans.length; i++) {
+    const fid = fans[i].fan_id;
+    if (!fid) continue;
+    fireAndForget(
+      createNotification({
+        userId: fid,
+        type: 'NEW_CONTENT_FROM_CREATOR',
+        metadata,
+        dedupeKey: `fan-new-content-${contentId}-${fid}`
+      })
+    );
+  }
+}
 
 const uploadsDir = path.join(__dirname, '../uploads');
 fs.mkdirSync(uploadsDir, { recursive: true });
@@ -155,6 +186,7 @@ router.post('/text', authMiddleware, requireCreator, ensureAuthedUserInDb, (req,
         metadata: { contentId: id, contentLabel: label },
         dedupeKey: `content-publish-${id}`
       }).catch(() => null);
+      notifyFansNewContent(req.user.id, id, label);
     }
     console.log('[POST] Creado:', {
       id,
@@ -228,6 +260,7 @@ router.post('/upload', authMiddleware, requireCreator, ensureAuthedUserInDb, (re
         metadata: { contentId: id, contentLabel: label },
         dedupeKey: `content-publish-${id}`
       }).catch(() => null);
+      notifyFansNewContent(req.user.id, id, label);
     }
     console.log('[POST] Creado:', {
       id,

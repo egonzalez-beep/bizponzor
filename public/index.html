@@ -1228,8 +1228,9 @@
     display: none;
   }
 
-  /* Notification Center (creador) */
-  #creator-dashboard .nc-bell-btn {
+  /* Notification Center — campana en sidebar creador y fan; panel #nc-dropdown */
+  #creator-dashboard .nc-bell-btn,
+  #fan-dashboard .nc-bell-btn {
     position: relative;
     display: flex;
     align-items: center;
@@ -1244,15 +1245,18 @@
     cursor: pointer;
     transition: background 0.15s ease, color 0.15s ease;
   }
-  #creator-dashboard .nc-bell-btn:hover {
+  #creator-dashboard .nc-bell-btn:hover,
+  #fan-dashboard .nc-bell-btn:hover {
     background: rgba(255, 255, 255, 0.07);
     color: #ffffff;
   }
-  #creator-dashboard .nc-bell-btn[aria-expanded="true"] {
+  #creator-dashboard .nc-bell-btn[aria-expanded="true"],
+  #fan-dashboard .nc-bell-btn[aria-expanded="true"] {
     background: rgba(56, 189, 248, 0.12);
     color: #7dd3fc;
   }
-  #creator-dashboard .nc-badge {
+  #creator-dashboard .nc-badge,
+  #fan-dashboard .nc-badge {
     position: absolute;
     top: 4px;
     right: 4px;
@@ -1270,7 +1274,7 @@
     line-height: 1;
     box-shadow: 0 0 0 2px #1a1a1a;
   }
-  #creator-dashboard .nc-dropdown {
+  #nc-dropdown {
     position: fixed;
     left: 0;
     top: 0;
@@ -1292,13 +1296,13 @@
     transition: opacity 0.2s ease, transform 0.2s ease, visibility 0.2s;
     pointer-events: none;
   }
-  #creator-dashboard .nc-dropdown.nc-open {
+  #nc-dropdown.nc-open {
     opacity: 1;
     visibility: visible;
     transform: translateY(0);
     pointer-events: auto;
   }
-  #creator-dashboard .nc-dropdown-head {
+  #nc-dropdown .nc-dropdown-head {
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -1307,13 +1311,13 @@
     border-bottom: 1px solid rgba(255, 255, 255, 0.07);
     flex-shrink: 0;
   }
-  #creator-dashboard .nc-dropdown-title {
+  #nc-dropdown .nc-dropdown-title {
     font-size: 0.82rem;
     font-weight: 700;
     letter-spacing: 0.02em;
     color: #fafafa;
   }
-  #creator-dashboard .nc-mark-all {
+  #nc-dropdown .nc-mark-all {
     border: none;
     background: transparent;
     color: #38bdf8;
@@ -1322,15 +1326,15 @@
     cursor: pointer;
     padding: 4px 0;
   }
-  #creator-dashboard .nc-mark-all:hover {
+  #nc-dropdown .nc-mark-all:hover {
     text-decoration: underline;
   }
-  #creator-dashboard .nc-list {
+  #nc-dropdown .nc-list {
     overflow-y: auto;
     max-height: 320px;
     min-height: 80px;
   }
-  #creator-dashboard .nc-item {
+  #nc-dropdown .nc-item {
     display: flex;
     gap: 12px;
     padding: 12px 16px;
@@ -1339,13 +1343,13 @@
     text-align: left;
     transition: background 0.15s ease;
   }
-  #creator-dashboard .nc-item:last-child {
+  #nc-dropdown .nc-item:last-child {
     border-bottom: none;
   }
-  #creator-dashboard .nc-item:hover {
+  #nc-dropdown .nc-item:hover {
     background: rgba(255, 255, 255, 0.04);
   }
-  #creator-dashboard .nc-item-icon {
+  #nc-dropdown .nc-item-icon {
     flex-shrink: 0;
     width: 36px;
     height: 36px;
@@ -1357,24 +1361,28 @@
     border: 1px solid rgba(56, 189, 248, 0.2);
     color: #38bdf8;
   }
-  #creator-dashboard .nc-item-body {
+  #nc-dropdown .nc-item-icon .nc-item-emoji {
+    font-size: 1.15rem;
+    line-height: 1;
+  }
+  #nc-dropdown .nc-item-body {
     flex: 1;
     min-width: 0;
   }
-  #creator-dashboard .nc-item-title {
+  #nc-dropdown .nc-item-title {
     font-size: 0.82rem;
     font-weight: 700;
     color: #f4f4f5;
     margin-bottom: 2px;
     line-height: 1.3;
   }
-  #creator-dashboard .nc-item-msg {
+  #nc-dropdown .nc-item-msg {
     font-size: 0.75rem;
     color: #a1a1aa;
     line-height: 1.4;
     word-break: break-word;
   }
-  #creator-dashboard .nc-item-meta {
+  #nc-dropdown .nc-item-meta {
     display: flex;
     align-items: center;
     gap: 8px;
@@ -1382,7 +1390,7 @@
     font-size: 0.68rem;
     color: #71717a;
   }
-  #creator-dashboard .nc-item-dot {
+  #nc-dropdown .nc-item-dot {
     width: 7px;
     height: 7px;
     border-radius: 50%;
@@ -1391,22 +1399,22 @@
     margin-top: 6px;
     opacity: 0;
   }
-  #creator-dashboard .nc-item.nc-unread .nc-item-dot {
+  #nc-dropdown .nc-item.nc-unread .nc-item-dot {
     opacity: 1;
   }
-  #creator-dashboard .nc-empty {
+  #nc-dropdown .nc-empty {
     padding: 36px 20px;
     text-align: center;
     font-size: 0.8rem;
     color: #71717a;
     line-height: 1.5;
   }
-  #creator-dashboard .nc-load-more-wrap {
+  #nc-dropdown .nc-load-more-wrap {
     padding: 10px 12px 14px;
     border-top: 1px solid rgba(255, 255, 255, 0.06);
     flex-shrink: 0;
   }
-  #creator-dashboard .nc-load-more {
+  #nc-dropdown .nc-load-more {
     width: 100%;
     padding: 8px;
     border-radius: 10px;
@@ -1417,7 +1425,7 @@
     font-weight: 600;
     cursor: pointer;
   }
-  #creator-dashboard .nc-load-more:hover {
+  #nc-dropdown .nc-load-more:hover {
     background: rgba(255, 255, 255, 0.08);
   }
 
@@ -5622,16 +5630,6 @@
       <div id="creator-profile-embed" class="creator-app-panels creator-profile-embed" style="display:none;" aria-hidden="true"></div>
     </div>
   </div>
-  <div class="nc-dropdown" id="nc-dropdown" role="region" aria-hidden="true">
-    <div class="nc-dropdown-head">
-      <span class="nc-dropdown-title">Notificaciones</span>
-      <button type="button" class="nc-mark-all" id="nc-mark-all">Marcar todas</button>
-    </div>
-    <div class="nc-list" id="nc-list"></div>
-    <div class="nc-load-more-wrap" id="nc-load-more-wrap" style="display:none;">
-      <button type="button" class="nc-load-more" id="nc-load-more">Cargar más</button>
-    </div>
-  </div>
 </div>
 
 
@@ -5646,6 +5644,12 @@
         <div class="sidebar-user-meta">
           <div class="sidebar-user-name" id="fan-sidebar-name">Luis García</div>
           <div class="sidebar-user-sub" id="fan-sidebar-sub">Fan</div>
+        </div>
+        <div class="nc-wrap" id="nc-wrap-fan" style="display:none;position:relative;flex-shrink:0;">
+          <button type="button" class="nc-bell-btn" id="nc-bell-btn-fan" aria-label="Notificaciones" aria-expanded="false" aria-controls="nc-dropdown">
+            <svg class="nc-bell-svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/></svg>
+            <span class="nc-badge badge-hidden" id="nc-badge-fan">0</span>
+          </button>
         </div>
       </div>
       <input type="file" id="fan-avatar-file" class="visually-hidden-input" accept="image/jpeg,image/png,image/webp" tabindex="-1" aria-hidden="true" />
@@ -5782,6 +5786,18 @@
       </div>
 
     </div>
+  </div>
+</div>
+
+<!-- Centro de notificaciones (compartido creador + fan; fuera de .page para position:fixed) -->
+<div class="nc-dropdown" id="nc-dropdown" role="region" aria-hidden="true">
+  <div class="nc-dropdown-head">
+    <span class="nc-dropdown-title">Notificaciones</span>
+    <button type="button" class="nc-mark-all" id="nc-mark-all">Marcar todas</button>
+  </div>
+  <div class="nc-list" id="nc-list"></div>
+  <div class="nc-load-more-wrap" id="nc-load-more-wrap" style="display:none;">
+    <button type="button" class="nc-load-more" id="nc-load-more">Cargar más</button>
   </div>
 </div>
 
@@ -7158,6 +7174,9 @@ function ncIconSvg(type) {
   if (type === 'NEW_CONTENT') {
     return '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/><path d="M16 13H8"/><path d="M16 17H8"/><path d="M10 9H8"/></svg>';
   }
+  if (type === 'NEW_CONTENT_FROM_CREATOR') {
+    return '<span class="nc-item-emoji" aria-hidden="true">🎬</span>';
+  }
   return '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>';
 }
 
@@ -7168,7 +7187,8 @@ function ncInvalidate() {
 }
 
 function ncFetchUnreadCount() {
-  if (!TOKEN || !CURRENT_USER || CURRENT_USER.role !== 'creator') return;
+  if (!TOKEN || !CURRENT_USER) return;
+  if (CURRENT_USER.role !== 'creator' && CURRENT_USER.role !== 'fan') return;
   api.get('/notifications/unread-count').then(function (data) {
     if (!data || data.error) return;
     var n = typeof data.unreadCount === 'number' ? data.unreadCount : 0;
@@ -7177,18 +7197,22 @@ function ncFetchUnreadCount() {
 }
 
 function ncUpdateBadge(n) {
-  var badge = document.getElementById('nc-badge');
-  if (!badge) return;
-  if (n > 0) {
-    badge.textContent = n > 99 ? '99+' : String(n);
-    badge.classList.remove('badge-hidden');
-  } else {
-    badge.classList.add('badge-hidden');
-  }
+  var t = n > 99 ? '99+' : String(n);
+  ['nc-badge', 'nc-badge-fan'].forEach(function (id) {
+    var badge = document.getElementById(id);
+    if (!badge) return;
+    if (n > 0) {
+      badge.textContent = t;
+      badge.classList.remove('badge-hidden');
+    } else {
+      badge.classList.add('badge-hidden');
+    }
+  });
 }
 
 function ncPrefetchNotifications() {
-  if (ncListCache || !TOKEN || !CURRENT_USER || CURRENT_USER.role !== 'creator') return;
+  if (ncListCache || !TOKEN || !CURRENT_USER) return;
+  if (CURRENT_USER.role !== 'creator' && CURRENT_USER.role !== 'fan') return;
   api.get('/notifications?limit=15').then(function (data) {
     if (!data || data.error) return;
     ncListCache = data;
@@ -7218,6 +7242,8 @@ function ncRenderList(items, replace) {
       };
       var unread = !n.isRead;
       var msg = n.message ? '<div class="nc-item-msg">' + esc(n.message) + '</div>' : '';
+      var meta = n.metadata && typeof n.metadata === 'object' ? n.metadata : {};
+      var ch = meta.creatorHandle != null ? String(meta.creatorHandle) : '';
       return (
         '<div class="nc-item' +
         (unread ? ' nc-unread' : '') +
@@ -7225,6 +7251,8 @@ function ncRenderList(items, replace) {
         esc(n.id) +
         '" data-type="' +
         esc(n.type) +
+        '" data-creator-handle="' +
+        esc(ch) +
         '" role="button" tabindex="0">' +
         '<span class="nc-item-dot" aria-hidden="true"></span>' +
         '<div class="nc-item-icon">' +
@@ -7274,11 +7302,22 @@ function ncOnListClick(e) {
   if (!el) return;
   var id = el.getAttribute('data-id');
   var type = el.getAttribute('data-type');
+  var creatorHandle = el.getAttribute('data-creator-handle') || '';
   if (!id) return;
   api.patch('/notifications/' + encodeURIComponent(id) + '/read', {}).then(function () {
     ncListCache = null;
     ncFetchUnreadCount();
     ncCloseDropdown();
+    if (
+      CURRENT_USER &&
+      CURRENT_USER.role === 'fan' &&
+      type === 'NEW_CONTENT_FROM_CREATOR' &&
+      creatorHandle &&
+      typeof openCreatorProfile === 'function'
+    ) {
+      openCreatorProfile(creatorHandle);
+      return;
+    }
     ncNavigateForType(type);
   });
 }
@@ -7286,7 +7325,10 @@ function ncOnListClick(e) {
 /** Panel fijo bajo la campana, centrado y limitado al viewport (evita recorte por el borde izquierdo). */
 function ncPositionDropdown() {
   var dd = document.getElementById('nc-dropdown');
-  var btn = document.getElementById('nc-bell-btn');
+  var btn =
+    window._ncBellAnchor ||
+    document.getElementById('nc-bell-btn') ||
+    document.getElementById('nc-bell-btn-fan');
   if (!dd || !btn) return;
   var pad = 12;
   var maxW = Math.min(380, window.innerWidth - pad * 2);
@@ -7304,11 +7346,17 @@ function ncPositionDropdown() {
 
 function ncToggleDropdown() {
   var dd = document.getElementById('nc-dropdown');
-  var btn = document.getElementById('nc-bell-btn');
+  var btn =
+    window._ncBellAnchor ||
+    document.getElementById('nc-bell-btn') ||
+    document.getElementById('nc-bell-btn-fan');
   if (!dd || !btn) return;
   ncDropdownOpen = !ncDropdownOpen;
   dd.classList.toggle('nc-open', ncDropdownOpen);
-  btn.setAttribute('aria-expanded', ncDropdownOpen ? 'true' : 'false');
+  var b1 = document.getElementById('nc-bell-btn');
+  var b2 = document.getElementById('nc-bell-btn-fan');
+  if (b1) b1.setAttribute('aria-expanded', ncDropdownOpen && btn === b1 ? 'true' : 'false');
+  if (b2) b2.setAttribute('aria-expanded', ncDropdownOpen && btn === b2 ? 'true' : 'false');
   dd.setAttribute('aria-hidden', ncDropdownOpen ? 'false' : 'true');
   if (ncDropdownOpen) {
     ncPositionDropdown();
@@ -7336,20 +7384,29 @@ function ncToggleDropdown() {
 
 function ncCloseDropdown() {
   var dd = document.getElementById('nc-dropdown');
-  var btn = document.getElementById('nc-bell-btn');
-  if (!dd || !btn) return;
+  if (!dd) return;
+  var b1 = document.getElementById('nc-bell-btn');
+  var b2 = document.getElementById('nc-bell-btn-fan');
+  if (b1) b1.setAttribute('aria-expanded', 'false');
+  if (b2) b2.setAttribute('aria-expanded', 'false');
   ncDropdownOpen = false;
   dd.classList.remove('nc-open');
-  btn.setAttribute('aria-expanded', 'false');
   dd.setAttribute('aria-hidden', 'true');
+  dd.style.left = '';
+  dd.style.top = '';
+  dd.style.width = '';
+  dd.style.maxHeight = '';
+  window._ncBellAnchor = null;
 }
 
-function ncInitCreatorUi() {
+function ncInitNotificationUi() {
   var wrap = document.getElementById('nc-wrap');
-  if (wrap && CURRENT_USER && CURRENT_USER.role === 'creator') {
-    wrap.style.display = '';
-  } else if (wrap) {
-    wrap.style.display = 'none';
+  var wrapF = document.getElementById('nc-wrap-fan');
+  if (wrap) {
+    wrap.style.display = CURRENT_USER && CURRENT_USER.role === 'creator' ? '' : 'none';
+  }
+  if (wrapF) {
+    wrapF.style.display = CURRENT_USER && CURRENT_USER.role === 'fan' ? '' : 'none';
   }
   ncFetchUnreadCount();
   var list = document.getElementById('nc-list');
@@ -7359,19 +7416,26 @@ function ncInitCreatorUi() {
   }
 }
 
+var ncInitCreatorUi = ncInitNotificationUi;
+
+function ncWireBellButton(bell) {
+  if (!bell || bell.dataset.ncWired) return;
+  bell.dataset.ncWired = '1';
+  bell.addEventListener('mouseenter', function () {
+    if (typeof ncPrefetchNotifications === 'function') ncPrefetchNotifications();
+  });
+  bell.addEventListener('click', function (e) {
+    e.stopPropagation();
+    window._ncBellAnchor = bell;
+    ncToggleDropdown();
+  });
+}
+
 function ncWireNotificationCenter() {
-  var bell = document.getElementById('nc-bell-btn');
+  ncWireBellButton(document.getElementById('nc-bell-btn'));
+  ncWireBellButton(document.getElementById('nc-bell-btn-fan'));
   var markAll = document.getElementById('nc-mark-all');
   var loadMore = document.getElementById('nc-load-more');
-  if (bell) {
-    bell.addEventListener('mouseenter', function () {
-      if (typeof ncPrefetchNotifications === 'function') ncPrefetchNotifications();
-    });
-    bell.addEventListener('click', function (e) {
-      e.stopPropagation();
-      ncToggleDropdown();
-    });
-  }
   if (markAll) {
     markAll.addEventListener('click', function (e) {
       e.stopPropagation();
@@ -7422,15 +7486,15 @@ function ncWireNotificationCenter() {
 }
 
 document.addEventListener('click', function (e) {
+  if (!ncDropdownOpen) return;
   var wrap = document.getElementById('nc-wrap');
+  var wrapF = document.getElementById('nc-wrap-fan');
   var dd = document.getElementById('nc-dropdown');
-  if (!wrap || !ncDropdownOpen) return;
-  if (wrap.contains(e.target) || (dd && dd.contains(e.target))) return;
+  if ((wrap && wrap.contains(e.target)) || (wrapF && wrapF.contains(e.target)) || (dd && dd.contains(e.target))) return;
   ncCloseDropdown();
 });
 
 var lastSubscriberIds = null;
-var lastContentIds = null;
 var lastDonationIds = null;
 var notificationInterval = null;
 
@@ -7488,39 +7552,6 @@ async function checkNewSubscribers() {
   }
 }
 
-async function checkNewContent() {
-  try {
-    var subscriptions = await api.get('/subscriptions/my');
-    if (!subscriptions || subscriptions.error || !Array.isArray(subscriptions)) return;
-    var allContent = [];
-    for (var i = 0; i < subscriptions.length; i++) {
-      var sub = subscriptions[i];
-      var content = await api.get('/content/creator/' + encodeURIComponent(sub.creator_id));
-      if (content && !content.error && Array.isArray(content)) {
-        allContent = allContent.concat(content);
-      }
-    }
-    var currentIds = allContent
-      .map(function (c) {
-        return normalizeNotifyId(c.id);
-      })
-      .filter(Boolean);
-    if (lastContentIds === null) {
-      lastContentIds = currentIds.slice();
-      return;
-    }
-    var newIds = currentIds.filter(function (id) {
-      return lastContentIds.indexOf(id) === -1;
-    });
-    if (newIds.length > 0) {
-      showNotification('📢 Nuevo contenido disponible', 'success');
-    }
-    lastContentIds = currentIds.slice();
-  } catch (e) {
-    console.error('Error content:', e);
-  }
-}
-
 async function checkNewDonations() {
   try {
     var donations = await api.get('/donations/received');
@@ -7556,7 +7587,7 @@ function startNotificationPolling(userRole) {
       if (typeof ncFetchUnreadCount === 'function') ncFetchUnreadCount();
     }
     if (userRole === 'fan') {
-      checkNewContent();
+      if (typeof ncFetchUnreadCount === 'function') ncFetchUnreadCount();
     }
   }, 20000);
 }
@@ -7567,7 +7598,6 @@ function stopNotificationPolling() {
     notificationInterval = null;
   }
   lastSubscriberIds = null;
-  lastContentIds = null;
   lastDonationIds = null;
 }
 
@@ -8816,8 +8846,11 @@ function logout() {
   if (typeof stopFanChatPolling === 'function') stopFanChatPolling();
   if (typeof stopNotificationPolling === 'function') stopNotificationPolling();
   if (typeof stopConversationsPolling === 'function') stopConversationsPolling();
+  if (typeof ncCloseDropdown === 'function') ncCloseDropdown();
   var ncw = document.getElementById('nc-wrap');
   if (ncw) ncw.style.display = 'none';
+  var ncwf = document.getElementById('nc-wrap-fan');
+  if (ncwf) ncwf.style.display = 'none';
   TOKEN = null; CURRENT_USER = null;
   localStorage.removeItem('bp_token');
   localStorage.removeItem('bp_user');
@@ -9566,6 +9599,7 @@ async function loadFanDashboard() {
     fanMessagesBadgeInterval = setInterval(updateFanMessagesBadge, 15000);
     if (typeof loadConversations === 'function') loadConversations(true);
   }
+  if (typeof ncInitNotificationUi === 'function') ncInitNotificationUi();
 }
 
 async function loadFanFeed() {
