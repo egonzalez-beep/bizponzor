@@ -2993,6 +2993,121 @@
     display: inline-flex;
     line-height: 0;
   }
+
+  /* Mini chat embebido (perfil creador, vista fan) */
+  #creator-profile-inner .mini-chat-wrap {
+    margin-top: 16px;
+  }
+  #creator-profile-inner .mini-chat {
+    border-radius: 16px;
+    background: rgba(255, 255, 255, 0.03);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    overflow: hidden;
+  }
+  #creator-profile-inner .mini-chat-header {
+    padding: 12px 16px;
+    font-weight: 600;
+    font-size: 0.95rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    color: #fff;
+  }
+  #creator-profile-inner #miniChatMessages.mini-chat-messages,
+  #creator-profile-inner #miniChatMessages {
+    max-height: 260px;
+    overflow-y: auto;
+    overflow-x: hidden;
+    padding: 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    scrollbar-width: thin;
+  }
+  #creator-profile-inner .mini-chat-input {
+    display: flex;
+    align-items: stretch;
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+  }
+  #creator-profile-inner .mini-chat-input input {
+    flex: 1;
+    min-width: 0;
+    padding: 10px 12px;
+    background: transparent;
+    border: none;
+    outline: none;
+    color: #fff;
+    font-size: 0.9rem;
+  }
+  #creator-profile-inner .mini-chat-input input::placeholder {
+    color: rgba(255, 255, 255, 0.35);
+  }
+  #creator-profile-inner .mini-chat-input button {
+    padding: 0 14px;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    color: rgba(255, 255, 255, 0.85);
+    font-size: 1.1rem;
+    line-height: 1;
+    transition: color 0.15s ease, transform 0.15s ease;
+  }
+  #creator-profile-inner .mini-chat-input button:hover {
+    color: #fff;
+    transform: translateX(2px);
+  }
+  #creator-profile-inner .mini-msg {
+    display: flex;
+    gap: 8px;
+    align-items: flex-end;
+    animation: miniMsgIn 0.22s ease both;
+  }
+  @keyframes miniMsgIn {
+    from {
+      opacity: 0;
+      transform: translateY(4px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  #creator-profile-inner .mini-msg.mine {
+    justify-content: flex-end;
+  }
+  #creator-profile-inner .mini-chat .mini-avatar.bp-avatar {
+    width: 28px;
+    height: 28px;
+    flex-shrink: 0;
+    font-size: 0.65rem;
+  }
+  #creator-profile-inner .mini-bubble {
+    padding: 8px 12px;
+    border-radius: 12px;
+    background: rgba(255, 255, 255, 0.06);
+    font-size: 13px;
+    line-height: 1.35;
+    max-width: 70%;
+    word-break: break-word;
+    color: rgba(255, 255, 255, 0.92);
+    transition: opacity 0.15s ease, box-shadow 0.15s ease;
+  }
+  #creator-profile-inner .mini-bubble:hover {
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.2);
+  }
+  #creator-profile-inner .mini-msg.mine .mini-bubble {
+    background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+    color: #fff;
+  }
+  #creator-profile-inner .mini-chat-empty,
+  #creator-profile-inner .mini-chat-err {
+    font-size: 0.82rem;
+    color: #a3a3a3;
+    text-align: center;
+    padding: 16px 8px;
+    line-height: 1.45;
+  }
+
   #creator-profile-inner .profile-info strong { color: #FFFFFF; }
   #creator-profile-inner .profile-info span[style*="gray-500"] { color: #A3A3A3 !important; }
   #creator-profile-inner {
@@ -5686,6 +5801,16 @@
           </div>
         </div>
       </div>
+      <div id="miniChatContainer" class="mini-chat-wrap" style="display:none;" aria-live="polite">
+        <div class="mini-chat">
+          <div class="mini-chat-header">💬 Mensajes</div>
+          <div id="miniChatMessages" class="mini-chat-messages"></div>
+          <div class="mini-chat-input">
+            <input type="text" id="miniChatInput" placeholder="Escribe un mensaje..." maxlength="8000" autocomplete="off" />
+            <button type="button" id="miniChatSend" aria-label="Enviar mensaje">➤</button>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
     </div>
@@ -5784,6 +5909,7 @@
     if (page !== 'creator-profile') {
       if (typeof stopProfileChatPolling === 'function') stopProfileChatPolling();
       if (typeof clearProfileChatState === 'function') clearProfileChatState();
+      if (typeof teardownMiniChat === 'function') teardownMiniChat();
     }
     if (page === 'landing' && typeof closeLandingAuth === 'function') {
       closeLandingAuth();
@@ -7370,6 +7496,39 @@ function setUploadAccess(val) {
 function stopProfileChatPolling() {}
 function clearProfileChatState() {}
 
+var miniChatPollInterval = null;
+var miniChatBound = false;
+var MINI_CHAT_CREATOR_ID = null;
+
+function teardownMiniChat() {
+  if (miniChatPollInterval) {
+    clearInterval(miniChatPollInterval);
+    miniChatPollInterval = null;
+  }
+  MINI_CHAT_CREATOR_ID = null;
+  const box = document.getElementById('miniChatContainer');
+  if (box) box.style.display = 'none';
+  const inp = document.getElementById('miniChatInput');
+  if (inp) inp.value = '';
+}
+
+function bindMiniChatOnce() {
+  if (miniChatBound) return;
+  const send = document.getElementById('miniChatSend');
+  const input = document.getElementById('miniChatInput');
+  if (!send || !input) return;
+  miniChatBound = true;
+  send.addEventListener('click', function () {
+    sendMiniMessage();
+  });
+  input.addEventListener('keydown', function (e) {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      sendMiniMessage();
+    }
+  });
+}
+
 window.SELECTED_CHAT_CREATOR = null;
 var fanChatPollInterval = null;
 var fanMessagesBadgeInterval = null;
@@ -7771,6 +7930,89 @@ function normalizeChatSender(m) {
   };
 }
 
+function renderMiniMessage(msg, currentUserId) {
+  const sender = normalizeChatSender(msg);
+  const isMine = String(sender.id) === String(currentUserId);
+  const bubble = escapeHtml(msg.content || '');
+  const payload = encodeURIComponent(
+    JSON.stringify({
+      id: sender.id,
+      name: sender.name,
+      email: '',
+      avatar_url: sender.avatar_url,
+      avatar_color: sender.avatar_color,
+      updated_at: sender.updated_at
+    })
+  );
+  const avatarHtml = !isMine
+    ? '<div class="mini-avatar bp-avatar bp-avatar--xs" data-user-payload="' + payload + '" role="img" aria-label=""></div>'
+    : '';
+  return (
+    '<div class="mini-msg' +
+    (isMine ? ' mine' : '') +
+    '">' +
+    avatarHtml +
+    '<div class="mini-bubble">' +
+    bubble +
+    '</div></div>'
+  );
+}
+
+async function loadMiniChat(creatorId) {
+  if (!creatorId || !CURRENT_USER) return;
+  const container = document.getElementById('miniChatMessages');
+  if (!container) return;
+  const res = await api.get('/messages/conversation/' + encodeURIComponent(creatorId));
+  if (!res || res.error) {
+    container.innerHTML =
+      '<div class="mini-chat-err">' +
+      escapeHtml(res && res.error ? String(res.error) : 'No se pudo cargar el chat') +
+      '</div>';
+    return;
+  }
+  if (!Array.isArray(res)) return;
+  if (!res.length) {
+    container.innerHTML =
+      '<div class="mini-chat-empty">💬 Aún no hay mensajes<span style="display:block;margin-top:6px;font-size:0.78rem;opacity:0.85;">Escribe abajo para comenzar</span></div>';
+    return;
+  }
+  container.innerHTML = res
+    .map(function (m) {
+      return renderMiniMessage(m, CURRENT_USER.id);
+    })
+    .join('');
+  container.querySelectorAll('.mini-avatar[data-user-payload]').forEach(function (el) {
+    try {
+      const raw = el.getAttribute('data-user-payload');
+      if (!raw) return;
+      const user = JSON.parse(decodeURIComponent(raw));
+      bpPaintAvatar(el, user, 'xs');
+    } catch (err) {
+      /* ignore */
+    }
+  });
+  container.scrollTop = container.scrollHeight;
+}
+
+async function sendMiniMessage() {
+  const creatorId = MINI_CHAT_CREATOR_ID || CURRENT_CREATOR_ID;
+  if (!creatorId || !CURRENT_USER || !TOKEN) return;
+  if (CURRENT_USER.role !== 'fan') return;
+  const input = document.getElementById('miniChatInput');
+  if (!input) return;
+  const text = String(input.value || '').trim();
+  if (!text) return;
+  const res = await api.post('/messages', { receiverId: creatorId, content: text });
+  if (res && res.error) {
+    showNotif('❌ ' + res.error);
+    return;
+  }
+  input.value = '';
+  await loadMiniChat(creatorId);
+  if (typeof markFanMessagesRead === 'function') await markFanMessagesRead(creatorId);
+  if (typeof updateFanMessagesBadge === 'function') updateFanMessagesBadge();
+}
+
 function paintChatMessageAvatar(wrapEl, sender) {
   bpPaintAvatar(
     wrapEl,
@@ -8009,6 +8251,7 @@ async function updateProfileMessageSection(creatorId) {
   subForm.style.display = 'none';
   locked.style.display = 'none';
   wrap.style.display = 'none';
+  if (typeof teardownMiniChat === 'function') teardownMiniChat();
   if (!CURRENT_USER || CURRENT_USER.role !== 'fan') return;
   wrap.style.display = 'block';
   if (!TOKEN) {
@@ -8026,6 +8269,22 @@ async function updateProfileMessageSection(creatorId) {
       btn.onclick = function () {
         goToFanMessages(creatorId, getProfileFanMessageHandle());
       };
+    }
+    const miniBox = document.getElementById('miniChatContainer');
+    const isOwnCreatorProfile =
+      CURRENT_USER.role === 'creator' && CURRENT_USER.id === creatorId;
+    if (miniBox && !isOwnCreatorProfile) {
+      miniBox.style.display = '';
+      MINI_CHAT_CREATOR_ID = creatorId;
+      bindMiniChatOnce();
+      await loadMiniChat(creatorId);
+      await markFanMessagesRead(creatorId);
+      if (miniChatPollInterval) clearInterval(miniChatPollInterval);
+      miniChatPollInterval = setInterval(function () {
+        const p = document.querySelector('.page.active');
+        if (!p || p.id !== 'creator-profile' || MINI_CHAT_CREATOR_ID !== creatorId) return;
+        loadMiniChat(creatorId);
+      }, 8000);
     }
   } else {
     locked.style.display = 'block';
