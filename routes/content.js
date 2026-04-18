@@ -99,6 +99,21 @@ const storage = multer.diskStorage({
 });
 const upload = multer({ storage, limits: { fileSize: 50 * 1024 * 1024 } });
 
+const TEXT_BACKGROUND_STYLES = new Set([
+  'galaxy',
+  'blue_basic',
+  'red_passion',
+  'mint_green',
+  'yellow_sun',
+  'minimal_gold',
+  'cyberpunk'
+]);
+
+function normalizeTextBackgroundStyle(raw) {
+  const k = raw != null ? String(raw).trim() : '';
+  return TEXT_BACKGROUND_STYLES.has(k) ? k : 'galaxy';
+}
+
 /**
  * Resuelve programación: fecha futura → scheduled; pasada o sin fecha → published.
  * El cliente debe enviar ISO 8601 en UTC (p. ej. desde datetime-local vía toISOString());
@@ -147,9 +162,10 @@ function uploadSingleFile(req, res, next) {
 
 router.post('/text', authMiddleware, requireCreator, ensureAuthedUserInDb, async (req, res) => {
   try {
-    const { title, description, text_body, is_exclusive, scheduled_for } = req.body;
+    const { title, description, text_body, is_exclusive, scheduled_for, background_style } = req.body;
     const body = String(text_body || '').trim();
     if (!body) return res.status(400).json({ error: 'El texto es obligatorio' });
+    const bgStyle = normalizeTextBackgroundStyle(background_style);
     const userExists = await db.prepare('SELECT id FROM users WHERE id = ?').get(req.user.id);
     if (!userExists) return res.status(400).json({ error: 'Usuario no encontrado' });
 
@@ -164,8 +180,8 @@ router.post('/text', authMiddleware, requireCreator, ensureAuthedUserInDb, async
     const excl = is_exclusive === false || is_exclusive === 'false' ? 0 : 1;
     await db
       .prepare(
-        `INSERT INTO content (id, creator_id, title, description, type, file_url, is_exclusive, text_body, scheduled_for, status)
-       VALUES (?,?,?,?,?,?,?,?,?,?)`
+        `INSERT INTO content (id, creator_id, title, description, type, file_url, is_exclusive, text_body, background_style, scheduled_for, status)
+       VALUES (?,?,?,?,?,?,?,?,?,?,?)`
       )
       .run(
       id,
@@ -176,6 +192,7 @@ router.post('/text', authMiddleware, requireCreator, ensureAuthedUserInDb, async
       file_url,
       excl,
       body,
+      bgStyle,
       scheduledFor,
       status
     );
@@ -202,7 +219,8 @@ router.post('/text', authMiddleware, requireCreator, ensureAuthedUserInDb, async
       type: 'text',
       is_exclusive: !!excl,
       status,
-      scheduled_for: scheduledFor
+      scheduled_for: scheduledFor,
+      background_style: bgStyle
     });
   } catch (e) {
     console.error('[content/text]', e);

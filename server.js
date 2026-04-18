@@ -9,6 +9,16 @@ const db = require('./db');
 const { createNotification } = require('./lib/createNotification');
 const { SKIP_LEGAL } = require('./lib/authConfig');
 
+(async function migrateContentBackgroundStylePg() {
+  try {
+    if (!process.env.DATABASE_URL) return;
+    const { getPool } = require('./lib/db-postgres');
+    await getPool().query('ALTER TABLE content ADD COLUMN IF NOT EXISTS background_style TEXT');
+  } catch (e) {
+    console.warn('[migrate] content.background_style (PG):', e.message);
+  }
+})();
+
 const app = express();
 const PORT = process.env.PORT || 8080;
 

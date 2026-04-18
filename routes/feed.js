@@ -105,6 +105,7 @@ function mapFeedRow(row, feedSource) {
       locked || row.type === 'text' ? (locked ? null : row.file_url) : null,
     thumbnail_url: row.thumbnail_url || null,
     text_body: locked ? null : row.text_body || null,
+    background_style: row.background_style || null,
     is_exclusive: isExclusive,
     is_public: !isExclusive,
     locked,

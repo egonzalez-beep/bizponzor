@@ -58,6 +58,7 @@ CREATE TABLE IF NOT EXISTS content (
   is_exclusive INTEGER DEFAULT 1,
   views INTEGER DEFAULT 0,
   text_body TEXT,
+  background_style TEXT,
   scheduled_for TEXT,
   status TEXT DEFAULT 'published',
   created_at TEXT DEFAULT ((now() AT TIME ZONE 'UTC')::text)

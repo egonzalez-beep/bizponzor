@@ -1564,9 +1564,13 @@
   }
   .content-thumb.aspect-photo { aspect-ratio: 1 / 1; }
   .content-thumb.aspect-video { aspect-ratio: 16 / 9; }
-  .content-thumb.aspect-text {
+  .content-thumb.aspect-text:not(.bp-text-thumb) {
     aspect-ratio: 1 / 1;
     background: #f3f4f6 !important;
+    cursor: pointer;
+  }
+  .content-thumb.aspect-text.bp-text-thumb {
+    aspect-ratio: 1 / 1;
     cursor: pointer;
   }
   .content-thumb .thumb-fill-media {
@@ -2488,8 +2492,8 @@
   #fan-dashboard .content-info h4 { color: #FFFFFF; }
   #creator-dashboard .content-info p,
   #fan-dashboard .content-info p { color: #A3A3A3; }
-  #creator-dashboard .content-thumb.aspect-text,
-  #fan-dashboard .content-thumb.aspect-text {
+  #creator-dashboard .content-thumb.aspect-text:not(.bp-text-thumb),
+  #fan-dashboard .content-thumb.aspect-text:not(.bp-text-thumb) {
     background: #333333 !important;
   }
   #creator-dashboard .upload-area,
@@ -3760,6 +3764,234 @@
     font-size: 1.5rem;
     opacity: 0.5;
   }
+
+  /* ─── Publicaciones de texto con fondo estilizado (estilo “estados”) ─── */
+  .bp-text-style-picker {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    align-items: center;
+    margin-top: 8px;
+  }
+  .bp-text-style-opt {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    border: 2px solid rgba(0, 0, 0, 0.12);
+    cursor: pointer;
+    padding: 0;
+    flex-shrink: 0;
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  }
+  .bp-text-style-opt:hover {
+    transform: scale(1.08);
+  }
+  .bp-text-style-opt.is-selected {
+    outline: 2px solid var(--brand, #8b5cf6);
+    outline-offset: 2px;
+    box-shadow: 0 0 0 2px rgba(139, 92, 246, 0.35);
+  }
+  .bp-text-style-opt[data-style='galaxy'] {
+    background: radial-gradient(circle at 30% 20%, #2a2a40 0%, #0a0a12 55%, #000 100%);
+    box-shadow: inset 0 0 12px rgba(255, 255, 255, 0.06);
+  }
+  .bp-text-style-opt[data-style='blue_basic'] {
+    background: linear-gradient(145deg, #1e3a8a 0%, #3b82f6 45%, #93c5fd 100%);
+  }
+  .bp-text-style-opt[data-style='red_passion'] {
+    background: linear-gradient(145deg, #7f1d1d 0%, #dc2626 50%, #f97316 100%);
+  }
+  .bp-text-style-opt[data-style='mint_green'] {
+    background: linear-gradient(145deg, #6ee7b7 0%, #34d399 50%, #a3e635 100%);
+  }
+  .bp-text-style-opt[data-style='yellow_sun'] {
+    background: linear-gradient(145deg, #facc15 0%, #eab308 50%, #ca8a04 100%);
+  }
+  .bp-text-style-opt[data-style='minimal_gold'] {
+    background: linear-gradient(145deg, #fef9c3 0%, #fef3c7 100%);
+    border-color: rgba(180, 140, 60, 0.35);
+  }
+  .bp-text-style-opt[data-style='cyberpunk'] {
+    background: linear-gradient(145deg, #18181b 0%, #09090b 100%);
+    border: 2px solid rgba(236, 72, 153, 0.45);
+    box-shadow: 0 0 10px rgba(236, 72, 153, 0.25);
+  }
+
+  .feed-preview--text-styled {
+    min-height: 140px;
+    border-radius: 14px;
+    padding: 20px 18px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    font-size: 1.35rem;
+    font-weight: 650;
+    line-height: 1.45;
+    white-space: pre-wrap;
+    word-break: break-word;
+    box-sizing: border-box;
+  }
+  .bp-text-style--galaxy {
+    background: radial-gradient(circle at 20% 15%, rgba(255, 255, 255, 0.08) 0%, transparent 40%),
+      radial-gradient(circle at 80% 60%, rgba(147, 197, 253, 0.06) 0%, transparent 35%),
+      linear-gradient(165deg, #0c0c14 0%, #030308 100%);
+    color: #f8fafc;
+    position: relative;
+    overflow: hidden;
+  }
+  .bp-text-style--galaxy::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image: radial-gradient(1px 1px at 10% 20%, rgba(255, 255, 255, 0.9) 50%, transparent 51%),
+      radial-gradient(1px 1px at 30% 80%, rgba(255, 255, 255, 0.75) 50%, transparent 51%),
+      radial-gradient(1px 1px at 70% 30%, rgba(255, 255, 255, 0.85) 50%, transparent 51%),
+      radial-gradient(1px 1px at 90% 70%, rgba(255, 255, 255, 0.6) 50%, transparent 51%),
+      radial-gradient(1px 1px at 50% 50%, rgba(255, 255, 255, 0.5) 50%, transparent 51%);
+    background-size: 100% 100%;
+    opacity: 0.55;
+    pointer-events: none;
+  }
+  .bp-text-style--galaxy .feed-preview-text-inner,
+  .bp-text-style--galaxy .bp-text-thumb-inner {
+    position: relative;
+    z-index: 1;
+  }
+  .bp-text-style--blue_basic {
+    background: linear-gradient(145deg, #1e3a8a 0%, #2563eb 42%, #7dd3fc 100%);
+    color: #ffffff;
+  }
+  .bp-text-style--red_passion {
+    background: linear-gradient(145deg, #7f1d1d 0%, #b91c1c 40%, #ea580c 100%);
+    color: #ffffff;
+  }
+  .bp-text-style--mint_green {
+    background: linear-gradient(145deg, #a7f3d0 0%, #34d399 45%, #84cc16 100%);
+    color: #14532d;
+  }
+  .bp-text-style--yellow_sun {
+    background: linear-gradient(145deg, #fde047 0%, #facc15 40%, #d97706 100%);
+    color: #171717;
+  }
+  .bp-text-style--minimal_gold {
+    background: linear-gradient(180deg, #fffbeb 0%, #fef3c7 100%);
+    color: #1c1917;
+    border: 1px solid rgba(212, 175, 55, 0.45);
+    box-shadow: 0 8px 28px rgba(180, 140, 60, 0.12), inset 0 1px 0 rgba(255, 255, 255, 0.8);
+  }
+  .bp-text-style--cyberpunk {
+    background: linear-gradient(180deg, #18181b 0%, #0a0a0b 100%);
+    color: #fafafa;
+    border: 1px solid rgba(236, 72, 153, 0.45);
+    box-shadow: 0 0 20px rgba(236, 72, 153, 0.15), inset 0 0 40px rgba(236, 72, 153, 0.04);
+  }
+
+  .content-thumb.bp-text-thumb {
+    padding: 8px;
+    font-size: 0.65rem;
+    font-weight: 650;
+    line-height: 1.25;
+    align-items: flex-start;
+    justify-content: flex-start;
+    overflow: hidden;
+  }
+  .content-thumb.bp-text-thumb .bp-text-thumb-inner {
+    display: -webkit-box;
+    -webkit-line-clamp: 5;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    width: 100%;
+    text-align: center;
+    word-break: break-word;
+  }
+  .content-thumb.bp-text-thumb .content-type-badge {
+    z-index: 5;
+  }
+
+  .text-modal-body-wrap {
+    border-radius: 14px;
+    min-height: 200px;
+    max-height: 60vh;
+    overflow: auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 28px 22px;
+    margin-top: 12px;
+  }
+  .text-modal-body-wrap #text-modal-body {
+    white-space: pre-wrap !important;
+    font-size: 1.45rem !important;
+    font-weight: 650 !important;
+    line-height: 1.5 !important;
+    max-height: none !important;
+    text-align: center;
+    width: 100%;
+  }
+  .text-modal-body-wrap.bp-text-style--galaxy {
+    position: relative;
+    overflow: hidden;
+  }
+  .text-modal-body-wrap.bp-text-style--galaxy::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image: radial-gradient(1px 1px at 15% 25%, rgba(255, 255, 255, 0.85) 50%, transparent 51%),
+      radial-gradient(1px 1px at 55% 65%, rgba(255, 255, 255, 0.7) 50%, transparent 51%),
+      radial-gradient(1px 1px at 85% 15%, rgba(255, 255, 255, 0.75) 50%, transparent 51%);
+    opacity: 0.5;
+    pointer-events: none;
+  }
+  .text-modal-body-wrap.bp-text-style--galaxy #text-modal-body {
+    position: relative;
+    z-index: 1;
+  }
+  .text-modal-body-wrap.bp-text-style--galaxy,
+  .text-modal-body-wrap.bp-text-style--blue_basic,
+  .text-modal-body-wrap.bp-text-style--red_passion {
+    color: #ffffff !important;
+  }
+  .text-modal-body-wrap.bp-text-style--galaxy #text-modal-body,
+  .text-modal-body-wrap.bp-text-style--blue_basic #text-modal-body,
+  .text-modal-body-wrap.bp-text-style--red_passion #text-modal-body,
+  .text-modal-body-wrap.bp-text-style--cyberpunk #text-modal-body {
+    color: #ffffff !important;
+  }
+  .text-modal-body-wrap.bp-text-style--mint_green #text-modal-body {
+    color: #14532d !important;
+  }
+  .text-modal-body-wrap.bp-text-style--yellow_sun #text-modal-body,
+  .text-modal-body-wrap.bp-text-style--minimal_gold #text-modal-body {
+    color: #171717 !important;
+  }
+  .text-modal-body-wrap.bp-text-style--mint_green {
+    background: linear-gradient(145deg, #a7f3d0 0%, #34d399 45%, #84cc16 100%);
+  }
+  .text-modal-body-wrap.bp-text-style--yellow_sun {
+    background: linear-gradient(145deg, #fde047 0%, #facc15 40%, #d97706 100%);
+  }
+  .text-modal-body-wrap.bp-text-style--minimal_gold {
+    background: linear-gradient(180deg, #fffbeb 0%, #fef3c7 100%);
+    border: 1px solid rgba(212, 175, 55, 0.45);
+    box-shadow: 0 8px 28px rgba(180, 140, 60, 0.12);
+  }
+  .text-modal-body-wrap.bp-text-style--blue_basic {
+    background: linear-gradient(145deg, #1e3a8a 0%, #2563eb 42%, #7dd3fc 100%);
+  }
+  .text-modal-body-wrap.bp-text-style--red_passion {
+    background: linear-gradient(145deg, #7f1d1d 0%, #b91c1c 40%, #ea580c 100%);
+  }
+  .text-modal-body-wrap.bp-text-style--cyberpunk {
+    background: linear-gradient(180deg, #18181b 0%, #0a0a0b 100%);
+    border: 1px solid rgba(236, 72, 153, 0.45);
+    box-shadow: 0 0 20px rgba(236, 72, 153, 0.12);
+  }
+  .text-modal-body-wrap.bp-text-style--galaxy {
+    background: radial-gradient(circle at 20% 15%, rgba(255, 255, 255, 0.08) 0%, transparent 40%),
+      linear-gradient(165deg, #0c0c14 0%, #030308 100%);
+  }
   .feed-card-title {
     padding: 12px 16px 0;
     font-size: 0.95rem;
@@ -4639,10 +4871,6 @@
     border-color: var(--brand);
     box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.2);
   }
-  #text-modal-body {
-    color: #A3A3A3 !important;
-  }
-
   /* MP */
   .mp-logo {
     display: flex; align-items: center; gap: 10px;
@@ -5501,6 +5729,20 @@
               </div>
               <textarea class="form-input" id="upload-text-body" rows="8" placeholder="Escribe tu publicación..."></textarea>
             </div>
+            <div class="form-group" style="margin-top:18px;">
+              <label class="form-label">Fondo del texto</label>
+              <p style="font-size:0.78rem;color:var(--gray-500);margin:0 0 10px 0;">Elige un estilo tipo estado; solo aplica a publicaciones de texto sin imagen.</p>
+              <input type="hidden" id="upload-text-bg-style" value="galaxy" />
+              <div class="bp-text-style-picker" role="radiogroup" aria-label="Estilo de fondo">
+                <button type="button" class="bp-text-style-opt is-selected" data-style="galaxy" title="Galaxy" aria-label="Galaxy" aria-checked="true" role="radio" onclick="setUploadTextBgStyle('galaxy')"></button>
+                <button type="button" class="bp-text-style-opt" data-style="blue_basic" title="Azul básico" aria-label="Azul básico" aria-checked="false" role="radio" onclick="setUploadTextBgStyle('blue_basic')"></button>
+                <button type="button" class="bp-text-style-opt" data-style="red_passion" title="Rojo pasión" aria-label="Rojo pasión" aria-checked="false" role="radio" onclick="setUploadTextBgStyle('red_passion')"></button>
+                <button type="button" class="bp-text-style-opt" data-style="mint_green" title="Verde menta" aria-label="Verde menta" aria-checked="false" role="radio" onclick="setUploadTextBgStyle('mint_green')"></button>
+                <button type="button" class="bp-text-style-opt" data-style="yellow_sun" title="Amarillo sol" aria-label="Amarillo sol" aria-checked="false" role="radio" onclick="setUploadTextBgStyle('yellow_sun')"></button>
+                <button type="button" class="bp-text-style-opt" data-style="minimal_gold" title="Minimal gold" aria-label="Minimal gold" aria-checked="false" role="radio" onclick="setUploadTextBgStyle('minimal_gold')"></button>
+                <button type="button" class="bp-text-style-opt" data-style="cyberpunk" title="Cyberpunk" aria-label="Cyberpunk" aria-checked="false" role="radio" onclick="setUploadTextBgStyle('cyberpunk')"></button>
+              </div>
+            </div>
           </div>
           <div class="dash-settings-card upload-studio-card upload-studio-panel" style="background:var(--white);border:1px solid var(--gray-200);border-radius:var(--radius);padding:28px;">
             <h3 class="upload-studio-card-title">
@@ -6289,7 +6531,9 @@
 <div class="modal-overlay" id="text-modal">
   <div class="modal" style="max-width:520px;">
     <h3 id="text-modal-title">Publicación</h3>
-    <div id="text-modal-body" style="white-space:pre-wrap;color:var(--gray-800);font-size:0.9rem;line-height:1.6;max-height:60vh;overflow:auto;"></div>
+    <div id="text-modal-body-wrap" class="text-modal-body-wrap bp-text-style--galaxy">
+      <div id="text-modal-body"></div>
+    </div>
     <div class="modal-actions" style="margin-top:20px;">
       <button class="btn btn-primary btn-full" type="button" onclick="closeTextModal()">Cerrar</button>
     </div>
@@ -6892,11 +7136,30 @@ document.addEventListener('keydown', (e) => {
   }
 });
 
-function openTextModal(title, body) {
+var BP_TEXT_BG_STYLES = ['galaxy', 'blue_basic', 'red_passion', 'mint_green', 'yellow_sun', 'minimal_gold', 'cyberpunk'];
+function normalizeClientTextBgStyle(raw) {
+  var k = String(raw || '').trim();
+  return BP_TEXT_BG_STYLES.indexOf(k) !== -1 ? k : 'galaxy';
+}
+function setUploadTextBgStyle(styleKey) {
+  var k = normalizeClientTextBgStyle(styleKey);
+  var hid = document.getElementById('upload-text-bg-style');
+  if (hid) hid.value = k;
+  document.querySelectorAll('.bp-text-style-opt').forEach(function (btn) {
+    var sel = btn.getAttribute('data-style') === k;
+    btn.classList.toggle('is-selected', sel);
+    btn.setAttribute('aria-checked', sel ? 'true' : 'false');
+  });
+}
+
+function openTextModal(title, body, bgStyle) {
   if (typeof closeMobileSidebar === 'function') closeMobileSidebar();
   const tEl = document.getElementById('text-modal-title');
   const bEl = document.getElementById('text-modal-body');
+  const wrap = document.getElementById('text-modal-body-wrap');
   const m = document.getElementById('text-modal');
+  var st = normalizeClientTextBgStyle(bgStyle);
+  if (wrap) wrap.className = 'text-modal-body-wrap bp-text-style--' + st;
   if (tEl) tEl.textContent = title || 'Publicación';
   if (bEl) bEl.textContent = body || '';
   if (m) {
@@ -6907,6 +7170,8 @@ function openTextModal(title, body) {
 
 function closeTextModal() {
   const m = document.getElementById('text-modal');
+  const wrap = document.getElementById('text-modal-body-wrap');
+  if (wrap) wrap.className = 'text-modal-body-wrap bp-text-style--galaxy';
   if (m) m.classList.remove('open');
   document.body.style.overflow = '';
 }
@@ -9770,7 +10035,11 @@ function renderContentGrid(container, items) {
     if (isText) {
       const tJson = JSON.stringify(c.title || '');
       const bJson = JSON.stringify(c.text_body || '');
-      thumb = `<div class="content-thumb ${aspect}" onclick='openTextModal(${tJson}, ${bJson})'>📝<span class="content-type-badge text-type-badge">📝 Texto</span></div>`;
+      const bgClass = normalizeClientTextBgStyle(c.background_style);
+      const bgJson = JSON.stringify(bgClass);
+      const excerptRaw = String(c.text_body || '').trim();
+      const excerpt = excerptRaw.length > 180 ? excerptRaw.slice(0, 177) + '…' : excerptRaw;
+      thumb = `<div class="content-thumb ${aspect} bp-text-thumb bp-text-style--${bgClass}" onclick='openTextModal(${tJson}, ${bJson}, ${bgJson})'><div class="bp-text-thumb-inner">${escapeHtml(excerpt)}</div><span class="content-type-badge text-type-badge">📝 Texto</span></div>`;
     } else if (c.file_url) {
       const vidHint = isVid ? '<span style="position:absolute;bottom:10px;right:10px;background:rgba(0,0,0,0.60);padding:6px 10px;border-radius:999px;color:white;font-size:0.75rem;font-weight:700;z-index:5;">▶ Ver</span>' : '';
       const src = bpContentMediaUrl(c.id);
@@ -9894,7 +10163,8 @@ async function publishTextContent(evt) {
     description: description || '',
     text_body: body,
     is_exclusive,
-    scheduled_for
+    scheduled_for,
+    background_style: normalizeClientTextBgStyle(document.getElementById('upload-text-bg-style')?.value)
   });
   if (btn) {
     btn.disabled = false;
@@ -9910,6 +10180,7 @@ async function publishTextContent(evt) {
     showNotif('🎉 ¡Publicación de texto lista!');
   }
   document.getElementById('upload-text-body').value = '';
+  setUploadTextBgStyle('galaxy');
   const sf = document.getElementById('scheduled_for');
   if (sf) sf.value = '';
   syncScheduledPublishButton();
@@ -10100,7 +10371,14 @@ function renderFanFeedContentPreview(item) {
   if (item.type === 'text') {
     var body = String(item.text_body || '').trim();
     var excerpt = body.length > 200 ? body.slice(0, 197) + '…' : body;
-    return '<div class="feed-preview feed-preview--text">' + escapeHtml(excerpt) + '</div>';
+    var bg = normalizeClientTextBgStyle(item.background_style);
+    return (
+      '<div class="feed-preview feed-preview--text-styled bp-text-style--' +
+      bg +
+      '"><span class="feed-preview-text-inner">' +
+      escapeHtml(excerpt) +
+      '</span></div>'
+    );
   }
   if (item.id && item.type === 'video') {
     var vsrc = bpContentMediaUrl(item.id);
@@ -10393,7 +10671,11 @@ function renderFanContent(container, items, opts) {
       } else {
         const tJson = JSON.stringify(c.title || '');
         const bJson = JSON.stringify(c.text_body || '');
-        thumbInner = `<div class="content-thumb ${aspect}" onclick='openTextModal(${tJson}, ${bJson})'>📝<span class="content-type-badge text-type-badge">📝 Texto</span></div>`;
+        const bgClass = normalizeClientTextBgStyle(c.background_style);
+        const bgJson = JSON.stringify(bgClass);
+        const excerptRaw = String(c.text_body || '').trim();
+        const excerpt = excerptRaw.length > 180 ? excerptRaw.slice(0, 177) + '…' : excerptRaw;
+        thumbInner = `<div class="content-thumb ${aspect} bp-text-thumb bp-text-style--${bgClass}" onclick='openTextModal(${tJson}, ${bJson}, ${bgJson})'><div class="bp-text-thumb-inner">${escapeHtml(excerpt)}</div><span class="content-type-badge text-type-badge">📝 Texto</span></div>`;
       }
     } else if (locked) {
       thumbInner = `<div class="content-thumb ${aspect}">${isVid ? '🎬' : '📸'}<span class="content-type-badge">${isVid ? 'VIDEO' : 'FOTO'}</span><div class="lock-overlay">🔒</div></div>`;
