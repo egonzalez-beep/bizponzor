@@ -2760,6 +2760,28 @@
     background: rgba(0,0,0,0.55);
     border-color: rgba(255,255,255,0.22);
   }
+  .media-modal-fs {
+    color: rgba(255,255,255,0.82);
+    border: 1px solid rgba(255,255,255,0.16);
+    background: rgba(0,0,0,0.35);
+    padding: 9px 14px;
+    border-radius: 999px;
+    font-size: 0.82rem;
+    font-weight: 650;
+    cursor: pointer;
+    display: none;
+    align-items: center;
+    gap: 8px;
+    font-family: inherit;
+    line-height: 1.2;
+  }
+  .media-modal-fs.is-visible {
+    display: inline-flex;
+  }
+  .media-modal-fs:hover {
+    background: rgba(0,0,0,0.55);
+    border-color: rgba(255,255,255,0.22);
+  }
 
   /* Creator Profile (public) */
   #creator-profile { padding-top: 0; background: #1A1A1A; color: #FFFFFF; }
@@ -3715,6 +3737,7 @@
     width: 100%;
     max-height: 420px;
     object-fit: cover;
+    pointer-events: none;
   }
   .feed-play-badge {
     position: absolute;
@@ -6280,6 +6303,7 @@
     <div class="media-modal-body">
       <div class="media-modal-media" id="media-modal-media"></div>
       <div class="media-modal-actions">
+        <button type="button" class="media-modal-fs" id="media-modal-fullscreen" aria-label="Pantalla completa">⛶ Pantalla completa</button>
         <a class="media-link" id="media-modal-open" href="#" target="_blank" rel="noopener noreferrer">↗ Abrir en nueva pestaña</a>
       </div>
     </div>
@@ -6729,16 +6753,54 @@ var optsProfileStarRefresh = false;
 let CURRENT_CREATOR_ID = null;
 
 // ─── MEDIA MODAL ────────────────────────────────────────
+function exitMediaModalFullscreen() {
+  var el = document.fullscreenElement || document.webkitFullscreenElement || document.msFullscreenElement;
+  if (!el) return;
+  var slot = document.getElementById('media-modal-media');
+  if (slot && slot.contains(el)) {
+    var exit = document.exitFullscreen || document.webkitExitFullscreen || document.msExitFullscreen;
+    if (exit) exit.call(document);
+  }
+}
+
+function requestVideoElementFullscreen(video) {
+  if (!video) return Promise.reject();
+  var req =
+    video.requestFullscreen ||
+    video.webkitRequestFullscreen ||
+    video.webkitEnterFullScreen ||
+    video.msRequestFullscreen;
+  if (!req) return Promise.reject(new Error('no-fs'));
+  return Promise.resolve(req.call(video));
+}
+
+function syncMediaModalFullscreenButton() {
+  var btn = document.getElementById('media-modal-fullscreen');
+  var slot = document.getElementById('media-modal-media');
+  if (!btn || !slot || !btn.classList.contains('is-visible')) return;
+  var v = slot.querySelector('video');
+  if (!v) return;
+  var fsEl = document.fullscreenElement || document.webkitFullscreenElement || document.msFullscreenElement;
+  var inFs = fsEl === v;
+  btn.textContent = inFs ? '↙ Salir de pantalla completa' : '⛶ Pantalla completa';
+  btn.setAttribute('aria-label', inFs ? 'Salir de pantalla completa' : 'Pantalla completa');
+}
+
 function openMediaModal(url, type) {
   if (!url) return;
   if (typeof closeMobileSidebar === 'function') closeMobileSidebar();
   const modal = document.getElementById('media-modal');
   const slot = document.getElementById('media-modal-media');
   const openLink = document.getElementById('media-modal-open');
+  const fsBtn = document.getElementById('media-modal-fullscreen');
 
   slot.innerHTML = '';
 
   if (openLink) openLink.href = url;
+  if (fsBtn) {
+    fsBtn.classList.remove('is-visible');
+    fsBtn.onclick = null;
+  }
 
   const wrap = document.createElement('div');
   wrap.className = 'media-wrapper protected-content';
@@ -6755,6 +6817,22 @@ function openMediaModal(url, type) {
     v.preload = 'metadata';
     v.draggable = false;
     wrap.appendChild(v);
+    if (fsBtn) {
+      fsBtn.classList.add('is-visible');
+      fsBtn.textContent = '⛶ Pantalla completa';
+      fsBtn.setAttribute('aria-label', 'Pantalla completa');
+      fsBtn.onclick = function () {
+        var fsEl = document.fullscreenElement || document.webkitFullscreenElement || document.msFullscreenElement;
+        if (fsEl === v) {
+          var exit = document.exitFullscreen || document.webkitExitFullscreen || document.msExitFullscreen;
+          if (exit) exit.call(document);
+        } else {
+          requestVideoElementFullscreen(v).catch(function () {
+            if (typeof showNotif === 'function') showNotif('Pantalla completa no disponible en este dispositivo');
+          });
+        }
+      };
+    }
   } else {
     const img = document.createElement('img');
     img.src = url;
@@ -6776,12 +6854,24 @@ function openMediaModal(url, type) {
 function closeMediaModal() {
   const modal = document.getElementById('media-modal');
   const slot = document.getElementById('media-modal-media');
+  const fsBtn = document.getElementById('media-modal-fullscreen');
   if (!modal) return;
+  exitMediaModalFullscreen();
   modal.classList.remove('open');
   document.body.style.overflow = '';
+  if (fsBtn) {
+    fsBtn.classList.remove('is-visible');
+    fsBtn.onclick = null;
+  }
   // Stop any playing video/audio
   if (slot) slot.innerHTML = '';
 }
+
+(function wireMediaModalFullscreenEvents() {
+  ['fullscreenchange', 'webkitfullscreenchange', 'MSFullscreenChange'].forEach(function (ev) {
+    document.addEventListener(ev, syncMediaModalFullscreenButton);
+  });
+})();
 
 document.addEventListener('keydown', (e) => {
   if (e.key === 'Escape') {
@@ -9656,7 +9746,7 @@ function renderContentGrid(container, items) {
     } else if (c.file_url) {
       const vidHint = isVid ? '<span style="position:absolute;bottom:10px;right:10px;background:rgba(0,0,0,0.60);padding:6px 10px;border-radius:999px;color:white;font-size:0.75rem;font-weight:700;z-index:5;">▶ Ver</span>' : '';
       const src = bpContentMediaUrl(c.id);
-      thumb = `<div class="content-thumb ${aspect} media-wrapper protected-content" onclick="openMediaModal(${JSON.stringify(src)}, ${JSON.stringify(c.type)})">${isVid ? `<video class="thumb-fill-media" src="${src}" muted preload="metadata" playsinline draggable="false"></video>` : `<img class="thumb-fill-media" src="${src}" alt="" draggable="false" />`}<div class="media-overlay" aria-hidden="true"></div><span class="content-type-badge">${isVid ? 'VIDEO' : 'FOTO'}</span>${vidHint}</div>`;
+      thumb = `<div class="content-thumb ${aspect} media-wrapper protected-content" onclick='openMediaModal(${JSON.stringify(src)}, ${JSON.stringify(c.type)})'>${isVid ? `<video class="thumb-fill-media" src="${src}" muted preload="metadata" playsinline draggable="false"></video>` : `<img class="thumb-fill-media" src="${src}" alt="" draggable="false" />`}<div class="media-overlay" aria-hidden="true"></div><span class="content-type-badge">${isVid ? 'VIDEO' : 'FOTO'}</span>${vidHint}</div>`;
     } else {
       thumb = `<div class="content-thumb ${aspect}">${isVid ? '🎬' : '📸'}<span class="content-type-badge">${isVid ? 'VIDEO' : 'FOTO'}</span></div>`;
     }
@@ -9970,7 +10060,12 @@ function renderFanFeedContentPreview(item) {
   if (item.id && item.type === 'video') {
     var vsrc = bpContentMediaUrl(item.id);
     return (
-      '<div class="feed-preview feed-preview--media media-wrapper protected-content">' +
+      '<div class="feed-preview feed-preview--media media-wrapper protected-content" ' +
+      "onclick='event.stopPropagation(); openMediaModal(" +
+      JSON.stringify(vsrc) +
+      ', ' +
+      JSON.stringify('video') +
+      ")'>" +
       '<video class="feed-preview-video" src="' +
       fanFeedEscAttr(vsrc) +
       '" muted playsinline preload="metadata" draggable="false"></video>' +
@@ -9981,7 +10076,12 @@ function renderFanFeedContentPreview(item) {
   if (item.id && item.type === 'photo') {
     var psrc = bpContentMediaUrl(item.id);
     return (
-      '<div class="feed-preview feed-preview--media media-wrapper protected-content">' +
+      '<div class="feed-preview feed-preview--media media-wrapper protected-content" ' +
+      "onclick='event.stopPropagation(); openMediaModal(" +
+      JSON.stringify(psrc) +
+      ', ' +
+      JSON.stringify('photo') +
+      ")'>" +
       '<img class="feed-preview-img" src="' +
       fanFeedEscAttr(psrc) +
       '" alt="" loading="lazy" draggable="false"/>' +
@@ -10255,7 +10355,7 @@ function renderFanContent(container, items, opts) {
     } else if (!locked && (c.type === 'photo' || c.type === 'video')) {
       const vidHint = isVid ? '<span style="position:absolute;bottom:10px;right:10px;background:rgba(0,0,0,0.60);padding:6px 10px;border-radius:999px;color:white;font-size:0.75rem;font-weight:700;z-index:5;">▶ Ver</span>' : '';
       const src = bpContentMediaUrl(c.id);
-      thumbInner = `<div class="content-thumb ${aspect} media-wrapper protected-content" onclick="openMediaModal(${JSON.stringify(src)}, ${JSON.stringify(c.type)})">${isVid ? `<video class="thumb-fill-media" src="${src}" muted preload="metadata" playsinline draggable="false"></video>` : `<img class="thumb-fill-media" src="${src}" alt="" draggable="false" />`}<div class="media-overlay" aria-hidden="true"></div><span class="content-type-badge">${isVid ? 'VIDEO' : 'FOTO'}</span>${vidHint}</div>`;
+      thumbInner = `<div class="content-thumb ${aspect} media-wrapper protected-content" onclick='openMediaModal(${JSON.stringify(src)}, ${JSON.stringify(c.type)})'>${isVid ? `<video class="thumb-fill-media" src="${src}" muted preload="metadata" playsinline draggable="false"></video>` : `<img class="thumb-fill-media" src="${src}" alt="" draggable="false" />`}<div class="media-overlay" aria-hidden="true"></div><span class="content-type-badge">${isVid ? 'VIDEO' : 'FOTO'}</span>${vidHint}</div>`;
     } else {
       thumbInner = `<div class="content-thumb ${aspect}">${isVid ? '🎬' : '📸'}<span class="content-type-badge">${isVid ? 'VIDEO' : 'FOTO'}</span></div>`;
     }
