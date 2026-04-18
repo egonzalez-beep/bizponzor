@@ -207,9 +207,14 @@ router.get('/conversations', auth, async (req, res) => {
               SELECT 1 FROM deleted_conversations dc
               WHERE dc.user_id = ? AND dc.other_user_id = c.id
             )
-          ORDER BY (last_message_at IS NULL), datetime(last_message_at) DESC`
+          ORDER BY (
+              SELECT created_at FROM messages 
+              WHERE (sender_id = ? AND receiver_id = c.id) 
+                 OR (sender_id = c.id AND receiver_id = ?)
+              ORDER BY datetime(created_at) DESC LIMIT 1
+          ) DESC`
         )
-        .all(userId, userId, userId, userId, userId, userId, userId);
+        .all(userId, userId, userId, userId, userId, userId, userId, userId, userId);
 
       return res.json(
         rows.map((conv) => ({
@@ -265,9 +270,16 @@ router.get('/conversations', auth, async (req, res) => {
               SELECT 1 FROM deleted_conversations dc
               WHERE dc.user_id = ? AND dc.other_user_id = u.id
             )
-          ORDER BY (last_message_at IS NULL), datetime(last_message_at) DESC`
+          ORDER BY (
+              SELECT created_at FROM messages 
+              WHERE (sender_id = u.id AND receiver_id = ?) 
+                 OR (sender_id = ? AND receiver_id = u.id)
+              ORDER BY datetime(created_at) DESC LIMIT 1
+          ) DESC`
         )
         .all(
+          userId,
+          userId,
           userId,
           userId,
           userId,
