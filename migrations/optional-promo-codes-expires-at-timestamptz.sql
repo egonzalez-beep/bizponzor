@@ -1,15 +1,10 @@
--- Opcional: alinear tipo de promo_codes.expires_at con comparaciones en PostgreSQL.
--- Ejecutar manualmente en Railway/psql DESPUÉS de validar datos (ver notas abajo).
+-- LEGACY: solo bases PostgreSQL creadas ANTES de que migrations/init.sql definiera
+-- promo_codes.expires_at como TIMESTAMPTZ.
 --
--- Notas:
--- 1) Todos los valores no nulos en expires_at deben ser fechas parseables por PostgreSQL
---    (p. ej. ISO 8601). Cadenas vacías o basura harán fallar el USING.
--- 2) Antes de migrar, inspeccionar:
---    SELECT id, expires_at FROM promo_codes
---    WHERE expires_at IS NOT NULL AND expires_at !~ '^\d{4}-\d{2}-\d{2}';
---    (ajustar el patrón según tu formato real).
--- 3) Tras el cambio, la app puede seguir enviando ISO como texto; el driver devuelve Date o string
---    según configuración. Ajustar el frontend si hace falta.
+-- Instalaciones nuevas: ejecutar solo node scripts/runMigration.js (init.sql ya incluye
+-- TIMESTAMPTZ + índice idx_promo_codes_expires_at).
+--
+-- Si tu producción ya aplicó este ALTER manualmente, no vuelvas a ejecutar este archivo.
 
 BEGIN;
 

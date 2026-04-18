@@ -1,4 +1,4 @@
--- BizPonzor — esquema PostgreSQL (paridad con SQLite en db-sqlite.js)
+-- BizPonzor — esquema PostgreSQL (alineado con db-sqlite.js; excepción: promo_codes.expires_at es TIMESTAMPTZ aquí, TEXT en SQLite).
 -- Ejecutar con: node scripts/runMigration.js
 
 CREATE EXTENSION IF NOT EXISTS "pgcrypto";
@@ -157,7 +157,7 @@ CREATE TABLE IF NOT EXISTS promo_codes (
   duration_days INTEGER DEFAULT 7,
   max_uses INTEGER DEFAULT 1,
   used_count INTEGER DEFAULT 0,
-  expires_at TEXT,
+  expires_at TIMESTAMPTZ,
   is_active INTEGER DEFAULT 1,
   created_at TEXT DEFAULT ((now() AT TIME ZONE 'UTC')::text)
 );
@@ -171,6 +171,10 @@ CREATE TABLE IF NOT EXISTS promo_redemptions (
 );
 
 CREATE INDEX IF NOT EXISTS idx_promo_codes_creator ON promo_codes (creator_id);
+
+CREATE INDEX IF NOT EXISTS idx_promo_codes_expires_at
+  ON promo_codes (expires_at)
+  WHERE expires_at IS NOT NULL;
 
 CREATE TABLE IF NOT EXISTS deleted_conversations (
   id TEXT PRIMARY KEY,

@@ -90,7 +90,7 @@ router.post('/redeem', auth, async (req, res) => {
     const result = await db.transaction(async (tx) => {
       const promo = await tx
         .prepare(
-          // SQLite: comparación por texto/datetime. PostgreSQL: lib/sql-pg.js reescribe a expires_at::timestamptz > CURRENT_TIMESTAMP
+          // SQLite: expires_at TEXT (ISO8601) vs datetime('now'). PostgreSQL: expires_at TIMESTAMPTZ vs CURRENT_TIMESTAMP (tras adaptSql).
           `SELECT * FROM promo_codes
          WHERE code = ?
            AND is_active = 1
