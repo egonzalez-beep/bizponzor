@@ -306,8 +306,11 @@ router.post('/forgot-password', async (req, res) => {
           const resend = new Resend(apiKey);
           const base = getPublicAppUrl();
           const resetUrl = `${base}/reset-password?token=${encodeURIComponent(token)}`;
+          const resendFrom =
+            (process.env.RESEND_FROM && String(process.env.RESEND_FROM).trim()) ||
+            'Bizponzor <soporte@bizponzor.com>';
           const sendResult = await resend.emails.send({
-            from: 'Bizponzor <soporte@bizponzor.com>',
+            from: resendFrom,
             to: user.email,
             subject: 'Restablece tu contraseña — BizPonzor',
             html: `<p>Hola,</p><p>Para restablecer tu contraseña, usa este enlace (válido 1 hora):</p><p><a href="${resetUrl}">${resetUrl}</a></p><p>Si no solicitaste esto, ignora este mensaje.</p>`
