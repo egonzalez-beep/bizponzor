@@ -9432,6 +9432,30 @@ var currentCalendarDate = new Date();
 var scheduledSummary = {};
 var calendarViewFilter = 'all';
 
+/** API /scheduled-summary: claves deben ser YYYY-MM-DD; normaliza respuestas legacy (p. ej. claves tipo Date#toString). */
+function normalizeScheduledSummaryResponse(res) {
+  if (!res || typeof res !== 'object' || Array.isArray(res)) return {};
+  var out = {};
+  Object.keys(res).forEach(function (k) {
+    if (k === 'error') return;
+    var dayKey = k;
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(k)) {
+      var parsed = Date.parse(k);
+      if (isNaN(parsed)) return;
+      var x = new Date(parsed);
+      dayKey =
+        x.getFullYear() +
+        '-' +
+        String(x.getMonth() + 1).padStart(2, '0') +
+        '-' +
+        String(x.getDate()).padStart(2, '0');
+    }
+    var n = Number(res[k]) || 0;
+    out[dayKey] = (out[dayKey] || 0) + n;
+  });
+  return out;
+}
+
 function setCalendarFilter(mode) {
   if (mode !== 'all' && mode !== 'scheduled') return;
   calendarViewFilter = mode;
@@ -9443,7 +9467,11 @@ function setCalendarFilter(mode) {
 
 async function loadScheduledSummary() {
   const res = await api.get('/content/scheduled-summary');
-  if (!res.error) scheduledSummary = res;
+  if (res && res.error) {
+    scheduledSummary = {};
+  } else {
+    scheduledSummary = normalizeScheduledSummaryResponse(res);
+  }
   renderCalendar();
 }
 

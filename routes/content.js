@@ -365,6 +365,40 @@ router.get('/my', authMiddleware, requireCreator, async (req, res) => {
   res.json(rows);
 });
 
+/**
+ * Clave YYYY-MM-DD para el calendario. node-pg devuelve DATE como Date;
+ * si se usa como clave de objeto, JSON.stringify envía strings ilegibles y el front no coincide.
+ */
+function scheduledSummaryDayKey(day) {
+  if (day == null || day === '') return null;
+  if (typeof day === 'string') {
+    const s = day.trim();
+    const m = s.match(/^(\d{4}-\d{2}-\d{2})/);
+    if (m) return m[1];
+    const d = new Date(s);
+    if (!isNaN(d.getTime())) {
+      return (
+        d.getUTCFullYear() +
+        '-' +
+        String(d.getUTCMonth() + 1).padStart(2, '0') +
+        '-' +
+        String(d.getUTCDate()).padStart(2, '0')
+      );
+    }
+    return null;
+  }
+  if (Object.prototype.toString.call(day) === '[object Date]' && !isNaN(day.getTime())) {
+    return (
+      day.getUTCFullYear() +
+      '-' +
+      String(day.getUTCMonth() + 1).padStart(2, '0') +
+      '-' +
+      String(day.getUTCDate()).padStart(2, '0')
+    );
+  }
+  return null;
+}
+
 router.get('/scheduled-summary', authMiddleware, requireCreator, async (req, res) => {
   const userId = req.user.id;
 
@@ -383,7 +417,10 @@ router.get('/scheduled-summary', authMiddleware, requireCreator, async (req, res
 
   const summary = {};
   rows.forEach((r) => {
-    summary[r.day] = r.total;
+    const key = scheduledSummaryDayKey(r.day);
+    if (!key) return;
+    const n = Number(r.total) || 0;
+    summary[key] = (summary[key] || 0) + n;
   });
 
   res.json(summary);
