@@ -14,6 +14,13 @@ const { getClientIp } = require('../lib/getClientIp');
 const { isReservedUsername } = require('../lib/reservedUsernames');
 const { loginRateAllowed, loginRateRecordFailure, loginRateReset } = require('../lib/loginRateLimit');
 
+/** URL pública de la app (enlace en correos de recuperación). Railway: define APP_URL. */
+function getPublicAppUrl() {
+  const raw = process.env.APP_URL || process.env.PUBLIC_URL;
+  if (raw && String(raw).trim()) return String(raw).replace(/\/$/, '');
+  return 'https://bizponzor-production.up.railway.app';
+}
+
 function normalizeUsername(raw) {
   const s = String(raw || '')
     .trim()
@@ -291,8 +298,29 @@ router.post('/forgot-password', async (req, res) => {
 
     if (user) {
       await db.prepare('UPDATE users SET reset_token = ?, reset_token_expires = ? WHERE id = ?').run(token, expiresIso, user.id);
-      if (process.env.NODE_ENV !== 'production') {
-        console.log('[auth/forgot-password] Reset token (solo no-producción):', token);
+
+      const apiKey = process.env.RESEND_API_KEY;
+      if (apiKey) {
+        try {
+          const { Resend } = require('resend');
+          const resend = new Resend(apiKey);
+          const base = getPublicAppUrl();
+          const resetUrl = `${base}/reset-password?token=${encodeURIComponent(token)}`;
+          const sendResult = await resend.emails.send({
+            from: 'onboarding@resend.dev',
+            to: user.email,
+            subject: 'Restablece tu contraseña — BizPonzor',
+            html: `<p>Hola,</p><p>Para restablecer tu contraseña, usa este enlace (válido 1 hora):</p><p><a href="${resetUrl}">${resetUrl}</a></p><p>Si no solicitaste esto, ignora este mensaje.</p>`
+          });
+          console.log('[auth/forgot-password] Resend full response:', JSON.stringify(sendResult, null, 2));
+        } catch (sendErr) {
+          console.error('[auth/forgot-password] Resend exception:', sendErr && sendErr.message, sendErr);
+        }
+      } else {
+        console.warn('[auth/forgot-password] RESEND_API_KEY no configurado; correo no enviado');
+        if (process.env.NODE_ENV !== 'production') {
+          console.log('[auth/forgot-password] Reset token (solo sin Resend / no-producción):', token);
+        }
       }
     }
     res.json({
