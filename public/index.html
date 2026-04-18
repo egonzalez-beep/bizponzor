@@ -9785,7 +9785,7 @@ function renderContentGrid(container, items) {
     const scheduledInfo =
       isScheduled && c.scheduled_for
         ? `<div style="font-size:0.7rem;color:var(--gray-500);margin-top:4px;">
-    📅 Publicará: ${new Date(c.scheduled_for).toLocaleString('es')}
+    📅 Publicará: ${formatScheduledForDisplay(c.scheduled_for)}
   </div>`
         : '';
     const hideTitle = shouldHideContentTitle(c.title);
@@ -9840,6 +9840,21 @@ function onUploadTypeChange() {
   if (ts) ts.style.display = mode === 'text' ? 'block' : 'none';
 }
 
+/** datetime-local es hora local del navegador; convierte a ISO UTC para que el servidor no la interprete en su propia zona (p. ej. UTC en Railway). */
+function scheduledLocalInputToIso(datetimeLocalValue) {
+  if (datetimeLocalValue == null || String(datetimeLocalValue).trim() === '') return null;
+  var d = new Date(String(datetimeLocalValue).trim());
+  if (isNaN(d.getTime())) return null;
+  return d.toISOString();
+}
+
+function formatScheduledForDisplay(iso) {
+  if (!iso) return '';
+  var d = new Date(iso);
+  if (isNaN(d.getTime())) return String(iso);
+  return d.toLocaleString('es', { dateStyle: 'medium', timeStyle: 'short' });
+}
+
 function syncScheduledPublishButton() {
   const scheduledInput = document.getElementById('scheduled_for');
   const publishBtn = document.querySelector('#dash-upload .btn-primary');
@@ -9860,10 +9875,11 @@ async function publishTextContent(evt) {
   const description = document.getElementById('upload-description')?.value;
   const accEl = document.getElementById('upload-access');
   const is_exclusive = accEl && accEl.value === 'exclusive';
-  const scheduled_for = document.getElementById('scheduled_for')?.value || null;
-  if (scheduled_for) {
-    const selectedDate = new Date(scheduled_for);
-    if (isNaN(selectedDate.getTime())) {
+  const rawSchedule = document.getElementById('scheduled_for')?.value || null;
+  let scheduled_for = null;
+  if (rawSchedule) {
+    scheduled_for = scheduledLocalInputToIso(rawSchedule);
+    if (!scheduled_for) {
       showNotif('❌ Fecha inválida. Usa el selector.');
       return;
     }
@@ -9915,10 +9931,11 @@ async function publishContent(evt) {
   const description = document.getElementById('upload-description')?.value;
   const accEl = document.getElementById('upload-access');
   const is_exclusive = accEl && accEl.value === 'exclusive' ? 'true' : 'false';
-  const scheduled_for = document.getElementById('scheduled_for')?.value || null;
-  if (scheduled_for) {
-    const selectedDate = new Date(scheduled_for);
-    if (isNaN(selectedDate.getTime())) {
+  const rawSchedule = document.getElementById('scheduled_for')?.value || null;
+  let scheduled_for = null;
+  if (rawSchedule) {
+    scheduled_for = scheduledLocalInputToIso(rawSchedule);
+    if (!scheduled_for) {
       showNotif('❌ Fecha inválida. Usa el selector.');
       return;
     }

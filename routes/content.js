@@ -101,6 +101,8 @@ const upload = multer({ storage, limits: { fileSize: 50 * 1024 * 1024 } });
 
 /**
  * Resuelve programación: fecha futura → scheduled; pasada o sin fecha → published.
+ * El cliente debe enviar ISO 8601 en UTC (p. ej. desde datetime-local vía toISOString());
+ * si se parsea sin zona en el servidor, se interpreta en la TZ del proceso (p. ej. UTC) y la hora se desplaza.
  * @returns {{ status: string, scheduledFor: string|null, error?: string }}
  */
 function resolveSchedule(scheduled_for) {
@@ -111,10 +113,7 @@ function resolveSchedule(scheduled_for) {
   if (!raw) {
     return { status, scheduledFor };
   }
-  const scheduledDate =
-    /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}$/.test(raw)
-      ? new Date(raw + ':00')
-      : new Date(raw);
+  const scheduledDate = new Date(raw);
   const now = new Date();
   const maxFuture = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000);
   if (isNaN(scheduledDate.getTime())) {
