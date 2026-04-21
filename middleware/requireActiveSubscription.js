@@ -8,6 +8,7 @@
  */
 function requireActiveFanSubscription(paramName = 'creatorId') {
   const db = require('../db');
+  const { subscriptionGrantsAccessSql } = require('../lib/subscriptionAccess');
 
   return async (req, res, next) => {
     try {
@@ -29,7 +30,7 @@ function requireActiveFanSubscription(paramName = 'creatorId') {
       const row = await db
         .prepare(
           `SELECT id FROM subscriptions
-           WHERE fan_id = ? AND creator_id = ? AND status = 'active'
+           WHERE fan_id = ? AND creator_id = ? AND (${subscriptionGrantsAccessSql()})
            LIMIT 1`
         )
         .get(req.user.id, creatorId);
@@ -58,6 +59,7 @@ function requireActiveFanSubscription(paramName = 'creatorId') {
  */
 async function requireAnyActiveFanSubscription(req, res, next) {
   const db = require('../db');
+  const { subscriptionGrantsAccessSql } = require('../lib/subscriptionAccess');
 
   try {
     if (!req.user) {
@@ -71,7 +73,9 @@ async function requireAnyActiveFanSubscription(req, res, next) {
     }
 
     const row = await db
-      .prepare(`SELECT id FROM subscriptions WHERE fan_id = ? AND status = 'active' LIMIT 1`)
+      .prepare(
+        `SELECT id FROM subscriptions WHERE fan_id = ? AND (${subscriptionGrantsAccessSql()}) LIMIT 1`
+      )
       .get(req.user.id);
 
     if (!row) {

@@ -80,10 +80,37 @@ async function syncSubscriptionFromPreapproval(mpPreapprovalId) {
            mp_subscription_id = ?,
            mp_preapproval_status = ?,
            next_billing = ?,
+           cancel_at_period_end = FALSE,
            updated_at = datetime('now')
        WHERE id = ?`
       )
       .run(dbStatus, mpId, mpStatus, nextBilling, sub.id);
+  } else if (dbStatus === 'cancelled') {
+    const nb = sub.next_billing ? new Date(sub.next_billing) : null;
+    const stillInPaidPeriod = nb && !Number.isNaN(nb.getTime()) && nb.getTime() > Date.now();
+    if (stillInPaidPeriod) {
+      await db
+        .prepare(
+          `UPDATE subscriptions
+         SET cancel_at_period_end = TRUE,
+             mp_subscription_id = ?,
+             mp_preapproval_status = ?,
+             updated_at = datetime('now')
+         WHERE id = ?`
+        )
+        .run(mpId, mpStatus, sub.id);
+    } else {
+      await db
+        .prepare(
+          `UPDATE subscriptions
+         SET status = ?,
+             mp_subscription_id = ?,
+             mp_preapproval_status = ?,
+             updated_at = datetime('now')
+         WHERE id = ?`
+        )
+        .run(dbStatus, mpId, mpStatus, sub.id);
+    }
   } else {
     await db
       .prepare(

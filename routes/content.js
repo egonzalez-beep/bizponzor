@@ -6,13 +6,16 @@ const fs = require('fs');
 const { v4: uuidv4 } = require('uuid');
 const db = require('../db');
 const authMiddleware = require('../middleware/auth');
+const { subscriptionGrantsAccessSql } = require('../lib/subscriptionAccess');
 const { createNotification, fireAndForget } = require('../lib/createNotification');
 
 async function notifyFansNewContent(creatorId, contentId, previewText) {
   const creator = await db.prepare('SELECT id, name, handle FROM users WHERE id = ?').get(creatorId);
   if (!creator) return;
   const fans = await db
-    .prepare(`SELECT fan_id FROM subscriptions WHERE creator_id = ? AND status = 'active'`)
+    .prepare(
+      `SELECT fan_id FROM subscriptions WHERE creator_id = ? AND (${subscriptionGrantsAccessSql()})`
+    )
     .all(creatorId);
   const preview =
     previewText && String(previewText).trim()
@@ -327,7 +330,7 @@ async function sendCreatorPublicFeed(req, res) {
   if (!hasAccess && userId) {
     const sub = await db
       .prepare(
-        "SELECT id FROM subscriptions WHERE fan_id=? AND creator_id=? AND status='active'"
+        `SELECT id FROM subscriptions WHERE fan_id=? AND creator_id=? AND (${subscriptionGrantsAccessSql()})`
       )
       .get(userId, creatorId);
     hasAccess = !!sub;

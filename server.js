@@ -318,4 +318,21 @@ setInterval(() => {
 }, 24 * 60 * 60 * 1000);
 cleanupOldNotifications().catch((err) => console.error('[notifications cleanup]', err));
 
+async function expireSubscriptionsAtPeriodEnd() {
+  try {
+    const { expireCancelledAtPeriodEnd } = require('./lib/subscriptionAccess');
+    const n = await expireCancelledAtPeriodEnd(db);
+    if (n > 0) {
+      console.log('[subscriptions] periodo vencido, marcadas canceladas:', n);
+    }
+  } catch (e) {
+    console.error('[subscriptions period cleanup]', e.message);
+  }
+}
+
+setInterval(() => {
+  expireSubscriptionsAtPeriodEnd().catch((err) => console.error('[subscriptions period cleanup]', err));
+}, 60 * 60 * 1000);
+expireSubscriptionsAtPeriodEnd().catch((err) => console.error('[subscriptions period cleanup]', err));
+
 app.listen(PORT, '0.0.0.0', () => console.log(`Servidor corriendo en el puerto ${PORT}`));

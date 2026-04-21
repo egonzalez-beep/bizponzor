@@ -2,6 +2,7 @@
 const router = require('express').Router();
 const db = require('../db');
 const auth = require('../middleware/auth');
+const { subscriptionGrantsAccessSql } = require('../lib/subscriptionAccess');
 
 async function totalStarsForCreator(creatorId) {
   const row = await db
@@ -28,7 +29,9 @@ async function countPhotosVideos(creatorId) {
 router.get('/', async (req, res) => {
   const creators = await db
     .prepare(
-      "SELECT u.id, u.name, u.handle, u.bio, u.category, u.location, u.avatar_url, u.banner_url, u.avatar_color, u.updated_at, COUNT(DISTINCT s.id) as subscribers FROM users u LEFT JOIN subscriptions s ON u.id=s.creator_id AND s.status='active' WHERE u.role='creator' AND COALESCE(u.is_public, TRUE) = TRUE GROUP BY u.id ORDER BY subscribers DESC"
+      `SELECT u.id, u.name, u.handle, u.bio, u.category, u.location, u.avatar_url, u.banner_url, u.avatar_color, u.updated_at, COUNT(DISTINCT s.id) as subscribers FROM users u LEFT JOIN subscriptions s ON u.id=s.creator_id AND (${subscriptionGrantsAccessSql(
+        's'
+      )}) WHERE u.role='creator' AND COALESCE(u.is_public, TRUE) = TRUE GROUP BY u.id ORDER BY subscribers DESC`
     )
     .all();
   res.json(creators);
@@ -45,7 +48,9 @@ router.get('/me', auth, async (req, res) => {
     .get(req.user.id);
   if (!creator) return res.status(404).json({ error: 'Creador no encontrado' });
   const subs = await db
-    .prepare("SELECT COUNT(*) as count FROM subscriptions WHERE creator_id=? AND status='active'")
+    .prepare(
+      `SELECT COUNT(*) as count FROM subscriptions WHERE creator_id=? AND (${subscriptionGrantsAccessSql()})`
+    )
     .get(creator.id);
   const contentCount = await db.prepare("SELECT COUNT(*) as count FROM content WHERE creator_id=?").get(creator.id);
   const pv = await countPhotosVideos(creator.id);
@@ -94,7 +99,9 @@ router.get('/:handle', async (req, res) => {
     .get(req.params.handle);
   if (!creator) return res.status(404).json({ error: 'Creador no encontrado' });
   const subs = await db
-    .prepare("SELECT COUNT(*) as count FROM subscriptions WHERE creator_id=? AND status='active'")
+    .prepare(
+      `SELECT COUNT(*) as count FROM subscriptions WHERE creator_id=? AND (${subscriptionGrantsAccessSql()})`
+    )
     .get(creator.id);
   const contentCount = await db.prepare("SELECT COUNT(*) as count FROM content WHERE creator_id=?").get(creator.id);
   const pv = await countPhotosVideos(creator.id);

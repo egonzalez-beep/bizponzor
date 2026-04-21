@@ -3,6 +3,7 @@ const fs = require('fs');
 const express = require('express');
 const jwt = require('jsonwebtoken');
 const db = require('../db');
+const { subscriptionGrantsAccessSql } = require('../lib/subscriptionAccess');
 
 const router = express.Router();
 const uploadsRoot = path.join(__dirname, '..', 'uploads');
@@ -58,7 +59,7 @@ router.get('/:contentId', async (req, res) => {
       }
       const sub = await db
         .prepare(
-          "SELECT id FROM subscriptions WHERE fan_id = ? AND creator_id = ? AND status = 'active'"
+          `SELECT id FROM subscriptions WHERE fan_id = ? AND creator_id = ? AND (${subscriptionGrantsAccessSql()})`
         )
         .get(userId, content.creator_id);
       if (!sub) {

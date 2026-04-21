@@ -6,6 +6,7 @@ const { createNotification } = require('../lib/createNotification');
 const auth = require('../middleware/auth');
 const { MercadoPagoConfig, PreApproval } = require('mercadopago');
 const { normalizePreapprovalPayload } = require('../lib/mpSubscription');
+const { subscriptionGrantsAccessSql } = require('../lib/subscriptionAccess');
 
 const MP_CURRENCY = process.env.MP_CURRENCY_ID || 'MXN';
 const APP_URL = 'https://bizponzor-production.up.railway.app';
@@ -40,7 +41,9 @@ router.post('/checkout', auth, async (req, res) => {
     if (!creator) return res.status(404).json({ error: 'Creador no encontrado' });
 
     const existingActive = await db
-      .prepare(`SELECT id FROM subscriptions WHERE fan_id = ? AND creator_id = ? AND status = 'active'`)
+      .prepare(
+        `SELECT id FROM subscriptions WHERE fan_id = ? AND creator_id = ? AND (${subscriptionGrantsAccessSql()})`
+      )
       .get(req.user.id, creator_id);
     if (existingActive) {
       return res.status(400).json({ error: 'Ya estás suscrito a este creador' });
@@ -218,7 +221,9 @@ router.post('/activate/:sub_id', auth, async (req, res) => {
   const nextBilling = new Date();
   nextBilling.setMonth(nextBilling.getMonth() + 1);
   await db
-    .prepare("UPDATE subscriptions SET status='active', next_billing=?, updated_at=datetime('now') WHERE id=?")
+    .prepare(
+      "UPDATE subscriptions SET status='active', next_billing=?, cancel_at_period_end=FALSE, updated_at=datetime('now') WHERE id=?"
+    )
     .run(nextBilling.toISOString(), sub.id);
   const fan = await db.prepare('SELECT name FROM users WHERE id = ?').get(sub.fan_id);
   const plan = await db.prepare('SELECT name FROM plans WHERE id = ?').get(sub.plan_id);
@@ -243,7 +248,7 @@ router.get('/my-subscribers', auth, async (req, res) => {
        FROM subscriptions s
        JOIN users u ON s.fan_id=u.id
        JOIN plans p ON s.plan_id=p.id
-       WHERE s.creator_id=? AND s.status='active'`
+       WHERE s.creator_id=? AND (${subscriptionGrantsAccessSql('s')})`
     )
     .all(req.user.id);
   res.json(subs);
@@ -257,7 +262,7 @@ router.get('/my', auth, async (req, res) => {
          FROM subscriptions s
          JOIN users u ON s.creator_id=u.id
          JOIN plans p ON s.plan_id=p.id
-         WHERE s.fan_id=? AND s.status='active'`
+         WHERE s.fan_id=? AND (${subscriptionGrantsAccessSql('s')})`
       )
       .all(req.user.id);
     res.json(subs);
@@ -268,7 +273,7 @@ router.get('/my', auth, async (req, res) => {
          FROM subscriptions s
          JOIN users u ON s.fan_id=u.id
          JOIN plans p ON s.plan_id=p.id
-         WHERE s.creator_id=? AND s.status='active'`
+         WHERE s.creator_id=? AND (${subscriptionGrantsAccessSql('s')})`
       )
       .all(req.user.id);
     res.json(subs);
@@ -276,17 +281,77 @@ router.get('/my', auth, async (req, res) => {
 });
 
 router.post('/cancel/:id', auth, async (req, res) => {
-  await db.prepare("UPDATE subscriptions SET status='cancelled' WHERE id=? AND fan_id=?").run(req.params.id, req.user.id);
-  res.json({ success: true });
+  try {
+    if (req.user.role !== 'fan') {
+      return res.status(403).json({ error: 'Solo los fans pueden cancelar su suscripción' });
+    }
+
+    const sub = await db
+      .prepare('SELECT * FROM subscriptions WHERE id = ? AND fan_id = ?')
+      .get(req.params.id, req.user.id);
+
+    if (!sub) {
+      return res.status(404).json({ error: 'Suscripción no encontrada' });
+    }
+
+    if (sub.status !== 'active') {
+      return res.status(400).json({ error: 'La suscripción no está activa' });
+    }
+
+    if (sub.cancel_at_period_end === 1 || sub.cancel_at_period_end === true) {
+      return res.json({ success: true, cancel_at_period_end: true, message: 'Ya estaba programada la baja al final del periodo' });
+    }
+
+    if (sub.mp_subscription_id) {
+      const account = await db
+        .prepare(
+          `SELECT access_token FROM mercado_pago_accounts WHERE user_id = ?`
+        )
+        .get(sub.creator_id);
+
+      if (account && account.access_token && String(account.access_token).length >= 20) {
+        try {
+          const preApprovalClient = new PreApproval(
+            new MercadoPagoConfig({
+              accessToken: account.access_token,
+              options: { timeout: 15000 }
+            })
+          );
+          await preApprovalClient.update({
+            id: String(sub.mp_subscription_id),
+            body: { status: 'cancelled' }
+          });
+        } catch (mpError) {
+          console.error('[MP cancel error]', mpError && mpError.message ? mpError.message : mpError);
+        }
+      } else {
+        console.warn('[cancel] Sin token MP del creador; se marca baja al fin de periodo igualmente', {
+          sub_id: sub.id,
+          creator_id: sub.creator_id
+        });
+      }
+    }
+
+    await db.prepare(`UPDATE subscriptions SET cancel_at_period_end = TRUE WHERE id = ?`).run(sub.id);
+
+    res.json({ success: true, cancel_at_period_end: true });
+  } catch (error) {
+    console.error('Cancel error:', error);
+    res.status(500).json({ error: 'Error al cancelar suscripción' });
+  }
 });
 
 router.get('/stats', auth, async (req, res) => {
   if (req.user.role !== 'creator') return res.status(403).json({ error: 'Solo creadores' });
   const total = await db
-    .prepare("SELECT COUNT(*) as count FROM subscriptions WHERE creator_id=? AND status='active'")
+    .prepare(
+      `SELECT COUNT(*) as count FROM subscriptions WHERE creator_id=? AND (${subscriptionGrantsAccessSql()})`
+    )
     .get(req.user.id);
   const revenue = await db
-    .prepare("SELECT SUM(amount) as total FROM subscriptions WHERE creator_id=? AND status='active'")
+    .prepare(
+      `SELECT SUM(amount) as total FROM subscriptions WHERE creator_id=? AND (${subscriptionGrantsAccessSql()})`
+    )
     .get(req.user.id);
   const content = await db.prepare('SELECT COUNT(*) as count FROM content WHERE creator_id=?').get(req.user.id);
   res.json({

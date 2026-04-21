@@ -1,6 +1,7 @@
 const router = require('express').Router();
 const db = require('../db');
 const auth = require('../middleware/auth');
+const { subscriptionGrantsAccessSql } = require('../lib/subscriptionAccess');
 
 /**
  * GET /api/feed?limit=&offset=
@@ -29,7 +30,7 @@ router.get('/', auth, async (req, res) => {
          JOIN users u ON c.creator_id = u.id
          WHERE c.creator_id IN (
            SELECT creator_id FROM subscriptions
-           WHERE fan_id = ? AND status = 'active'
+           WHERE fan_id = ? AND (${subscriptionGrantsAccessSql()})
          )
          AND (c.status IS NULL OR c.status = 'published')
          ORDER BY c.created_at DESC

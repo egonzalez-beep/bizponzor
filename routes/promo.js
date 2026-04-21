@@ -1,6 +1,7 @@
 const router = require('express').Router();
 const { v4: uuidv4 } = require('uuid');
 const db = require('../db');
+const { subscriptionGrantsAccessSql } = require('../lib/subscriptionAccess');
 const auth = require('../middleware/auth');
 
 /** Evita FOREIGN KEY al canjear si el JWT existe pero la fila en `users` no (p. ej. móvil / réplica). */
@@ -123,7 +124,7 @@ router.post('/redeem', auth, async (req, res) => {
       const existingSub = await tx
         .prepare(
           `SELECT 1 FROM subscriptions
-         WHERE fan_id = ? AND creator_id = ? AND status = 'active'`
+         WHERE fan_id = ? AND creator_id = ? AND (${subscriptionGrantsAccessSql()})`
         )
         .get(fanId, creator_id);
 

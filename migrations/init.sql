@@ -81,8 +81,11 @@ CREATE TABLE IF NOT EXISTS subscriptions (
   promo_code TEXT,
   discount_percent INTEGER DEFAULT 0,
   created_at TEXT DEFAULT ((now() AT TIME ZONE 'UTC')::text),
-  updated_at TEXT DEFAULT ((now() AT TIME ZONE 'UTC')::text)
+  updated_at TEXT DEFAULT ((now() AT TIME ZONE 'UTC')::text),
+  cancel_at_period_end BOOLEAN DEFAULT FALSE
 );
+
+ALTER TABLE subscriptions ADD COLUMN IF NOT EXISTS cancel_at_period_end BOOLEAN DEFAULT FALSE;
 
 CREATE TABLE IF NOT EXISTS payments (
   id TEXT PRIMARY KEY,

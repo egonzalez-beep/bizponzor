@@ -3,6 +3,7 @@ const router = require('express').Router();
 const crypto = require('crypto');
 const db = require('../db');
 const auth = require('../middleware/auth');
+const { subscriptionGrantsAccessSql } = require('../lib/subscriptionAccess');
 
 router.post('/:id/read', auth, async (req, res) => {
   try {
@@ -65,7 +66,7 @@ router.post('/', auth, async (req, res) => {
     const subscription = await db
       .prepare(
         `SELECT id FROM subscriptions
-         WHERE fan_id = ? AND creator_id = ? AND status = 'active'`
+         WHERE fan_id = ? AND creator_id = ? AND (${subscriptionGrantsAccessSql()})`
       )
       .get(fanId, creatorId);
 
@@ -111,7 +112,7 @@ router.get('/conversation/:userId', auth, async (req, res) => {
 
     const sub = await db
       .prepare(
-        `SELECT id FROM subscriptions WHERE fan_id = ? AND creator_id = ? AND status = 'active'`
+        `SELECT id FROM subscriptions WHERE fan_id = ? AND creator_id = ? AND (${subscriptionGrantsAccessSql()})`
       )
       .get(fanId, creatorId);
     if (!sub) {
@@ -202,7 +203,7 @@ router.get('/conversations', auth, async (req, res) => {
             ) AS unread_count
           FROM subscriptions s
           JOIN users c ON c.id = s.creator_id
-          WHERE s.fan_id = ? AND s.status = 'active'
+          WHERE s.fan_id = ? AND (${subscriptionGrantsAccessSql('s')})
             AND NOT EXISTS (
               SELECT 1 FROM deleted_conversations dc
               WHERE dc.user_id = ? AND dc.other_user_id = c.id
@@ -264,7 +265,7 @@ router.get('/conversations', auth, async (req, res) => {
           WHERE p.fan_id IS NOT NULL
             AND EXISTS (
               SELECT 1 FROM subscriptions s
-              WHERE s.creator_id = ? AND s.fan_id = u.id AND s.status = 'active'
+              WHERE s.creator_id = ? AND s.fan_id = u.id AND (${subscriptionGrantsAccessSql('s')})
             )
             AND NOT EXISTS (
               SELECT 1 FROM deleted_conversations dc
@@ -341,7 +342,7 @@ router.post('/conversations/:userId/delete', auth, async (req, res) => {
 
     const sub = await db
       .prepare(
-        `SELECT id FROM subscriptions WHERE fan_id = ? AND creator_id = ? AND status = 'active'`
+        `SELECT id FROM subscriptions WHERE fan_id = ? AND creator_id = ? AND (${subscriptionGrantsAccessSql()})`
       )
       .get(fanId, creatorId);
     if (!sub) {

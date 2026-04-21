@@ -7,6 +7,7 @@ const multer = require('multer');
 const { v4: uuidv4 } = require('uuid');
 const crypto = require('crypto');
 const db = require('../db');
+const { subscriptionGrantsAccessSql } = require('../lib/subscriptionAccess');
 const { avatarMulter } = require('../lib/avatarUpload');
 const { handleAvatarUpload } = require('../lib/handleAvatarUpload');
 const { TERMS_VERSION, PRIVACY_VERSION, SKIP_LEGAL } = require('../lib/authConfig');
@@ -398,7 +399,9 @@ router.get('/me', require('../middleware/auth'), async (req, res) => {
   const postsRow = await db.prepare('SELECT COUNT(*) AS n FROM content WHERE creator_id = ?').get(user.id);
   const total_posts = Number(postsRow?.n ?? 0);
   const subsRow = await db
-    .prepare("SELECT COUNT(*) AS n FROM subscriptions WHERE creator_id = ? AND status = 'active'")
+    .prepare(
+      `SELECT COUNT(*) AS n FROM subscriptions WHERE creator_id = ? AND (${subscriptionGrantsAccessSql()})`
+    )
     .get(user.id);
   const total_subscribers = Number(subsRow?.n ?? 0);
 
