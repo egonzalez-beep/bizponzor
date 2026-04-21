@@ -77,11 +77,11 @@ CREATE TABLE IF NOT EXISTS subscriptions (
   mp_payment_id TEXT,
   mp_preapproval_status TEXT,
   amount DOUBLE PRECISION,
-  next_billing TEXT,
+  next_billing TIMESTAMPTZ,
   promo_code TEXT,
   discount_percent INTEGER DEFAULT 0,
-  created_at TEXT DEFAULT ((now() AT TIME ZONE 'UTC')::text),
-  updated_at TEXT DEFAULT ((now() AT TIME ZONE 'UTC')::text),
+  created_at TIMESTAMPTZ DEFAULT (now() AT TIME ZONE 'utc'),
+  updated_at TIMESTAMPTZ DEFAULT (now() AT TIME ZONE 'utc'),
   cancel_at_period_end BOOLEAN DEFAULT FALSE
 );
 

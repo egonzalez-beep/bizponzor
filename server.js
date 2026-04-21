@@ -19,6 +19,16 @@ const { SKIP_LEGAL } = require('./lib/authConfig');
   }
 })();
 
+(async function migrateSubscriptionsTimestamptzPgStartup() {
+  try {
+    if (!process.env.DATABASE_URL) return;
+    const { migrateSubscriptionsTimestamptzPg } = require('./lib/migratePgSubscriptionsTz');
+    await migrateSubscriptionsTimestamptzPg();
+  } catch (e) {
+    console.warn('[migrate] subscriptions timestamptz (PG):', e.message);
+  }
+})();
+
 const app = express();
 const PORT = process.env.PORT || 8080;
 
