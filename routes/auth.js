@@ -48,7 +48,12 @@ function buildMePayload(user, extras) {
     social_instagram: user.social_instagram || null,
     social_facebook: user.social_facebook || null,
     social_tiktok: user.social_tiktok || null,
-    social_other: user.social_other || null
+    social_other: user.social_other || null,
+    ...(user.role === 'creator'
+      ? {
+          is_public: !(user.is_public === false || user.is_public === 0 || user.is_public === '0')
+        }
+      : {})
   };
   return extras && typeof extras === 'object' ? { ...base, ...extras } : base;
 }
@@ -371,7 +376,7 @@ router.post('/reset-password', async (req, res) => {
 router.get('/me', require('../middleware/auth'), async (req, res) => {
   const user = await db
     .prepare(
-      'SELECT id, name, email, role, handle, username, bio, category, location, avatar_url, banner_url, avatar_color, social_instagram, social_facebook, social_tiktok, social_other, updated_at FROM users WHERE id = ?'
+      'SELECT id, name, email, role, handle, username, bio, category, location, avatar_url, banner_url, avatar_color, social_instagram, social_facebook, social_tiktok, social_other, updated_at, is_public FROM users WHERE id = ?'
     )
     .get(req.user.id);
   if (!user) return res.status(404).json({ error: 'Usuario no encontrado' });

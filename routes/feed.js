@@ -49,6 +49,7 @@ router.get('/', auth, async (req, res) => {
          FROM content c
          JOIN users u ON c.creator_id = u.id
          WHERE u.role = 'creator'
+         AND COALESCE(u.is_public, TRUE) = TRUE
          AND (c.is_exclusive = 0 OR c.is_exclusive IS NULL)
          AND (c.status IS NULL OR c.status = 'published')
          ORDER BY c.created_at DESC

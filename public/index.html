@@ -1951,6 +1951,100 @@
     border-color: rgba(56, 189, 248, 0.6);
   }
 
+  #creator-dashboard #dash-settings .settings-visibility-row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 16px 20px;
+    padding: 16px 0 4px;
+  }
+  #creator-dashboard #dash-settings .settings-visibility-copy {
+    flex: 1 1 240px;
+    min-width: 0;
+  }
+  #creator-dashboard #dash-settings .settings-visibility-head {
+    font-weight: 700;
+    color: #f1f5f9;
+    margin-bottom: 8px;
+    font-size: 0.95rem;
+  }
+  #creator-dashboard #dash-settings .settings-visibility-toggle-wrap {
+    flex: 0 0 auto;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding-top: 2px;
+  }
+  #creator-dashboard #dash-settings .settings-visibility-badge {
+    font-size: 0.78rem;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    padding: 6px 10px;
+    border-radius: 999px;
+    border: 1px solid rgba(148, 163, 184, 0.35);
+    color: #94a3b8;
+    min-width: 4.5rem;
+    text-align: center;
+  }
+  #creator-dashboard #dash-settings .settings-visibility-badge.is-on {
+    border-color: rgba(34, 197, 94, 0.45);
+    color: #86efac;
+    background: rgba(34, 197, 94, 0.08);
+  }
+  #creator-dashboard #dash-settings .settings-visibility-badge.is-off {
+    border-color: rgba(248, 113, 113, 0.4);
+    color: #fca5a5;
+    background: rgba(248, 113, 113, 0.07);
+  }
+  #creator-dashboard #dash-settings .settings-switch {
+    position: relative;
+    display: inline-block;
+    width: 52px;
+    height: 28px;
+    flex-shrink: 0;
+    cursor: pointer;
+  }
+  #creator-dashboard #dash-settings .settings-switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+    position: absolute;
+  }
+  #creator-dashboard #dash-settings .settings-switch-track {
+    position: absolute;
+    inset: 0;
+    border-radius: 999px;
+    background: rgba(71, 85, 105, 0.65);
+    border: 1px solid rgba(148, 163, 184, 0.35);
+    transition: background 0.2s ease, border-color 0.2s ease;
+  }
+  #creator-dashboard #dash-settings .settings-switch-track::after {
+    content: '';
+    position: absolute;
+    width: 22px;
+    height: 22px;
+    left: 3px;
+    top: 50%;
+    transform: translateY(-50%);
+    border-radius: 50%;
+    background: #f8fafc;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.25);
+    transition: left 0.2s ease, background 0.2s ease;
+  }
+  #creator-dashboard #dash-settings .settings-switch input:checked + .settings-switch-track {
+    background: rgba(34, 197, 94, 0.35);
+    border-color: rgba(34, 197, 94, 0.55);
+  }
+  #creator-dashboard #dash-settings .settings-switch input:checked + .settings-switch-track::after {
+    left: calc(100% - 25px);
+  }
+  #creator-dashboard #dash-settings .settings-switch input:focus-visible + .settings-switch-track {
+    outline: 2px solid rgba(56, 189, 248, 0.75);
+    outline-offset: 2px;
+  }
+
   /* Subir contenido — estudio creativo (solo #dash-upload) */
   #creator-dashboard #dash-upload .upload-studio {
     margin-top: 8px;
@@ -5957,6 +6051,26 @@
 
             <section class="settings-section">
               <h3 class="settings-section-title">
+                <span class="settings-st-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></span>
+                Visibilidad
+              </h3>
+              <div class="settings-visibility-row">
+                <div class="settings-visibility-copy">
+                  <div class="settings-visibility-head">Mostrarte en Descubrir y en recomendaciones del feed</div>
+                  <p class="settings-hint" style="margin:0;">Si lo desactivas, tu perfil queda <strong>privado</strong>: no aparecerás en la lista de creadores ni en el apartado de descubrimiento del feed de los fans. <strong>Tu enlace público sigue igual</strong>: quien lo tenga podrá entrar, ver tu perfil y suscribirse.</p>
+                </div>
+                <div class="settings-visibility-toggle-wrap">
+                  <span class="settings-visibility-badge is-on" id="settings-discover-visible-state" aria-live="polite">Público</span>
+                  <label class="settings-switch" title="Encendido = visible en listados y descubrimiento">
+                    <input type="checkbox" id="settings-discover-visible" checked onchange="onSettingsDiscoverVisibilityChange(this)" aria-label="Mostrar mi perfil en Descubrir y recomendaciones del feed">
+                    <span class="settings-switch-track"></span>
+                  </label>
+                </div>
+              </div>
+            </section>
+
+            <section class="settings-section">
+              <h3 class="settings-section-title">
                 <span class="settings-st-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg></span>
                 Redes sociales
               </h3>
@@ -9820,6 +9934,39 @@ function redirectMercadoPagoOAuth() {
     encodeURIComponent(CURRENT_USER.id);
 }
 
+function syncSettingsDiscoverVisibilityUi(checkboxEl) {
+  var cb = checkboxEl || document.getElementById('settings-discover-visible');
+  var badge = document.getElementById('settings-discover-visible-state');
+  if (!cb || !badge) return;
+  var on = !!cb.checked;
+  badge.textContent = on ? 'Público' : 'Privado';
+  badge.classList.toggle('is-on', on);
+  badge.classList.toggle('is-off', !on);
+}
+
+async function onSettingsDiscoverVisibilityChange(el) {
+  if (!el || !CURRENT_USER || CURRENT_USER.role !== 'creator') return;
+  var want = !!el.checked;
+  var rollback = !want;
+  var res = await api.patch('/creators/visibility', { is_public: want });
+  if (res.error) {
+    showNotif('❌ ' + (res.error || 'No se pudo actualizar la visibilidad'));
+    el.checked = rollback;
+    syncSettingsDiscoverVisibilityUi(el);
+    return;
+  }
+  var serverVal = res.is_public === true || res.is_public === 1;
+  el.checked = serverVal;
+  syncSettingsDiscoverVisibilityUi(el);
+  if (CURRENT_USER) {
+    CURRENT_USER.is_public = serverVal;
+    try {
+      localStorage.setItem('bp_user', JSON.stringify(CURRENT_USER));
+    } catch (e) {}
+  }
+  showNotif(serverVal ? 'Perfil visible en Descubrir y recomendaciones' : 'Perfil privado: solo quien tenga tu enlace');
+}
+
 async function loadProfileSettings() {
   if (!CURRENT_USER) return;
   const res = await api.get('/auth/me');
@@ -9861,6 +10008,11 @@ async function loadProfileSettings() {
       'xl',
       'settings-avatar-preview bp-avatar'
     );
+  }
+  var discoverCb = document.getElementById('settings-discover-visible');
+  if (discoverCb && CURRENT_USER.role === 'creator') {
+    discoverCb.checked = !(res.is_public === false || res.is_public === 0 || res.is_public === '0');
+    syncSettingsDiscoverVisibilityUi(discoverCb);
   }
 }
 

@@ -30,8 +30,11 @@ CREATE TABLE IF NOT EXISTS users (
   accepted_ip TEXT,
   reset_token TEXT,
   reset_token_expires TEXT,
-  updated_at TEXT
+  updated_at TEXT,
+  is_public BOOLEAN DEFAULT TRUE
 );
+
+ALTER TABLE users ADD COLUMN IF NOT EXISTS is_public BOOLEAN DEFAULT TRUE;
 
 CREATE TABLE IF NOT EXISTS plans (
   id TEXT PRIMARY KEY,
