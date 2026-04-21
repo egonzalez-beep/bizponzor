@@ -44,6 +44,7 @@ app.use('/api/creator', require('./routes/creatorPromo'));
 app.use('/api/notifications', require('./routes/notifications'));
 app.use('/api/feed', require('./routes/feed'));
 app.use('/api/media', require('./routes/media'));
+app.use('/api/level-up', require('./routes/levelUp'));
 
 app.get('/terms', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'terms.html'));
