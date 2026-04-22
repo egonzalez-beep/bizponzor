@@ -9,26 +9,6 @@ const db = require('./db');
 const { createNotification } = require('./lib/createNotification');
 const { SKIP_LEGAL } = require('./lib/authConfig');
 
-(async function migrateContentBackgroundStylePg() {
-  try {
-    if (!process.env.DATABASE_URL) return;
-    const { getPool } = require('./lib/db-postgres');
-    await getPool().query('ALTER TABLE content ADD COLUMN IF NOT EXISTS background_style TEXT');
-  } catch (e) {
-    console.warn('[migrate] content.background_style (PG):', e.message);
-  }
-})();
-
-(async function migrateSubscriptionsTimestamptzPgStartup() {
-  try {
-    if (!process.env.DATABASE_URL) return;
-    const { migrateSubscriptionsTimestamptzPg } = require('./lib/migratePgSubscriptionsTz');
-    await migrateSubscriptionsTimestamptzPg();
-  } catch (e) {
-    console.warn('[migrate] subscriptions timestamptz (PG):', e.message);
-  }
-})();
-
 const app = express();
 const PORT = process.env.PORT || 8080;
 
@@ -347,9 +327,27 @@ setInterval(() => {
 expireSubscriptionsAtPeriodEnd().catch((err) => console.error('[subscriptions period cleanup]', err));
 
 const { runCreatorEmailJobs } = require('./lib/creatorEmailJobs');
-setInterval(() => {
-  runCreatorEmailJobs(db).catch((err) => console.error('[email jobs]', err.message));
-}, 60 * 60 * 1000);
-runCreatorEmailJobs(db).catch((err) => console.error('[email jobs]', err.message));
 
-app.listen(PORT, '0.0.0.0', () => console.log(`Servidor corriendo en el puerto ${PORT}`));
+(async function startServer() {
+  try {
+    if (process.env.DATABASE_URL) {
+      const { getPool } = require('./lib/db-postgres');
+      await getPool().query('ALTER TABLE content ADD COLUMN IF NOT EXISTS background_style TEXT');
+      const { migrateSubscriptionsTimestamptzPg } = require('./lib/migratePgSubscriptionsTz');
+      await migrateSubscriptionsTimestamptzPg();
+      const { migratePgNormalizeTypes, validatePgSchemaOrExit } = require('./lib/migratePgNormalizeTypes');
+      await migratePgNormalizeTypes();
+      await validatePgSchemaOrExit();
+    }
+  } catch (e) {
+    console.error('[startup] migración PostgreSQL:', e.message || e);
+    process.exit(1);
+  }
+
+  setInterval(() => {
+    runCreatorEmailJobs(db).catch((err) => console.error('[email jobs]', err.message));
+  }, 60 * 60 * 1000);
+  runCreatorEmailJobs(db).catch((err) => console.error('[email jobs]', err.message));
+
+  app.listen(PORT, '0.0.0.0', () => console.log(`Servidor corriendo en el puerto ${PORT}`));
+})();

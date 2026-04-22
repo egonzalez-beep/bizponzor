@@ -1,0 +1,2 @@
+-- Normalización UUID + TIMESTAMPTZ: implementada en lib/migratePgNormalizeTypes.js
+-- (arranque con DATABASE_URL). No ejecutar como única fuente de verdad sin ese script.
