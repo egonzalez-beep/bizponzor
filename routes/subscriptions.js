@@ -7,7 +7,7 @@ const auth = require('../middleware/auth');
 const { MercadoPagoConfig, PreApproval } = require('mercadopago');
 const { normalizePreapprovalPayload } = require('../lib/mpSubscription');
 const { subscriptionGrantsAccessSql } = require('../lib/subscriptionAccess');
-const { sendCheckoutMpBlockedEmail, notifyNewSubscriberIfPaid } = require('../lib/creatorEmails');
+const { sendMissedRevenueAlertEmail, notifyNewSubscriberIfPaid } = require('../lib/creatorEmails');
 
 const MP_CURRENCY = process.env.MP_CURRENCY_ID || 'MXN';
 const APP_URL = 'https://bizponzor-production.up.railway.app';
@@ -135,7 +135,7 @@ router.post('/checkout', auth, async (req, res) => {
         .prepare('SELECT id, name, email FROM users WHERE id = ? AND role = ?')
         .get(creator_id, 'creator');
       const fanName = req.user.name || null;
-      void sendCheckoutMpBlockedEmail(db, creatorRow, fanName).catch(() => null);
+      void sendMissedRevenueAlertEmail(db, creatorRow, fanName).catch(() => null);
       return res.status(400).json({
         error: 'El creador no tiene una cuenta de Mercado Pago válida'
       });
