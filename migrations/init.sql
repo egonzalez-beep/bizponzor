@@ -225,3 +225,14 @@ CREATE TABLE IF NOT EXISTS level_up_events (
 
 CREATE INDEX IF NOT EXISTS idx_level_up_events_user ON level_up_events (user_id);
 CREATE INDEX IF NOT EXISTS idx_level_up_events_created ON level_up_events (created_at DESC);
+
+CREATE TABLE IF NOT EXISTS email_logs (
+  id TEXT PRIMARY KEY,
+  user_id TEXT NOT NULL REFERENCES users (id) ON DELETE CASCADE,
+  type TEXT NOT NULL,
+  sent_at TEXT NOT NULL DEFAULT ((now() AT TIME ZONE 'UTC')::text)
+);
+
+CREATE INDEX IF NOT EXISTS idx_email_logs_user ON email_logs (user_id);
+CREATE INDEX IF NOT EXISTS idx_email_logs_type ON email_logs (user_id, type);
+CREATE INDEX IF NOT EXISTS idx_email_logs_sent ON email_logs (sent_at DESC);

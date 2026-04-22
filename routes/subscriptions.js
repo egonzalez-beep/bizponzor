@@ -7,6 +7,7 @@ const auth = require('../middleware/auth');
 const { MercadoPagoConfig, PreApproval } = require('mercadopago');
 const { normalizePreapprovalPayload } = require('../lib/mpSubscription');
 const { subscriptionGrantsAccessSql } = require('../lib/subscriptionAccess');
+const { sendCheckoutMpBlockedEmail, notifyNewSubscriberIfPaid } = require('../lib/creatorEmails');
 
 const MP_CURRENCY = process.env.MP_CURRENCY_ID || 'MXN';
 const APP_URL = 'https://bizponzor-production.up.railway.app';
@@ -85,6 +86,7 @@ router.post('/checkout', auth, async (req, res) => {
         metadata: { fanName: fan?.name, planName: plan.name },
         dedupeKey: `sub-free-${sub_id}`
       }).catch(() => null);
+      void notifyNewSubscriberIfPaid(db, sub_id).catch(() => null);
       return res.json({ success: true, sub_id, free: true });
     }
 
@@ -129,6 +131,11 @@ router.post('/checkout', auth, async (req, res) => {
     );
 
     if (!account || !account.access_token || typeof account.access_token !== 'string' || account.access_token.length < 20) {
+      const creatorRow = await db
+        .prepare('SELECT id, name, email FROM users WHERE id = ? AND role = ?')
+        .get(creator_id, 'creator');
+      const fanName = req.user.name || null;
+      void sendCheckoutMpBlockedEmail(db, creatorRow, fanName).catch(() => null);
       return res.status(400).json({
         error: 'El creador no tiene una cuenta de Mercado Pago válida'
       });
@@ -233,6 +240,7 @@ router.post('/activate/:sub_id', auth, async (req, res) => {
     metadata: { fanName: fan?.name, planName: plan?.name },
     dedupeKey: `sub-active-${sub.id}`
   }).catch(() => null);
+  void notifyNewSubscriberIfPaid(db, sub.id).catch(() => null);
   res.json({ success: true, status: 'active' });
 });
 

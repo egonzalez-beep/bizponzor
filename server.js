@@ -346,4 +346,10 @@ setInterval(() => {
 }, 60 * 60 * 1000);
 expireSubscriptionsAtPeriodEnd().catch((err) => console.error('[subscriptions period cleanup]', err));
 
+const { runCreatorEmailJobs } = require('./lib/creatorEmailJobs');
+setInterval(() => {
+  runCreatorEmailJobs(db).catch((err) => console.error('[email jobs]', err.message));
+}, 60 * 60 * 1000);
+runCreatorEmailJobs(db).catch((err) => console.error('[email jobs]', err.message));
+
 app.listen(PORT, '0.0.0.0', () => console.log(`Servidor corriendo en el puerto ${PORT}`));

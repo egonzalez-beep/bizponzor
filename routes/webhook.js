@@ -8,6 +8,7 @@ const {
   normalizePreapprovalPayload
 } = require('../lib/mpSubscription');
 const { getPaymentClient, normalizeMpPayload } = require('../lib/mpPreference');
+const { notifyNewSubscriberIfPaid } = require('../lib/creatorEmails');
 
 /**
  * Extrae topic e id de notificaciones MP (GET query o POST body).
@@ -133,6 +134,7 @@ async function syncSubscriptionFromPreapproval(mpPreapprovalId) {
       metadata: { fanName: fan?.name, planName: plan?.name },
       dedupeKey: `sub-active-${sub.id}`
     }).catch(() => null);
+    void notifyNewSubscriberIfPaid(db, sub.id).catch(() => null);
   }
 
   console.log('[WEBHOOK] Suscripción actualizada', { local_id: sub.id, dbStatus, mpStatus });

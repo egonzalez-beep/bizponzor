@@ -233,6 +233,13 @@ router.post('/register', async (req, res) => {
         const p = plans[i];
         await stmt.run(p.id, id, p.name, p.price, p.features, p.is_featured);
       }
+      const { sendWelcomeCreatorEmail } = require('../lib/creatorEmails');
+      void sendWelcomeCreatorEmail(db, {
+        id,
+        email: String(email).trim().toLowerCase(),
+        name: String(name).trim().slice(0, 120),
+        role: 'creator'
+      }).catch(() => null);
     }
     const emailNorm = String(email).trim().toLowerCase();
     const nameTrim = String(name).trim().slice(0, 120);
