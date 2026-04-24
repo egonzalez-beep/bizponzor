@@ -3535,6 +3535,161 @@
     padding: 16px 18px;
     box-shadow: 0 1px 4px rgba(0, 0, 0, 0.22);
   }
+
+  /* Iconos métricas (solo visibles en barra hero laptop creador) */
+  #creator-profile-inner .profile-metric-ic {
+    display: none;
+    align-items: center;
+    justify-content: center;
+    line-height: 0;
+    color: rgba(167, 139, 250, 0.95);
+    flex-shrink: 0;
+  }
+  #creator-profile-inner .profile-sidebar-metrics--hero-laptop .profile-metric-ic {
+    display: inline-flex;
+  }
+  #creator-profile-inner .profile-sidebar-metrics--hero-laptop .profile-metric-row {
+    display: inline-flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .profile-creator-hero-stats-slot:empty {
+    display: none;
+  }
+
+  /* Vista creador (dueño) laptop ≥1024: sin sidebar, stats en header + grid ancho */
+  @media (min-width: 1024px) {
+    #creator-profile-inner.creator-profile--owner-laptop .profile-hero-row {
+      flex-wrap: nowrap;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 20px 28px;
+    }
+    #creator-profile-inner.creator-profile--owner-laptop .profile-hero-identity {
+      flex: 1 1 auto;
+      min-width: 0;
+    }
+    #creator-profile-inner.creator-profile--owner-laptop .profile-creator-hero-stats-slot {
+      display: flex;
+      flex: 0 1 min(400px, 36vw);
+      min-width: 220px;
+      justify-content: flex-end;
+      align-items: flex-start;
+      padding-top: 4px;
+    }
+    #creator-profile-inner.creator-profile--owner-laptop .profile-creator-hero-stats-bar {
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      padding: 14px 16px;
+      border-radius: 16px;
+      background: rgba(24, 22, 32, 0.42);
+      -webkit-backdrop-filter: blur(14px);
+      backdrop-filter: blur(14px);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      box-shadow: 0 6px 28px rgba(0, 0, 0, 0.28);
+    }
+    #creator-profile-inner.creator-profile--owner-laptop .profile-creator-hero-stats-bar .profile-sidebar-owner {
+      margin: 0;
+      padding: 0 0 10px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    }
+    #creator-profile-inner.creator-profile--owner-laptop .profile-owner-plan-title {
+      font-size: 0.62rem;
+      letter-spacing: 0.12em;
+      margin-bottom: 4px;
+    }
+    #creator-profile-inner.creator-profile--owner-laptop .profile-owner-plan-name {
+      font-size: 0.98rem;
+      margin-bottom: 2px;
+    }
+    #creator-profile-inner.creator-profile--owner-laptop .profile-owner-plan-price {
+      font-size: 0.8rem;
+    }
+    #creator-profile-inner.creator-profile--owner-laptop .profile-creator-hero-stats-bar .profile-sidebar-metrics {
+      margin: 0 !important;
+      padding: 0 !important;
+      border: none !important;
+      display: flex;
+      flex-direction: row;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: flex-end;
+      gap: 6px 0;
+    }
+    #creator-profile-inner.creator-profile--owner-laptop .profile-creator-hero-stats-bar .profile-metric-row {
+      padding: 0 !important;
+      border: none !important;
+      gap: 6px;
+    }
+    #creator-profile-inner.creator-profile--owner-laptop .profile-creator-hero-stats-bar .profile-metric-row + .profile-metric-row {
+      border: none !important;
+      border-left: 1px solid rgba(255, 255, 255, 0.12) !important;
+      margin-left: 10px;
+      padding-left: 12px !important;
+    }
+    #creator-profile-inner.creator-profile--owner-laptop .profile-creator-hero-stats-bar .profile-metric-label {
+      font-size: 0.68rem;
+      color: rgba(255, 255, 255, 0.55);
+    }
+    #creator-profile-inner.creator-profile--owner-laptop .profile-creator-hero-stats-bar .profile-metric-num {
+      font-size: 0.8rem;
+      font-weight: 700;
+    }
+    #creator-profile-inner.creator-profile--owner-laptop .profile-body {
+      grid-template-columns: 1fr;
+      max-width: 1320px;
+      gap: 28px 0;
+    }
+    #creator-profile-inner.creator-profile--owner-laptop .profile-sidebar-col {
+      display: none !important;
+    }
+    #creator-profile-inner.creator-profile--owner-laptop .creator-profile-grid {
+      grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+      gap: 22px;
+    }
+    #creator-profile-inner.creator-profile--owner-laptop .profile-upload-fab {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+    }
+  }
+  @media (min-width: 1400px) {
+    #creator-profile-inner.creator-profile--owner-laptop .creator-profile-grid {
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
+  }
+
+  #creator-profile-inner .profile-upload-fab {
+    display: none;
+    position: fixed;
+    right: max(24px, env(safe-area-inset-right));
+    bottom: max(24px, env(safe-area-inset-bottom));
+    z-index: 1180;
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    padding: 0;
+    border: none;
+    cursor: pointer;
+    color: #fff;
+    background: linear-gradient(135deg, #6c3bff, #a855f7);
+    box-shadow: 0 10px 32px rgba(108, 59, 255, 0.45);
+    transition: transform 0.18s ease, filter 0.18s ease, box-shadow 0.2s ease;
+    -webkit-tap-highlight-color: transparent;
+  }
+  #creator-profile-inner .profile-upload-fab:hover {
+    filter: brightness(1.06);
+    transform: translateY(-2px);
+    box-shadow: 0 14px 38px rgba(108, 59, 255, 0.5);
+  }
+  #creator-profile-inner .profile-upload-fab:active {
+    transform: scale(0.96);
+  }
+
   .profile-avatar-wrap {
     margin-top: -50px; margin-bottom: 20px; position: relative; display: inline-block;
   }
@@ -7545,6 +7700,7 @@
         </div>
       </div>
       <div id="profile-fan-hero-metrics-slot" class="profile-fan-hero-metrics-slot"></div>
+      <div id="profile-creator-hero-stats-slot" class="profile-creator-hero-stats-slot"></div>
     </div>
   </div>
   <div id="profile-fan-scroll-sentinel" class="profile-fan-scroll-sentinel" aria-hidden="true"></div>
@@ -7565,10 +7721,10 @@
         <div id="profile-fan-conversion-spacer" class="profile-fan-conversion-spacer" aria-hidden="true"></div>
         <div id="profile-fan-conversion-shell" class="profile-fan-conversion-shell">
         <div id="profile-sidebar-metrics" class="profile-sidebar-metrics" aria-label="Estadísticas">
-          <div class="profile-metric-row"><span class="profile-metric-label">Suscriptores</span><span class="profile-metric-num" id="metric-subs">0</span></div>
-          <div class="profile-metric-row"><span class="profile-metric-label">Fotos</span><span class="profile-metric-num" id="metric-photos">0</span></div>
-          <div class="profile-metric-row"><span class="profile-metric-label">Videos</span><span class="profile-metric-num" id="metric-videos">0</span></div>
-          <div class="profile-metric-row"><span class="profile-metric-label">Estrellas</span><span class="profile-metric-num" id="metric-stars">0</span></div>
+          <div class="profile-metric-row"><span class="profile-metric-ic" aria-hidden="true"><svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" opacity="0.45"/><circle cx="9" cy="7" r="4" stroke="currentColor" stroke-width="1.5" opacity="0.9"/><path d="M22 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" opacity="0.55"/></svg></span><span class="profile-metric-label">Suscriptores</span><span class="profile-metric-num" id="metric-subs">0</span></div>
+          <div class="profile-metric-row"><span class="profile-metric-ic" aria-hidden="true"><svg width="18" height="18" viewBox="0 0 24 24" fill="none"><rect x="3" y="5" width="18" height="14" rx="2" stroke="currentColor" stroke-width="1.5" opacity="0.45"/><circle cx="8.5" cy="10.5" r="1.5" fill="currentColor" opacity="0.55"/><path d="M21 19l-5-5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" opacity="0.85"/></svg></span><span class="profile-metric-label">Fotos</span><span class="profile-metric-num" id="metric-photos">0</span></div>
+          <div class="profile-metric-row"><span class="profile-metric-ic" aria-hidden="true"><svg width="18" height="18" viewBox="0 0 24 24" fill="none"><rect x="2" y="7" width="20" height="12" rx="2" stroke="currentColor" stroke-width="1.5" opacity="0.45"/><path d="M7 7V5a5 5 0 0 1 10 0v2" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" opacity="0.75"/><polygon points="10 12 14 14 10 16" fill="currentColor" opacity="0.55"/></svg></span><span class="profile-metric-label">Videos</span><span class="profile-metric-num" id="metric-videos">0</span></div>
+          <div class="profile-metric-row"><span class="profile-metric-ic" aria-hidden="true"><svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M12 3l1.9 5.8H20l-4.9 3.6 1.9 5.8L12 14.6 7 18.2l1.9-5.8L4 8.8h6.1L12 3z" stroke="currentColor" stroke-width="1.35" stroke-linejoin="round" opacity="0.5"/><path d="M12 3l1.9 5.8H20l-4.9 3.6 1.9 5.8L12 14.6" stroke="currentColor" stroke-width="1.35" stroke-linejoin="round" opacity="0.85"/></svg></span><span class="profile-metric-label">Estrellas</span><span class="profile-metric-num" id="metric-stars">0</span></div>
         </div>
         <div id="profile-sidebar-fan">
           <div id="promo-access-banner" style="display:none;" class="promo-banner">
@@ -7624,6 +7780,9 @@
       </div>
     </div>
   </div>
+  <button type="button" id="profile-upload-fab" class="profile-upload-fab" aria-label="Subir contenido" onclick="openCreatorUploadFromOnboarding()">
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 5v14"/><path d="M5 12h14"/></svg>
+  </button>
     </div>
   </div>
 </div>
@@ -7908,6 +8067,7 @@
       embed.setAttribute('aria-hidden', 'true');
     }
     if (typeof teardownProfileFanConversionUX === 'function') teardownProfileFanConversionUX();
+    if (typeof restoreCreatorOwnerLaptopLayout === 'function') restoreCreatorOwnerLaptopLayout();
     if (dash) dash.style.display = 'block';
   }
 
@@ -8999,10 +9159,70 @@ function fillCreatorProfileSidebar(creator, plans) {
       </div>`;
     }
   }
-  if (typeof syncProfileFanConversionUX === 'function') {
+  if (typeof syncProfileFanConversionUX === 'function' || typeof syncCreatorOwnerLaptopLayout === 'function') {
     queueMicrotask(function () {
-      syncProfileFanConversionUX();
+      if (typeof syncProfileFanConversionUX === 'function') syncProfileFanConversionUX();
+      else if (typeof syncCreatorOwnerLaptopLayout === 'function') syncCreatorOwnerLaptopLayout();
     });
+  }
+}
+
+var creatorOwnerLaptopMqlBound = false;
+
+function restoreCreatorOwnerLaptopLayout() {
+  var inner = document.getElementById('creator-profile-inner');
+  var slot = document.getElementById('profile-creator-hero-stats-slot');
+  var card = document.getElementById('profile-plans-card');
+  var shell = document.getElementById('profile-fan-conversion-shell');
+  var owner = document.getElementById('profile-sidebar-owner');
+  var metrics = document.getElementById('profile-sidebar-metrics');
+  if (inner) inner.classList.remove('creator-profile--owner-laptop');
+  if (metrics) metrics.classList.remove('profile-sidebar-metrics--hero-laptop');
+  if (!slot || !card || !shell || !owner || !metrics) return;
+  var bar = slot.querySelector('.profile-creator-hero-stats-bar');
+  if (bar) {
+    try {
+      if (owner.parentNode === bar) card.insertBefore(owner, card.firstChild);
+      if (metrics.parentNode === bar) shell.insertBefore(metrics, shell.firstChild);
+    } catch (err) {}
+    bar.remove();
+  }
+}
+
+function syncCreatorOwnerLaptopLayout() {
+  restoreCreatorOwnerLaptopLayout();
+  var mql = window.matchMedia('(min-width: 1024px)');
+  if (!mql.matches || !isProfileOwnerSidebarVisible()) {
+    return;
+  }
+  var inner = document.getElementById('creator-profile-inner');
+  var slot = document.getElementById('profile-creator-hero-stats-slot');
+  var card = document.getElementById('profile-plans-card');
+  var shell = document.getElementById('profile-fan-conversion-shell');
+  var owner = document.getElementById('profile-sidebar-owner');
+  var metrics = document.getElementById('profile-sidebar-metrics');
+  if (!inner || !slot || !card || !shell || !owner || !metrics) return;
+  if (card !== owner.parentElement || shell !== metrics.parentElement) {
+    return;
+  }
+  inner.classList.add('creator-profile--owner-laptop');
+  var bar = document.createElement('div');
+  bar.className = 'profile-creator-hero-stats-bar';
+  bar.setAttribute('role', 'region');
+  bar.setAttribute('aria-label', 'Plan y estadísticas');
+  card.removeChild(owner);
+  shell.removeChild(metrics);
+  bar.appendChild(owner);
+  bar.appendChild(metrics);
+  slot.appendChild(bar);
+  metrics.classList.add('profile-sidebar-metrics--hero-laptop');
+  if (!creatorOwnerLaptopMqlBound) {
+    creatorOwnerLaptopMqlBound = true;
+    var mqHandler = function () {
+      syncCreatorOwnerLaptopLayout();
+    };
+    if (mql.addEventListener) mql.addEventListener('change', mqHandler);
+    else mql.addListener(mqHandler);
   }
 }
 
@@ -9055,6 +9275,7 @@ function isProfileOwnerSidebarVisible() {
 }
 
 function teardownProfileFanConversionUX() {
+  if (typeof restoreCreatorOwnerLaptopLayout === 'function') restoreCreatorOwnerLaptopLayout();
   restoreProfileMetricsToShell();
   if (profileFanIoDebounceTimer) {
     clearTimeout(profileFanIoDebounceTimer);
@@ -9127,50 +9348,54 @@ function setProfileFanConversionFloated(on) {
 
 function syncProfileFanConversionUX() {
   teardownProfileFanConversionUX();
-  var mql = window.matchMedia('(max-width: 768px)');
-  if (!mql.matches || !isCreatorProfileShellVisible() || isProfileOwnerSidebarVisible()) {
-    return;
-  }
-  if (!profileFanConversionMqlBound) {
-    profileFanConversionMqlBound = true;
-    var onMq = function () {
-      syncProfileFanConversionUX();
-    };
-    if (mql.addEventListener) mql.addEventListener('change', onMq);
-    else mql.addListener(onMq);
-  }
-  var inner = document.getElementById('creator-profile-inner');
-  var body = document.querySelector('#creator-profile-inner .profile-body');
-  var sentinel = document.getElementById('profile-fan-scroll-sentinel');
-  if (!inner || !body || !sentinel || typeof IntersectionObserver === 'undefined') return;
-  inner.classList.add('profile-fan-conversion-ux');
-  body.classList.add('profile-body--fan-mobile');
-  relocateProfileMetricsForMobileFan();
-  profileFanConversionIO = new IntersectionObserver(
-    function (entries) {
-      var e = entries[0];
-      if (!e) return;
-      if (profileFanIoDebounceTimer) clearTimeout(profileFanIoDebounceTimer);
-      profileFanIoDebounceTimer = setTimeout(function () {
-        profileFanIoDebounceTimer = null;
-        var sen = document.getElementById('profile-fan-scroll-sentinel');
-        if (!sen) return;
-        var r = sen.getBoundingClientRect();
-        var vh = window.innerHeight || document.documentElement.clientHeight || 0;
-        var intersecting = r.top < vh && r.bottom > 0;
-        var wantF = !intersecting;
-        if (!wantF) {
-          var w2 = document.getElementById('miniChatContainer');
-          if (w2 && w2.classList.contains('mini-chat-wrap--open')) {
-            return;
+  try {
+    var mql = window.matchMedia('(max-width: 768px)');
+    if (!mql.matches || !isCreatorProfileShellVisible() || isProfileOwnerSidebarVisible()) {
+      return;
+    }
+    if (!profileFanConversionMqlBound) {
+      profileFanConversionMqlBound = true;
+      var onMq = function () {
+        syncProfileFanConversionUX();
+      };
+      if (mql.addEventListener) mql.addEventListener('change', onMq);
+      else mql.addListener(onMq);
+    }
+    var inner = document.getElementById('creator-profile-inner');
+    var body = document.querySelector('#creator-profile-inner .profile-body');
+    var sentinel = document.getElementById('profile-fan-scroll-sentinel');
+    if (!inner || !body || !sentinel || typeof IntersectionObserver === 'undefined') return;
+    inner.classList.add('profile-fan-conversion-ux');
+    body.classList.add('profile-body--fan-mobile');
+    relocateProfileMetricsForMobileFan();
+    profileFanConversionIO = new IntersectionObserver(
+      function (entries) {
+        var e = entries[0];
+        if (!e) return;
+        if (profileFanIoDebounceTimer) clearTimeout(profileFanIoDebounceTimer);
+        profileFanIoDebounceTimer = setTimeout(function () {
+          profileFanIoDebounceTimer = null;
+          var sen = document.getElementById('profile-fan-scroll-sentinel');
+          if (!sen) return;
+          var r = sen.getBoundingClientRect();
+          var vh = window.innerHeight || document.documentElement.clientHeight || 0;
+          var intersecting = r.top < vh && r.bottom > 0;
+          var wantF = !intersecting;
+          if (!wantF) {
+            var w2 = document.getElementById('miniChatContainer');
+            if (w2 && w2.classList.contains('mini-chat-wrap--open')) {
+              return;
+            }
           }
-        }
-        setProfileFanConversionFloated(!!wantF);
-      }, 110);
-    },
-    { root: null, threshold: 0, rootMargin: '0px 0px -6% 0px' }
-  );
-  profileFanConversionIO.observe(sentinel);
+          setProfileFanConversionFloated(!!wantF);
+        }, 110);
+      },
+      { root: null, threshold: 0, rootMargin: '0px 0px -6% 0px' }
+    );
+    profileFanConversionIO.observe(sentinel);
+  } finally {
+    if (typeof syncCreatorOwnerLaptopLayout === 'function') syncCreatorOwnerLaptopLayout();
+  }
 }
 
 const api = {
