@@ -336,11 +336,13 @@ const { runCreatorEmailJobs } = require('./lib/creatorEmailJobs');
 
       const { getPool } = require('./lib/db-postgres');
       await getPool().query('ALTER TABLE content ADD COLUMN IF NOT EXISTS background_style TEXT');
-      const { migrateSubscriptionsTimestamptzPg } = require('./lib/migratePgSubscriptionsTz');
-      await migrateSubscriptionsTimestamptzPg();
-      const { migratePgNormalizeTypes, validatePgSchemaOrExit } = require('./lib/migratePgNormalizeTypes');
-      await migratePgNormalizeTypes();
-      await validatePgSchemaOrExit();
+
+      // legacy migration (disabled) — tipos/fechas vía migrations/pg/*.sql + runMigrations()
+      // const { migrateSubscriptionsTimestamptzPg } = require('./lib/migratePgSubscriptionsTz');
+      // await migrateSubscriptionsTimestamptzPg();
+      // const { migratePgNormalizeTypes, validatePgSchemaOrExit } = require('./lib/migratePgNormalizeTypes');
+      // await migratePgNormalizeTypes();
+      // await validatePgSchemaOrExit();
     }
   } catch (e) {
     console.error('[Migration] Fatal error:', e && (e.message || e));
