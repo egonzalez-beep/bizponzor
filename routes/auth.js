@@ -66,37 +66,48 @@ const uploadBanner = multer({
 });
 
 function getOnboardingStatus(user, stats) {
+  const totalPosts = Number(stats.total_posts || 0);
+  const postsOk = totalPosts >= 5;
+
+  /** Pasos que desbloquean monetización (checklist principal). */
   const effectiveSteps = [
+    { id: 'avatar', done: !!user.avatar_url },
     { id: 'banner', done: !!user.banner_url },
-    { id: 'bio', done: !!(user.bio && user.bio.trim().length >= 20) },
-    { id: 'mercadopago', done: !!user.mp_user_id },
-    { id: 'plan', done: user.has_plan === true },
-    { id: 'first_post', done: (stats.total_posts || 0) > 0 }
+    { id: 'posts', done: postsOk },
+    { id: 'mercadopago', done: !!user.mp_user_id }
   ];
 
   const allSteps = [
     {
-      id: 'banner',
-      name: 'Banner',
-      icon: '🖼️',
-      done: !!user.banner_url,
-      action: 'Sube una imagen de portada',
+      id: 'avatar',
+      name: 'Foto de perfil',
+      icon: '👤',
+      done: !!user.avatar_url,
+      action: 'Sube una foto reconocible',
       tab: 'settings'
     },
     {
-      id: 'bio',
-      name: 'Biografía',
-      icon: '✏️',
-      done: !!(user.bio && user.bio.trim().length >= 20),
-      action: 'Cuéntales quién eres',
+      id: 'banner',
+      name: 'Foto de portada',
+      icon: '🖼️',
+      done: !!user.banner_url,
+      action: 'Destaca tu perfil con una portada',
       tab: 'settings'
+    },
+    {
+      id: 'posts',
+      name: '5 publicaciones',
+      icon: '📸',
+      done: postsOk,
+      action: 'Sube al menos 5 fotos o videos',
+      tab: 'upload'
     },
     {
       id: 'mercadopago',
       name: 'Mercado Pago',
       icon: '💳',
       done: !!user.mp_user_id,
-      action: 'Vincula tu cuenta para cobrar',
+      action: 'Conecta tu cuenta para cobrar',
       tab: 'settings'
     },
     {
@@ -105,15 +116,8 @@ function getOnboardingStatus(user, stats) {
       icon: '💎',
       done: user.has_plan === true,
       action: 'Define cuánto quieres ganar',
-      tab: 'plans'
-    },
-    {
-      id: 'first_post',
-      name: 'Primer contenido',
-      icon: '📷',
-      done: (stats.total_posts || 0) > 0,
-      action: 'Comparte tu primer contenido',
-      tab: 'upload'
+      tab: 'plans',
+      isBonus: true
     },
     {
       id: 'first_subscriber',
@@ -129,13 +133,16 @@ function getOnboardingStatus(user, stats) {
   const completedEffective = effectiveSteps.filter((s) => s.done).length;
   const totalEffective = effectiveSteps.length;
   const percent = Math.round((completedEffective / totalEffective) * 100);
+  const coreComplete = completedEffective === totalEffective;
 
   return {
     percent,
     completedEffective,
     totalEffective,
+    coreComplete,
+    posts_count: totalPosts,
     steps: allSteps,
-    allCompleted: allSteps.filter((s) => s.done).length === allSteps.length
+    allCompleted: coreComplete && allSteps.filter((s) => s.isBonus).every((s) => s.done)
   };
 }
 

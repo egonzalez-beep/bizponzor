@@ -1901,6 +1901,282 @@
     border-radius: 8px;
     padding: 6px 10px;
   }
+
+  /* Onboarding monetización — banner en Configuración */
+  #creator-dashboard .settings-onboarding-hero {
+    max-width: 640px;
+    margin-bottom: 20px;
+    border-radius: 20px;
+    padding: 22px 22px 20px;
+    background: linear-gradient(145deg, rgba(30, 27, 24, 0.98) 0%, rgba(24, 22, 18, 0.98) 100%);
+    border: 1px solid rgba(251, 146, 60, 0.35);
+    box-shadow:
+      0 0 0 1px rgba(255, 255, 255, 0.04) inset,
+      0 12px 40px rgba(0, 0, 0, 0.35),
+      0 0 48px rgba(249, 115, 22, 0.12);
+  }
+  #creator-dashboard .settings-onboarding-hero.settings-onboarding-hero--complete {
+    border-color: rgba(34, 197, 94, 0.45);
+    box-shadow:
+      0 0 0 1px rgba(255, 255, 255, 0.05) inset,
+      0 12px 40px rgba(0, 0, 0, 0.3),
+      0 0 40px rgba(34, 197, 94, 0.15);
+  }
+  #creator-dashboard .soh-title {
+    margin: 0 0 10px;
+    font-size: 1.15rem;
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    color: #fff;
+    line-height: 1.25;
+  }
+  #creator-dashboard .soh-sub {
+    margin: 0 0 18px;
+    font-size: 0.88rem;
+    line-height: 1.55;
+    color: #cbd5e1;
+  }
+  #creator-dashboard .soh-checklist {
+    list-style: none;
+    margin: 0 0 16px;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  #creator-dashboard .soh-checklist li {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 10px 12px;
+    border-radius: 12px;
+    font-size: 0.86rem;
+    font-weight: 600;
+    color: #e2e8f0;
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    transition: background 0.25s ease, border-color 0.25s ease, transform 0.2s ease;
+  }
+  #creator-dashboard .soh-checklist li.soh-row-done {
+    border-color: rgba(34, 197, 94, 0.35);
+    background: rgba(34, 197, 94, 0.08);
+  }
+  #creator-dashboard .soh-checklist li.soh-row-pending {
+    border-color: rgba(251, 146, 60, 0.2);
+  }
+  #creator-dashboard .soh-checklist li.bp-check-flash {
+    animation: bpOnboardingFlash 0.55s ease;
+  }
+  @keyframes bpOnboardingFlash {
+    0% { transform: scale(1); }
+    40% { transform: scale(1.02); }
+    100% { transform: scale(1); }
+  }
+  #creator-dashboard .soh-check-ic {
+    font-size: 1rem;
+    flex-shrink: 0;
+  }
+  #creator-dashboard .soh-progress-wrap {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 16px;
+  }
+  #creator-dashboard .soh-progress-bar {
+    flex: 1;
+    height: 10px;
+    border-radius: 999px;
+    background: rgba(0, 0, 0, 0.35);
+    overflow: hidden;
+  }
+  #creator-dashboard .soh-progress-fill {
+    height: 100%;
+    width: 0%;
+    border-radius: 999px;
+    background: linear-gradient(90deg, #f97316, #fbbf24);
+    transition: width 0.45s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  #creator-dashboard .settings-onboarding-hero--complete .soh-progress-fill {
+    background: linear-gradient(90deg, #22c55e, #4ade80);
+  }
+  #creator-dashboard .soh-progress-label {
+    font-size: 0.78rem;
+    font-weight: 800;
+    color: #94a3b8;
+    min-width: 2.5rem;
+    text-align: right;
+  }
+  #creator-dashboard .soh-cta {
+    font-weight: 800;
+    border-radius: 12px;
+    padding-top: 12px;
+    padding-bottom: 12px;
+  }
+  #creator-dashboard .settings-onboarding-cards {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+    max-width: 640px;
+    margin-bottom: 20px;
+  }
+  @media (max-width: 720px) {
+    #creator-dashboard .settings-onboarding-cards {
+      grid-template-columns: 1fr;
+    }
+  }
+  #creator-dashboard .settings-onboarding-card {
+    border-radius: 16px;
+    padding: 18px 16px;
+    display: flex;
+    gap: 12px;
+    align-items: flex-start;
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    box-shadow: 0 8px 28px rgba(0, 0, 0, 0.2);
+  }
+  #creator-dashboard .settings-onboarding-card-ic {
+    font-size: 1.5rem;
+    line-height: 1;
+  }
+  #creator-dashboard .settings-onboarding-card-body {
+    flex: 1;
+    min-width: 0;
+  }
+  #creator-dashboard .settings-onboarding-card-title {
+    margin: 0 0 6px;
+    font-size: 0.95rem;
+    font-weight: 800;
+    color: #fff;
+  }
+  #creator-dashboard .settings-onboarding-card-text {
+    margin: 0 0 12px;
+    font-size: 0.78rem;
+    line-height: 1.45;
+    color: #94a3b8;
+  }
+  #creator-dashboard .settings-mp-teaser-btn {
+    background: linear-gradient(180deg, #fde047 0%, #eab308 100%);
+    color: #1a1a12;
+    font-weight: 800;
+    border: 1px solid rgba(234, 179, 8, 0.85);
+    border-radius: 10px;
+    box-shadow: 0 4px 16px rgba(234, 179, 8, 0.25);
+  }
+  #creator-dashboard .settings-mp-teaser-btn:hover {
+    filter: brightness(1.05);
+  }
+
+  /* Modal bienvenida creador */
+  .creator-welcome-modal {
+    position: fixed;
+    inset: 0;
+    z-index: 12001;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    padding: max(16px, env(safe-area-inset-top)) max(16px, env(safe-area-inset-right)) max(16px, env(safe-area-inset-bottom)) max(16px, env(safe-area-inset-left));
+    box-sizing: border-box;
+  }
+  .creator-welcome-modal.is-open {
+    display: flex;
+  }
+  .creator-welcome-modal-backdrop {
+    position: absolute;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.72);
+    backdrop-filter: blur(8px);
+  }
+  .creator-welcome-modal-panel {
+    position: relative;
+    z-index: 1;
+    width: 100%;
+    max-width: 420px;
+    border-radius: 22px;
+    padding: 32px 28px 28px;
+    background: linear-gradient(165deg, #1e1b4b 0%, #0f172a 55%, #111827 100%);
+    border: 1px solid rgba(99, 102, 241, 0.45);
+    box-shadow:
+      0 0 0 1px rgba(255, 255, 255, 0.06) inset,
+      0 24px 80px rgba(0, 0, 0, 0.55),
+      0 0 60px rgba(99, 102, 241, 0.25);
+    text-align: center;
+  }
+  .creator-welcome-modal-glow {
+    position: absolute;
+    width: 180px;
+    height: 180px;
+    border-radius: 50%;
+    top: -60px;
+    right: -40px;
+    background: radial-gradient(circle, rgba(168, 85, 247, 0.45) 0%, transparent 70%);
+    pointer-events: none;
+  }
+  .creator-welcome-modal-title {
+    margin: 0 0 12px;
+    font-size: 1.35rem;
+    font-weight: 900;
+    letter-spacing: -0.03em;
+    color: #fff;
+    position: relative;
+  }
+  .creator-welcome-modal-text {
+    margin: 0 0 24px;
+    font-size: 0.95rem;
+    line-height: 1.55;
+    color: #c4b5fd;
+    position: relative;
+  }
+  .creator-welcome-modal-cta {
+    position: relative;
+    border-radius: 12px;
+    font-weight: 800;
+    padding-top: 14px;
+    padding-bottom: 14px;
+    box-shadow: 0 8px 28px rgba(99, 102, 241, 0.35);
+  }
+  .creator-welcome-modal-x {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    width: 36px;
+    height: 36px;
+    border: none;
+    border-radius: 10px;
+    background: rgba(255, 255, 255, 0.08);
+    color: #e2e8f0;
+    font-size: 1.1rem;
+    cursor: pointer;
+    z-index: 2;
+  }
+  .creator-welcome-modal-x:hover {
+    background: rgba(255, 255, 255, 0.14);
+  }
+
+  /* Franja perfil embebido — incompleto */
+  #creator-profile-inner .creator-profile-onboarding-banner {
+    margin: 0;
+    padding: 12px 16px;
+    background: linear-gradient(90deg, rgba(127, 29, 29, 0.35) 0%, rgba(30, 27, 24, 0.92) 100%);
+    border-bottom: 1px solid rgba(251, 113, 133, 0.35);
+  }
+  #creator-profile-inner .creator-profile-onboarding-banner-inner {
+    max-width: 900px;
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 14px;
+    flex-wrap: wrap;
+  }
+  #creator-profile-inner .creator-profile-onboarding-banner-text {
+    margin: 0;
+    font-size: 0.86rem;
+    font-weight: 700;
+    color: #fecdd3;
+    line-height: 1.4;
+  }
+
   #creator-dashboard .onboarding-icon svg {
     display: block;
     width: 28px;
@@ -6103,6 +6379,40 @@
           <p>Tu perfil público y la cuenta, en un solo lugar</p>
         </div>
 
+        <div id="settings-onboarding-hero" class="settings-onboarding-hero" style="display:none;" aria-label="Activar tu perfil">
+          <div class="settings-onboarding-hero-inner">
+            <div class="soh-head">
+              <h2 id="soh-title" class="soh-title">Empieza a ganar dinero en Bizponzor</h2>
+              <p id="soh-sub" class="soh-sub"></p>
+            </div>
+            <ul id="soh-checklist" class="soh-checklist" aria-label="Pasos para activar tu perfil"></ul>
+            <div class="soh-progress-wrap">
+              <div class="soh-progress-bar" aria-hidden="true"><div id="soh-progress-fill" class="soh-progress-fill"></div></div>
+              <div id="soh-progress-label" class="soh-progress-label">0%</div>
+            </div>
+            <button type="button" id="soh-cta-btn" class="btn btn-primary btn-full soh-cta" onclick="scrollToFirstIncompleteMonetization()">Activar mi perfil ahora</button>
+          </div>
+        </div>
+
+        <div id="settings-onboarding-cards" class="settings-onboarding-cards" style="display:none;">
+          <div class="settings-onboarding-card settings-onboarding-card--mp">
+            <div class="settings-onboarding-card-ic" aria-hidden="true">💳</div>
+            <div class="settings-onboarding-card-body">
+              <h3 class="settings-onboarding-card-title">Conecta Mercado Pago</h3>
+              <p class="settings-onboarding-card-text">Aquí recibirás suscripciones, donaciones y tu bono</p>
+              <button type="button" class="btn btn-full settings-mp-teaser-btn" onclick="scrollToSettingsMpAnchor()">Conectar ahora</button>
+            </div>
+          </div>
+          <div class="settings-onboarding-card settings-onboarding-card--upload">
+            <div class="settings-onboarding-card-ic" aria-hidden="true">📸</div>
+            <div class="settings-onboarding-card-body">
+              <h3 class="settings-onboarding-card-title">Sube tu contenido</h3>
+              <p class="settings-onboarding-card-text">Sube 5 fotos para activar tu Bono Fundador Bizponzor</p>
+              <button type="button" class="btn btn-primary btn-full" onclick="openCreatorUploadFromOnboarding()">Subir contenido</button>
+            </div>
+          </div>
+        </div>
+
         <div id="onboarding-card" class="onboarding-card" style="display: none;">
           <div class="onboarding-header">
             <div class="onboarding-icon" aria-hidden="true">
@@ -6128,6 +6438,34 @@
 
         <div class="settings-studio">
           <div class="settings-studio-surface">
+            <section id="settings-section-appearance" class="settings-section">
+              <h3 class="settings-section-title">
+                <span class="settings-st-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="13.5" cy="6.5" r=".5"/><circle cx="17.5" cy="10.5" r=".5"/><circle cx="8.5" cy="7.5" r=".5"/><circle cx="6.5" cy="12.5" r=".5"/><path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c.926 0 1.648-.746 1.648-1.688 0-.437-.18-.835-.437-1.125-.29-.289-.438-.652-.438-1.125a1.64 1.64 0 0 1 1.668-1.668h1.996c3.051 0 5.555-2.503 5.555-5.554C21.965 6.012 17.461 2 12 2z"/></svg></span>
+                Apariencia
+              </h3>
+              <div id="settings-anchor-avatar" class="form-group">
+                <label class="form-label">Foto de perfil</label>
+                <div class="settings-avatar-editor">
+                  <div class="bp-avatar bp-avatar--xl settings-avatar-preview" id="settings-avatar-preview" role="img" aria-label="Vista previa de foto de perfil"></div>
+                  <button type="button" class="settings-avatar-cam" id="settings-avatar-cam-btn" aria-label="Elegir foto de perfil" title="Cambiar foto">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
+                  </button>
+                  <input type="file" id="settings-avatar-file" class="visually-hidden-input" accept="image/jpeg,image/png,image/webp" tabindex="-1" aria-hidden="true">
+                </div>
+                <p class="settings-hint">JPG, PNG o WebP · máx. 2&nbsp;MB · se muestra a 512&nbsp;px en el perfil</p>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Color del avatar</label>
+                <input type="color" class="form-input" id="settings-avatar-color" value="#333333" style="height:44px;padding:6px 10px;max-width:120px;">
+                <div class="settings-hint">Inicial sobre este color si no hay foto</div>
+              </div>
+              <div id="settings-anchor-banner" class="form-group">
+                <label class="form-label">Banner (portada)</label>
+                <input type="file" class="form-input" id="settings-banner" accept="image/*">
+                <div class="settings-hint">Recomendado 1200×300px · máximo 10&nbsp;MB</div>
+              </div>
+            </section>
+
             <section class="settings-section">
               <h3 class="settings-section-title">
                 <span class="settings-st-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></span>
@@ -6231,35 +6569,7 @@
               </div>
             </section>
 
-            <section class="settings-section">
-              <h3 class="settings-section-title">
-                <span class="settings-st-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="13.5" cy="6.5" r=".5"/><circle cx="17.5" cy="10.5" r=".5"/><circle cx="8.5" cy="7.5" r=".5"/><circle cx="6.5" cy="12.5" r=".5"/><path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c.926 0 1.648-.746 1.648-1.688 0-.437-.18-.835-.437-1.125-.29-.289-.438-.652-.438-1.125a1.64 1.64 0 0 1 1.668-1.668h1.996c3.051 0 5.555-2.503 5.555-5.554C21.965 6.012 17.461 2 12 2z"/></svg></span>
-                Apariencia
-              </h3>
-              <div class="form-group">
-                <label class="form-label">Foto de perfil</label>
-                <div class="settings-avatar-editor">
-                  <div class="bp-avatar bp-avatar--xl settings-avatar-preview" id="settings-avatar-preview" role="img" aria-label="Vista previa de foto de perfil"></div>
-                  <button type="button" class="settings-avatar-cam" id="settings-avatar-cam-btn" aria-label="Elegir foto de perfil" title="Cambiar foto">
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
-                  </button>
-                  <input type="file" id="settings-avatar-file" class="visually-hidden-input" accept="image/jpeg,image/png,image/webp" tabindex="-1" aria-hidden="true">
-                </div>
-                <p class="settings-hint">JPG, PNG o WebP · máx. 2&nbsp;MB · se muestra a 512&nbsp;px en el perfil</p>
-              </div>
-              <div class="form-group">
-                <label class="form-label">Color del avatar</label>
-                <input type="color" class="form-input" id="settings-avatar-color" value="#333333" style="height:44px;padding:6px 10px;max-width:120px;">
-                <div class="settings-hint">Inicial sobre este color si no hay foto</div>
-              </div>
-              <div class="form-group">
-                <label class="form-label">Banner (portada)</label>
-                <input type="file" class="form-input" id="settings-banner" accept="image/*">
-                <div class="settings-hint">Recomendado 1200×300px · máximo 10&nbsp;MB</div>
-              </div>
-            </section>
-
-            <section class="settings-section">
+            <section id="settings-section-cobros" class="settings-section">
               <h3 class="settings-section-title">
                 <span class="settings-st-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="20" height="14" x="2" y="5" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg></span>
                 Cobros
@@ -6460,6 +6770,17 @@
       </div>
     </div>
   </div>
+
+  <div id="creator-welcome-modal" class="creator-welcome-modal" role="dialog" aria-modal="true" aria-labelledby="creator-welcome-title" hidden>
+    <div class="creator-welcome-modal-backdrop" onclick="closeCreatorWelcomeModal()" aria-hidden="true"></div>
+    <div class="creator-welcome-modal-panel" onclick="event.stopPropagation()">
+      <button type="button" class="creator-welcome-modal-x" onclick="closeCreatorWelcomeModal()" aria-label="Cerrar">✕</button>
+      <div class="creator-welcome-modal-glow" aria-hidden="true"></div>
+      <h2 id="creator-welcome-title" class="creator-welcome-modal-title">Bienvenido a Bizponzor</h2>
+      <p class="creator-welcome-modal-text">Comienza ya a monetizar tu contenido VIP. Vamos a activar tu perfil en menos de 2 minutos.</p>
+      <button type="button" class="btn btn-primary btn-full creator-welcome-modal-cta" onclick="activateWelcomeProfileCta()">Activar mi perfil</button>
+    </div>
+  </div>
 </div>
 
 
@@ -6643,6 +6964,12 @@
   <div id="profile-mount-standalone">
     <div id="creator-profile-inner">
   <div class="profile-banner"></div>
+  <div id="creator-profile-onboarding-banner" class="creator-profile-onboarding-banner" style="display:none;" role="region" aria-label="Perfil incompleto">
+    <div class="creator-profile-onboarding-banner-inner">
+      <p class="creator-profile-onboarding-banner-text">Tu perfil está incompleto — estás perdiendo dinero</p>
+      <button type="button" class="btn btn-primary btn-sm creator-profile-onboarding-banner-btn" onclick="openCreatorSettingsOnboarding()">Completar perfil</button>
+    </div>
+  </div>
   <div class="profile-info profile-info-hero">
     <div class="profile-hero-row">
       <div class="profile-hero-identity">
@@ -7030,6 +7357,276 @@
     embed.setAttribute('aria-hidden', 'false');
   }
 
+  window.__lastOnboardingPayload = window.__lastOnboardingPayload || null;
+  window.__lastOnboardingPercent = typeof window.__lastOnboardingPercent === 'number' ? window.__lastOnboardingPercent : -1;
+
+  function bpMergeSearchParams(mutator) {
+    try {
+      var u = new URL(window.location.href);
+      mutator(u.searchParams);
+      var q = u.searchParams.toString();
+      history.replaceState(null, '', u.pathname + (q ? '?' + q : '') + u.hash);
+    } catch (e) {}
+  }
+
+  function clearCreatorSidebarActiveVisual() {
+    document.querySelectorAll('#creator-dashboard .sidebar-item').forEach(function (i) {
+      i.classList.remove('active');
+    });
+  }
+
+  function openCreatorWelcomeModal() {
+    var el = document.getElementById('creator-welcome-modal');
+    if (!el) return;
+    el.removeAttribute('hidden');
+    el.classList.add('is-open');
+    document.body.style.overflow = 'hidden';
+  }
+
+  function closeCreatorWelcomeModal() {
+    var el = document.getElementById('creator-welcome-modal');
+    if (!el) return;
+    el.setAttribute('hidden', '');
+    el.classList.remove('is-open');
+    document.body.style.overflow = '';
+    bpMergeSearchParams(function (sp) {
+      sp.delete('welcome');
+    });
+    var uid = CURRENT_USER && CURRENT_USER.id;
+    if (uid) {
+      try {
+        localStorage.setItem('bp_welcome_modal_done_' + uid, '1');
+      } catch (err) {}
+    }
+  }
+
+  function maybeOpenCreatorWelcomeModal() {
+    var uid = CURRENT_USER && CURRENT_USER.id;
+    if (!uid) return;
+    try {
+      if (localStorage.getItem('bp_welcome_modal_done_' + uid)) {
+        bpMergeSearchParams(function (sp) {
+          sp.delete('welcome');
+        });
+        return;
+      }
+    } catch (e) {}
+    var sp = new URLSearchParams(window.location.search);
+    if (sp.get('welcome') !== 'true') return;
+    openCreatorWelcomeModal();
+  }
+
+  function activateWelcomeProfileCta() {
+    closeCreatorWelcomeModal();
+    openCreatorSettingsOnboarding();
+  }
+
+  function openCreatorSettingsOnboarding() {
+    bpMergeSearchParams(function (sp) {
+      sp.delete('welcome');
+      sp.set('onboarding', '1');
+    });
+    var el = document.getElementById('sidebar-tab-settings');
+    if (typeof setDashTab === 'function') setDashTab('settings', el);
+  }
+
+  function handleSettingsOnboardingQueryScroll() {
+    var sp = new URLSearchParams(window.location.search);
+    if (sp.get('onboarding') !== '1') return;
+    setTimeout(function () {
+      var hero = document.getElementById('settings-onboarding-hero');
+      var cards = document.getElementById('settings-onboarding-cards');
+      if (hero && hero.style.display !== 'none') hero.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      else if (cards) cards.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      bpMergeSearchParams(function (p) {
+        p.delete('onboarding');
+      });
+    }, 220);
+  }
+
+  function scrollToSettingsMpAnchor() {
+    var sec = document.getElementById('settings-section-cobros');
+    if (sec) sec.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  }
+
+  function openCreatorUploadFromOnboarding() {
+    var el = document.getElementById('sidebar-tab-upload');
+    if (typeof setDashTab === 'function') setDashTab('upload', el);
+  }
+
+  function getMonetizationStepStates() {
+    var d = window.__lastOnboardingPayload;
+    var steps = (d && d.steps) || [];
+    var core = steps.filter(function (s) {
+      return !s.isBonus;
+    });
+    var avatar = core.find(function (s) {
+      return s.id === 'avatar';
+    });
+    var banner = core.find(function (s) {
+      return s.id === 'banner';
+    });
+    var posts = core.find(function (s) {
+      return s.id === 'posts';
+    });
+    var mp = core.find(function (s) {
+      return s.id === 'mercadopago';
+    });
+    return {
+      avatar: !!(avatar && avatar.done),
+      banner: !!(banner && banner.done),
+      posts: !!(posts && posts.done),
+      mp: !!(mp && mp.done)
+    };
+  }
+
+  function scrollToFirstIncompleteMonetization() {
+    var st = getMonetizationStepStates();
+    var tabSettings = document.getElementById('sidebar-tab-settings');
+    var tabUpload = document.getElementById('sidebar-tab-upload');
+    if (!st.avatar || !st.banner) {
+      if (typeof setDashTab === 'function') setDashTab('settings', tabSettings);
+      setTimeout(function () {
+        var target = !st.avatar ? document.getElementById('settings-anchor-avatar') : document.getElementById('settings-anchor-banner');
+        if (target) target.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        else scrollToSettingsMpAnchor();
+      }, 200);
+      return;
+    }
+    if (!st.posts) {
+      if (typeof setDashTab === 'function') setDashTab('upload', tabUpload);
+      return;
+    }
+    if (!st.mp) {
+      if (typeof setDashTab === 'function') setDashTab('settings', tabSettings);
+      setTimeout(function () {
+        scrollToSettingsMpAnchor();
+      }, 200);
+    }
+  }
+
+  function renderSettingsOnboardingHero(data) {
+    var hero = document.getElementById('settings-onboarding-hero');
+    var cards = document.getElementById('settings-onboarding-cards');
+    var sub = document.getElementById('soh-sub');
+    var list = document.getElementById('soh-checklist');
+    var fill = document.getElementById('soh-progress-fill');
+    var label = document.getElementById('soh-progress-label');
+    var cta = document.getElementById('soh-cta-btn');
+    if (!hero || !data) return;
+    var coreComplete = data.coreComplete === true;
+    if (cards) {
+      cards.style.display = coreComplete ? 'none' : 'grid';
+    }
+    if (coreComplete) {
+      hero.style.display = 'none';
+      return;
+    }
+    hero.style.display = 'block';
+    hero.classList.remove('settings-onboarding-hero--complete');
+    if (sub) {
+      sub.textContent =
+        'Bienvenido a Bizponzor, comienza ya a monetizar tu contenido VIP. Tu perfil aún no gana dinero. Actívalo en menos de 2 minutos.';
+    }
+    if (list) {
+      var rows = [
+        { id: 'avatar', label: 'Foto de perfil' },
+        { id: 'banner', label: 'Foto de portada' },
+        { id: 'posts', label: '5 publicaciones' },
+        { id: 'mercadopago', label: 'Mercado Pago conectado' }
+      ];
+      var steps = data.steps || [];
+      var prevPct = window.__lastOnboardingPercent;
+      var pct = typeof data.percent === 'number' ? data.percent : 0;
+      list.innerHTML = rows
+        .map(function (r) {
+          var step = steps.find(function (s) {
+            return s.id === r.id;
+          });
+          var done = !!(step && step.done);
+          return (
+            '<li class="' +
+            (done ? 'soh-row-done' : 'soh-row-pending') +
+            '" data-onb-row="' +
+            r.id +
+            '"><span>' +
+            escapeHtml(r.label) +
+            '</span><span class="soh-check-ic" aria-hidden="true">' +
+            (done ? '✔' : '❌') +
+            '</span></li>'
+          );
+        })
+        .join('');
+      if (prevPct >= 0 && pct > prevPct) {
+        list.querySelectorAll('li.soh-row-done').forEach(function (li) {
+          li.classList.add('bp-check-flash');
+          setTimeout(function () {
+            li.classList.remove('bp-check-flash');
+          }, 600);
+        });
+      }
+    }
+    if (fill) {
+      fill.style.width = (typeof data.percent === 'number' ? data.percent : 0) + '%';
+    }
+    if (label) {
+      label.textContent = (typeof data.percent === 'number' ? data.percent : 0) + '%';
+    }
+    if (cta) {
+      cta.style.display = '';
+      cta.textContent = 'Activar mi perfil ahora';
+    }
+    window.__lastOnboardingPercent = typeof data.percent === 'number' ? data.percent : 0;
+  }
+
+  function updateCreatorProfileOnboardingStrip() {
+    var strip = document.getElementById('creator-profile-onboarding-banner');
+    var d = window.__lastOnboardingPayload;
+    if (!strip || !CURRENT_USER || CURRENT_USER.role !== 'creator') return;
+    var embed = document.getElementById('creator-profile-embed');
+    var inEmbed = embed && embed.style.display !== 'none' && embed.getAttribute('aria-hidden') !== 'true';
+    if (!inEmbed || d == null || d.coreComplete === true) {
+      strip.style.display = 'none';
+      return;
+    }
+    strip.style.display = 'block';
+  }
+
+  async function navigateCreatorAfterAuth(opts) {
+    opts = opts || {};
+    var fromLogin = !!opts.fromLogin;
+    var uid = CURRENT_USER && CURRENT_USER.id;
+    if (!uid || CURRENT_USER.role !== 'creator') return;
+    var firstEverLogin = false;
+    if (fromLogin) {
+      var key = 'bp_creator_login_count_' + uid;
+      var prev = parseInt(localStorage.getItem(key) || '0', 10) || 0;
+      firstEverLogin = prev === 0;
+      try {
+        localStorage.setItem(key, String(prev + 1));
+      } catch (e) {}
+      if (firstEverLogin) {
+        bpMergeSearchParams(function (sp) {
+          sp.set('welcome', 'true');
+        });
+      } else {
+        bpMergeSearchParams(function (sp) {
+          sp.delete('welcome');
+        });
+      }
+    } else {
+      bpMergeSearchParams(function (sp) {
+        sp.delete('welcome');
+      });
+    }
+    clearCreatorSidebarActiveVisual();
+    await showCreatorProfile();
+    updateCreatorProfileOnboardingStrip();
+    if (fromLogin && firstEverLogin) {
+      maybeOpenCreatorWelcomeModal();
+    }
+  }
+
   async function showCreatorProfile() {
     if (CURRENT_USER && CURRENT_USER.role === 'creator') {
       const creator = await api.get('/creators/me');
@@ -7063,6 +7660,7 @@
         document.getElementById('creator-dashboard').classList.add('active');
         updateNavbar('creator-profile');
         window.scrollTo(0, 0);
+        if (typeof updateCreatorProfileOnboardingStrip === 'function') updateCreatorProfileOnboardingStrip();
         return;
       }
     }
@@ -7072,12 +7670,12 @@
 
   function goBackToDashboard() {
     if (CURRENT_USER && CURRENT_USER.role === 'creator') {
-      unmountCreatorProfileFromEmbed();
       document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
       document.getElementById('creator-dashboard').classList.add('active');
       updateNavbar('creator-dashboard');
       updateMobileMenuToggle();
-      setDashTab('content', document.getElementById('sidebar-tab-content'));
+      if (typeof clearCreatorSidebarActiveVisual === 'function') clearCreatorSidebarActiveVisual();
+      void showCreatorProfile();
     } else if (CURRENT_USER && CURRENT_USER.role === 'fan') {
       if (typeof stopProfileChatPolling === 'function') stopProfileChatPolling();
       if (typeof clearProfileChatState === 'function') clearProfileChatState();
@@ -9785,7 +10383,11 @@ function setSession(res) {
   
   if (CURRENT_USER.role === 'creator') {
     document.getElementById('creator-dashboard').classList.add('active');
-    loadCreatorDashboard();
+    void loadCreatorDashboard().then(function () {
+      if (typeof navigateCreatorAfterAuth === 'function') {
+        return navigateCreatorAfterAuth({ fromLogin: true });
+      }
+    });
   } else {
     document.getElementById('fan-dashboard').classList.add('active');
     loadFanDashboard();
@@ -9834,6 +10436,7 @@ function levelUpTrackAndOpen() {
 
 function logout() {
   if (typeof closeLevelUpModal === 'function') closeLevelUpModal();
+  if (typeof closeCreatorWelcomeModal === 'function') closeCreatorWelcomeModal();
   if (typeof unmountCreatorProfileFromEmbed === 'function') unmountCreatorProfileFromEmbed();
   stopGlobalMessagesBadgePolling();
   if (typeof stopFanMessagesBadgePolling === 'function') stopFanMessagesBadgePolling();
@@ -9880,6 +10483,20 @@ function goToStep(stepId, tabName) {
     if (el && typeof setDashTab === 'function') {
       setDashTab(tabName, el);
     }
+    setTimeout(function () {
+      if (tabName === 'settings') {
+        if (stepId === 'mercadopago' && typeof scrollToSettingsMpAnchor === 'function') scrollToSettingsMpAnchor();
+        else if (stepId === 'avatar' && document.getElementById('settings-anchor-avatar')) {
+          document.getElementById('settings-anchor-avatar').scrollIntoView({ behavior: 'smooth', block: 'center' });
+        } else if (stepId === 'banner' && document.getElementById('settings-anchor-banner')) {
+          document.getElementById('settings-anchor-banner').scrollIntoView({ behavior: 'smooth', block: 'center' });
+        } else if (stepId === 'posts' && typeof openCreatorUploadFromOnboarding === 'function') {
+          openCreatorUploadFromOnboarding();
+        } else if (document.getElementById('settings-section-appearance')) {
+          document.getElementById('settings-section-appearance').scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+      }
+    }, 180);
   } else if (tabName === 'profile' && typeof showCreatorProfile === 'function') {
     showCreatorProfile();
   }
@@ -9887,6 +10504,8 @@ function goToStep(stepId, tabName) {
 
 function renderOnboardingCard(data) {
   if (!data) return;
+
+  window.__lastOnboardingPayload = data;
 
   const container = document.getElementById('onboarding-card');
   const stepsContainer = document.getElementById('onboarding-steps');
@@ -9898,29 +10517,41 @@ function renderOnboardingCard(data) {
 
   if (!container || !stepsContainer || !titleEl || !subtitleEl || !fillEl) return;
 
-  const { percent = 0, steps = [] } = data;
+  const percent = typeof data.percent === 'number' ? data.percent : 0;
+  const steps = data.steps || [];
+  const coreComplete = data.coreComplete === true;
 
-  const completed = steps.filter(function (s) {
-    return s.done && !s.isBonus;
+  const coreIds = { avatar: true, banner: true, posts: true, mercadopago: true };
+  const coreSteps = steps.filter(function (s) {
+    return coreIds[s.id];
+  });
+  const completedCore = coreSteps.filter(function (s) {
+    return s.done;
   }).length;
-  const total = steps.filter(function (s) {
-    return !s.isBonus;
-  }).length;
-  const remaining = total - completed;
+  const totalCore = 4;
+  const remainingCore = totalCore - completedCore;
 
-  if (completed === 0) titleEl.textContent = 'Configura tu perfil';
-  else if (remaining > 0) titleEl.textContent = 'Ya casi está listo';
-  else titleEl.textContent = 'Sin tareas pendientes';
+  if (typeof renderSettingsOnboardingHero === 'function') renderSettingsOnboardingHero(data);
+  if (typeof updateCreatorProfileOnboardingStrip === 'function') updateCreatorProfileOnboardingStrip();
+
+  if (coreComplete) {
+    container.style.display = 'none';
+    return;
+  }
+
+  container.style.display = 'block';
+
+  if (completedCore === 0) titleEl.textContent = 'Activa tu perfil para cobrar';
+  else if (remainingCore > 0) titleEl.textContent = 'Ya casi monetizas';
+  else titleEl.textContent = 'Perfil listo para ingresos';
 
   subtitleEl.textContent =
-    remaining > 0
-      ? 'Completa ' + remaining + ' paso' + (remaining !== 1 ? 's' : '') + ' más'
-      : 'Tu perfil está listo';
+    remainingCore > 0
+      ? 'Te faltan ' + remainingCore + ' paso' + (remainingCore !== 1 ? 's' : '') + ' para que tu perfil gane dinero'
+      : 'Listo. Ya puedes empezar a generar ingresos';
 
   fillEl.style.width = percent + '%';
   fillEl.style.background = 'linear-gradient(90deg, #1E3A5F, #06B6D4)';
-
-  container.style.display = 'block';
 
   onboardingExpanded = false;
   stepsContainer.style.display = 'none';
@@ -9935,6 +10566,7 @@ function renderOnboardingCard(data) {
     .map(function (step) {
       const isNext = nextStep && step.id === nextStep.id;
       const tab = step.tab != null ? step.tab : '';
+      const mark = step.isBonus ? (step.done ? '✓' : '○') : step.done ? '✔' : '❌';
       return (
         '<div class="onboarding-step' +
         (isNext ? ' next' : '') +
@@ -9947,7 +10579,7 @@ function renderOnboardingCard(data) {
         '</span><span style="flex:1">' +
         escapeHtml(step.name) +
         '</span><span>' +
-        (step.done ? '✓' : '○') +
+        mark +
         '</span></div>'
       );
     })
@@ -10206,6 +10838,11 @@ async function loadProfileSettings() {
     discoverCb.checked = !(res.is_public === false || res.is_public === 0 || res.is_public === '0');
     syncSettingsDiscoverVisibilityUi(discoverCb);
   }
+  if (CURRENT_USER.role === 'creator' && res.onboarding) {
+    window.__lastOnboardingPayload = res.onboarding;
+    renderOnboardingCard(res.onboarding);
+  }
+  if (typeof handleSettingsOnboardingQueryScroll === 'function') handleSettingsOnboardingQueryScroll();
 }
 
 async function saveProfileSettings() {
@@ -11530,7 +12167,11 @@ if (TOKEN && CURRENT_USER) {
   document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
   if (CURRENT_USER.role === 'creator') {
     document.getElementById('creator-dashboard').classList.add('active');
-    loadCreatorDashboard();
+    void loadCreatorDashboard().then(function () {
+      if (typeof navigateCreatorAfterAuth === 'function') {
+        return navigateCreatorAfterAuth({ fromLogin: false });
+      }
+    });
   } else if (CURRENT_USER.role === 'fan') {
     document.getElementById('fan-dashboard').classList.add('active');
     loadFanDashboard();
