@@ -331,6 +331,9 @@ const { runCreatorEmailJobs } = require('./lib/creatorEmailJobs');
 (async function startServer() {
   try {
     if (process.env.DATABASE_URL) {
+      const { runMigrations } = require('./lib/runMigrations');
+      await runMigrations();
+
       const { getPool } = require('./lib/db-postgres');
       await getPool().query('ALTER TABLE content ADD COLUMN IF NOT EXISTS background_style TEXT');
       const { migrateSubscriptionsTimestamptzPg } = require('./lib/migratePgSubscriptionsTz');
@@ -340,7 +343,7 @@ const { runCreatorEmailJobs } = require('./lib/creatorEmailJobs');
       await validatePgSchemaOrExit();
     }
   } catch (e) {
-    console.error('[startup] migración PostgreSQL:', e.message || e);
+    console.error('[Migration] Fatal error:', e && (e.message || e));
     process.exit(1);
   }
 
