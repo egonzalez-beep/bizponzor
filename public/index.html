@@ -3861,6 +3861,42 @@
     top: 20px;
     max-height: calc(100vh - 36px);
   }
+  /*
+   * Fan laptop (≥1041px, grid 2 cols): la columna lateral debe ocupar toda la altura de la fila.
+   * Si el contenedor del sticky es solo tan alto como la tarjeta, position:sticky no tiene recorrido.
+   */
+  @media (min-width: 1041px) {
+    #creator-profile-inner:not(.creator-profile--hero-stats-owner) .profile-body {
+      align-items: stretch;
+    }
+    #creator-profile-inner:not(.creator-profile--hero-stats-owner) .profile-sidebar-col {
+      display: flex;
+      flex-direction: column;
+      align-self: stretch;
+      min-height: 0;
+    }
+    #creator-profile-inner:not(.creator-profile--hero-stats-owner) .profile-sidebar-card {
+      position: sticky;
+      align-self: flex-start;
+      top: 80px;
+      max-height: calc(100vh - 96px);
+    }
+    #creator-profile-embed #creator-profile-inner:not(.creator-profile--hero-stats-owner) .profile-body {
+      align-items: stretch;
+    }
+    #creator-profile-embed #creator-profile-inner:not(.creator-profile--hero-stats-owner) .profile-sidebar-col {
+      display: flex;
+      flex-direction: column;
+      align-self: stretch;
+      min-height: 0;
+    }
+    #creator-profile-embed #creator-profile-inner:not(.creator-profile--hero-stats-owner) .profile-sidebar-card {
+      position: sticky;
+      align-self: flex-start;
+      top: 16px;
+      max-height: calc(100vh - 140px);
+    }
+  }
   /* Perfil fan (desktop / tablet ancho): jerarquía de CTAs + hover */
   @media (min-width: 769px) {
     #creator-profile-inner #profile-btn-subscribe {
