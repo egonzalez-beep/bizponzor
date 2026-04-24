@@ -1074,17 +1074,21 @@
     justify-content: center;
     gap: 8px;
     width: 100%;
+    max-width: 100%;
     margin-top: 12px;
-    padding: 14px 16px;
+    padding: 12px 10px;
     border: none;
     border-radius: 14px;
-    font-size: 0.9rem;
+    font-size: 0.82rem;
     font-weight: 800;
     letter-spacing: 0.02em;
     color: #fff;
     cursor: pointer;
     text-align: center;
     line-height: 1.25;
+    white-space: normal;
+    word-wrap: break-word;
+    hyphens: auto;
     box-shadow:
       0 4px 16px rgba(56, 189, 248, 0.35),
       0 8px 28px rgba(139, 92, 246, 0.22);
@@ -1243,6 +1247,9 @@
   #fan-dashboard .sidebar-user-meta .sidebar-user-sub {
     font-size: 0.72rem;
     color: var(--gray-500);
+    overflow-wrap: anywhere;
+    word-break: break-word;
+    line-height: 1.35;
   }
   #creator-dashboard .sidebar-user-name,
   #fan-dashboard .sidebar-user-name {
@@ -1902,117 +1909,6 @@
     padding: 6px 10px;
   }
 
-  /* Onboarding monetización — banner en Configuración */
-  #creator-dashboard .settings-onboarding-hero {
-    max-width: 640px;
-    margin-bottom: 20px;
-    border-radius: 20px;
-    padding: 22px 22px 20px;
-    background: linear-gradient(145deg, rgba(30, 27, 24, 0.98) 0%, rgba(24, 22, 18, 0.98) 100%);
-    border: 1px solid rgba(251, 146, 60, 0.35);
-    box-shadow:
-      0 0 0 1px rgba(255, 255, 255, 0.04) inset,
-      0 12px 40px rgba(0, 0, 0, 0.35),
-      0 0 48px rgba(249, 115, 22, 0.12);
-  }
-  #creator-dashboard .settings-onboarding-hero.settings-onboarding-hero--complete {
-    border-color: rgba(34, 197, 94, 0.45);
-    box-shadow:
-      0 0 0 1px rgba(255, 255, 255, 0.05) inset,
-      0 12px 40px rgba(0, 0, 0, 0.3),
-      0 0 40px rgba(34, 197, 94, 0.15);
-  }
-  #creator-dashboard .soh-title {
-    margin: 0 0 10px;
-    font-size: 1.15rem;
-    font-weight: 800;
-    letter-spacing: -0.02em;
-    color: #fff;
-    line-height: 1.25;
-  }
-  #creator-dashboard .soh-sub {
-    margin: 0 0 18px;
-    font-size: 0.88rem;
-    line-height: 1.55;
-    color: #cbd5e1;
-  }
-  #creator-dashboard .soh-checklist {
-    list-style: none;
-    margin: 0 0 16px;
-    padding: 0;
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-  }
-  #creator-dashboard .soh-checklist li {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 12px;
-    padding: 10px 12px;
-    border-radius: 12px;
-    font-size: 0.86rem;
-    font-weight: 600;
-    color: #e2e8f0;
-    background: rgba(255, 255, 255, 0.04);
-    border: 1px solid rgba(255, 255, 255, 0.06);
-    transition: background 0.25s ease, border-color 0.25s ease, transform 0.2s ease;
-  }
-  #creator-dashboard .soh-checklist li.soh-row-done {
-    border-color: rgba(34, 197, 94, 0.35);
-    background: rgba(34, 197, 94, 0.08);
-  }
-  #creator-dashboard .soh-checklist li.soh-row-pending {
-    border-color: rgba(251, 146, 60, 0.2);
-  }
-  #creator-dashboard .soh-checklist li.bp-check-flash {
-    animation: bpOnboardingFlash 0.55s ease;
-  }
-  @keyframes bpOnboardingFlash {
-    0% { transform: scale(1); }
-    40% { transform: scale(1.02); }
-    100% { transform: scale(1); }
-  }
-  #creator-dashboard .soh-check-ic {
-    font-size: 1rem;
-    flex-shrink: 0;
-  }
-  #creator-dashboard .soh-progress-wrap {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    margin-bottom: 16px;
-  }
-  #creator-dashboard .soh-progress-bar {
-    flex: 1;
-    height: 10px;
-    border-radius: 999px;
-    background: rgba(0, 0, 0, 0.35);
-    overflow: hidden;
-  }
-  #creator-dashboard .soh-progress-fill {
-    height: 100%;
-    width: 0%;
-    border-radius: 999px;
-    background: linear-gradient(90deg, #f97316, #fbbf24);
-    transition: width 0.45s cubic-bezier(0.22, 1, 0.36, 1);
-  }
-  #creator-dashboard .settings-onboarding-hero--complete .soh-progress-fill {
-    background: linear-gradient(90deg, #22c55e, #4ade80);
-  }
-  #creator-dashboard .soh-progress-label {
-    font-size: 0.78rem;
-    font-weight: 800;
-    color: #94a3b8;
-    min-width: 2.5rem;
-    text-align: right;
-  }
-  #creator-dashboard .soh-cta {
-    font-weight: 800;
-    border-radius: 12px;
-    padding-top: 12px;
-    padding-bottom: 12px;
-  }
   #creator-dashboard .settings-onboarding-cards {
     display: grid;
     grid-template-columns: 1fr 1fr;
@@ -2151,30 +2047,6 @@
   }
   .creator-welcome-modal-x:hover {
     background: rgba(255, 255, 255, 0.14);
-  }
-
-  /* Franja perfil embebido — incompleto */
-  #creator-profile-inner .creator-profile-onboarding-banner {
-    margin: 0;
-    padding: 12px 16px;
-    background: linear-gradient(90deg, rgba(127, 29, 29, 0.35) 0%, rgba(30, 27, 24, 0.92) 100%);
-    border-bottom: 1px solid rgba(251, 113, 133, 0.35);
-  }
-  #creator-profile-inner .creator-profile-onboarding-banner-inner {
-    max-width: 900px;
-    margin: 0 auto;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 14px;
-    flex-wrap: wrap;
-  }
-  #creator-profile-inner .creator-profile-onboarding-banner-text {
-    margin: 0;
-    font-size: 0.86rem;
-    font-weight: 700;
-    color: #fecdd3;
-    line-height: 1.4;
   }
 
   #creator-dashboard .onboarding-icon svg {
@@ -3336,9 +3208,16 @@
     max-width: 100%;
   }
   .profile-hero-identity > .profile-avatar-wrap {
-    margin-top: -50px;
+    margin-top: -44px;
     margin-bottom: 0;
     flex-shrink: 0;
+    position: relative;
+    z-index: 2;
+  }
+  @media (max-width: 540px) {
+    #creator-profile-inner .profile-hero-identity > .profile-avatar-wrap {
+      margin-top: -32px;
+    }
   }
   .profile-hero-text-block {
     flex: 1 1 280px;
@@ -6379,21 +6258,6 @@
           <p>Tu perfil público y la cuenta, en un solo lugar</p>
         </div>
 
-        <div id="settings-onboarding-hero" class="settings-onboarding-hero" style="display:none;" aria-label="Activar tu perfil">
-          <div class="settings-onboarding-hero-inner">
-            <div class="soh-head">
-              <h2 id="soh-title" class="soh-title">Empieza a ganar dinero en Bizponzor</h2>
-              <p id="soh-sub" class="soh-sub"></p>
-            </div>
-            <ul id="soh-checklist" class="soh-checklist" aria-label="Pasos para activar tu perfil"></ul>
-            <div class="soh-progress-wrap">
-              <div class="soh-progress-bar" aria-hidden="true"><div id="soh-progress-fill" class="soh-progress-fill"></div></div>
-              <div id="soh-progress-label" class="soh-progress-label">0%</div>
-            </div>
-            <button type="button" id="soh-cta-btn" class="btn btn-primary btn-full soh-cta" onclick="scrollToFirstIncompleteMonetization()">Activar mi perfil ahora</button>
-          </div>
-        </div>
-
         <div id="settings-onboarding-cards" class="settings-onboarding-cards" style="display:none;">
           <div class="settings-onboarding-card settings-onboarding-card--mp">
             <div class="settings-onboarding-card-ic" aria-hidden="true">💳</div>
@@ -6964,12 +6828,6 @@
   <div id="profile-mount-standalone">
     <div id="creator-profile-inner">
   <div class="profile-banner"></div>
-  <div id="creator-profile-onboarding-banner" class="creator-profile-onboarding-banner" style="display:none;" role="region" aria-label="Perfil incompleto">
-    <div class="creator-profile-onboarding-banner-inner">
-      <p class="creator-profile-onboarding-banner-text">Tu perfil está incompleto — estás perdiendo dinero</p>
-      <button type="button" class="btn btn-primary btn-sm creator-profile-onboarding-banner-btn" onclick="openCreatorSettingsOnboarding()">Completar perfil</button>
-    </div>
-  </div>
   <div class="profile-info profile-info-hero">
     <div class="profile-hero-row">
       <div class="profile-hero-identity">
@@ -7358,7 +7216,6 @@
   }
 
   window.__lastOnboardingPayload = window.__lastOnboardingPayload || null;
-  window.__lastOnboardingPercent = typeof window.__lastOnboardingPercent === 'number' ? window.__lastOnboardingPercent : -1;
 
   function bpMergeSearchParams(mutator) {
     try {
@@ -7434,10 +7291,10 @@
     var sp = new URLSearchParams(window.location.search);
     if (sp.get('onboarding') !== '1') return;
     setTimeout(function () {
-      var hero = document.getElementById('settings-onboarding-hero');
+      var ob = document.getElementById('onboarding-card');
       var cards = document.getElementById('settings-onboarding-cards');
-      if (hero && hero.style.display !== 'none') hero.scrollIntoView({ behavior: 'smooth', block: 'start' });
-      else if (cards) cards.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      if (ob && ob.style.display !== 'none') ob.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      else if (cards && cards.style.display !== 'none') cards.scrollIntoView({ behavior: 'smooth', block: 'start' });
       bpMergeSearchParams(function (p) {
         p.delete('onboarding');
       });
@@ -7506,90 +7363,15 @@
   }
 
   function renderSettingsOnboardingHero(data) {
-    var hero = document.getElementById('settings-onboarding-hero');
     var cards = document.getElementById('settings-onboarding-cards');
-    var sub = document.getElementById('soh-sub');
-    var list = document.getElementById('soh-checklist');
-    var fill = document.getElementById('soh-progress-fill');
-    var label = document.getElementById('soh-progress-label');
-    var cta = document.getElementById('soh-cta-btn');
-    if (!hero || !data) return;
-    var coreComplete = data.coreComplete === true;
+    if (!data) return;
     if (cards) {
-      cards.style.display = coreComplete ? 'none' : 'grid';
+      cards.style.display = data.coreComplete === true ? 'none' : 'grid';
     }
-    if (coreComplete) {
-      hero.style.display = 'none';
-      return;
-    }
-    hero.style.display = 'block';
-    hero.classList.remove('settings-onboarding-hero--complete');
-    if (sub) {
-      sub.textContent =
-        'Bienvenido a Bizponzor, comienza ya a monetizar tu contenido VIP. Tu perfil aún no gana dinero. Actívalo en menos de 2 minutos.';
-    }
-    if (list) {
-      var rows = [
-        { id: 'avatar', label: 'Foto de perfil' },
-        { id: 'banner', label: 'Foto de portada' },
-        { id: 'posts', label: '5 publicaciones' },
-        { id: 'mercadopago', label: 'Mercado Pago conectado' }
-      ];
-      var steps = data.steps || [];
-      var prevPct = window.__lastOnboardingPercent;
-      var pct = typeof data.percent === 'number' ? data.percent : 0;
-      list.innerHTML = rows
-        .map(function (r) {
-          var step = steps.find(function (s) {
-            return s.id === r.id;
-          });
-          var done = !!(step && step.done);
-          return (
-            '<li class="' +
-            (done ? 'soh-row-done' : 'soh-row-pending') +
-            '" data-onb-row="' +
-            r.id +
-            '"><span>' +
-            escapeHtml(r.label) +
-            '</span><span class="soh-check-ic" aria-hidden="true">' +
-            (done ? '✔' : '❌') +
-            '</span></li>'
-          );
-        })
-        .join('');
-      if (prevPct >= 0 && pct > prevPct) {
-        list.querySelectorAll('li.soh-row-done').forEach(function (li) {
-          li.classList.add('bp-check-flash');
-          setTimeout(function () {
-            li.classList.remove('bp-check-flash');
-          }, 600);
-        });
-      }
-    }
-    if (fill) {
-      fill.style.width = (typeof data.percent === 'number' ? data.percent : 0) + '%';
-    }
-    if (label) {
-      label.textContent = (typeof data.percent === 'number' ? data.percent : 0) + '%';
-    }
-    if (cta) {
-      cta.style.display = '';
-      cta.textContent = 'Activar mi perfil ahora';
-    }
-    window.__lastOnboardingPercent = typeof data.percent === 'number' ? data.percent : 0;
   }
 
   function updateCreatorProfileOnboardingStrip() {
-    var strip = document.getElementById('creator-profile-onboarding-banner');
-    var d = window.__lastOnboardingPayload;
-    if (!strip || !CURRENT_USER || CURRENT_USER.role !== 'creator') return;
-    var embed = document.getElementById('creator-profile-embed');
-    var inEmbed = embed && embed.style.display !== 'none' && embed.getAttribute('aria-hidden') !== 'true';
-    if (!inEmbed || d == null || d.coreComplete === true) {
-      strip.style.display = 'none';
-      return;
-    }
-    strip.style.display = 'block';
+    /* Franja “perfil incompleto” retirada: duplicaba onboarding y solapaba avatar/botón en móvil. */
   }
 
   async function navigateCreatorAfterAuth(opts) {
