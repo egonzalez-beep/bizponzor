@@ -3571,7 +3571,7 @@
   .profile-sidebar-card {
     background: var(--white); border: 1px solid var(--gray-200);
     border-radius: var(--radius); padding: 28px; margin-bottom: 20px;
-    position: sticky; top: 88px;
+    position: sticky; top: 20px;
     width: 100%;
     max-height: calc(100vh - 100px);
     overflow-y: auto;
@@ -3582,6 +3582,51 @@
     border: 1px solid #333333;
     z-index: 1;
     isolation: isolate;
+    top: 20px;
+    max-height: calc(100vh - 36px);
+  }
+  /* Perfil fan (desktop / tablet ancho): jerarquía de CTAs + hover */
+  @media (min-width: 769px) {
+    #creator-profile-inner #profile-btn-subscribe {
+      min-height: 56px;
+      font-size: 1.06rem;
+      letter-spacing: -0.02em;
+      box-shadow: 0 10px 28px rgba(99, 102, 241, 0.35);
+      transition: transform 0.18s ease, box-shadow 0.2s ease, filter 0.18s ease;
+    }
+    #creator-profile-inner #profile-btn-subscribe:hover:not(:disabled) {
+      transform: translateY(-1px);
+      filter: brightness(1.05);
+      box-shadow: 0 14px 34px rgba(99, 102, 241, 0.42);
+    }
+    #creator-profile-inner #profile-btn-donate {
+      background: transparent !important;
+      color: #f8fafc !important;
+      border: 2px solid rgba(255, 255, 255, 0.22) !important;
+      box-shadow: none;
+      transition: border-color 0.18s ease, background 0.18s ease, transform 0.18s ease;
+    }
+    #creator-profile-inner #profile-btn-donate:hover {
+      border-color: rgba(56, 189, 248, 0.45) !important;
+      background: rgba(56, 189, 248, 0.08) !important;
+      transform: translateY(-1px);
+    }
+    #creator-profile-inner .profile-action-buttons {
+      gap: 14px;
+    }
+    #creator-profile-inner #profile-message-wrap {
+      margin-top: 18px !important;
+      padding-top: 18px !important;
+    }
+    #creator-profile-inner .profile-chat-cta .btn-chat {
+      min-height: 48px;
+      font-weight: 700;
+      transition: transform 0.18s ease, filter 0.18s ease;
+    }
+    #creator-profile-inner .profile-chat-cta .btn-chat:hover {
+      transform: translateY(-1px);
+      filter: brightness(1.04);
+    }
   }
   .profile-sidebar-card h4 { font-size: 1.05rem; font-weight: 800; margin-bottom: 12px; }
   #creator-profile-inner .profile-sidebar-card h4 { color: #FFFFFF; }
@@ -3835,6 +3880,255 @@
     background: #1A1A1A;
     color: #ffffff;
     --profile-accent: #6366f1;
+  }
+
+  /* Sentinel para anclar el dock móvil (sin altura visual) */
+  .profile-fan-scroll-sentinel {
+    height: 1px;
+    width: 100%;
+    margin: 0;
+    padding: 0;
+    pointer-events: none;
+    visibility: hidden;
+    overflow: hidden;
+  }
+  .profile-fan-conversion-spacer {
+    width: 100%;
+    height: 0;
+    flex-shrink: 0;
+    pointer-events: none;
+  }
+
+  /* ═══ Perfil creador · vista fan · móvil (≤768): sub-isla + dock flotante ═══ */
+  @media (max-width: 768px) {
+    #creator-profile-inner.profile-fan-conversion-ux .profile-body.profile-body--fan-mobile {
+      display: flex;
+      flex-direction: column;
+      align-items: stretch;
+      gap: 18px;
+      padding-bottom: max(40px, calc(32px + env(safe-area-inset-bottom)));
+    }
+    #creator-profile-inner.profile-fan-conversion-ux .profile-body.profile-body--fan-mobile.profile-body--fan-dock .profile-feed {
+      padding-bottom: max(72px, calc(56px + env(safe-area-inset-bottom)));
+    }
+    #creator-profile-inner.profile-fan-conversion-ux .profile-body--fan-mobile .profile-sidebar-col {
+      order: 1;
+      width: 100%;
+      max-width: none;
+    }
+    #creator-profile-inner.profile-fan-conversion-ux .profile-body--fan-mobile .profile-feed {
+      order: 2;
+      margin-top: -20px;
+      padding-top: 8px;
+      position: relative;
+      z-index: 0;
+    }
+    #creator-profile-inner.profile-fan-conversion-ux .profile-fan-conversion-shell {
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      padding: 16px 16px 18px;
+      border-radius: 18px;
+      background: rgba(34, 34, 34, 0.72);
+      -webkit-backdrop-filter: blur(14px);
+      backdrop-filter: blur(14px);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      box-shadow:
+        0 10px 40px rgba(0, 0, 0, 0.35),
+        0 1px 0 rgba(255, 255, 255, 0.06) inset;
+      margin-bottom: -24px;
+      position: relative;
+      z-index: 1;
+      transition:
+        transform 0.32s cubic-bezier(0.22, 1, 0.36, 1),
+        opacity 0.28s ease,
+        box-shadow 0.28s ease;
+    }
+    #creator-profile-inner.profile-fan-conversion-ux #profile-sidebar-fan {
+      order: 1;
+    }
+    #creator-profile-inner.profile-fan-conversion-ux #miniChatContainer {
+      order: 2;
+    }
+    #creator-profile-inner.profile-fan-conversion-ux #profile-sidebar-metrics {
+      order: 3;
+    }
+    #creator-profile-inner.profile-fan-conversion-ux .profile-fan-conversion-hint {
+      margin: -6px 0 0;
+      font-size: 0.78rem;
+      line-height: 1.45;
+      color: #94a3b8;
+      text-align: center;
+    }
+    #creator-profile-inner.profile-fan-conversion-ux .profile-action-buttons {
+      flex-direction: column;
+      gap: 10px;
+      margin-bottom: 0;
+    }
+    #creator-profile-inner.profile-fan-conversion-ux .profile-action-buttons .btn {
+      min-height: 50px;
+      border-radius: 14px;
+    }
+    #creator-profile-inner.profile-fan-conversion-ux .profile-sidebar-metrics {
+      margin-top: 4px;
+      padding-top: 12px;
+      border-top: 1px solid rgba(255, 255, 255, 0.08);
+    }
+    #creator-profile-inner.profile-fan-conversion-ux .profile-sidebar-card .mini-chat-wrap {
+      margin-top: 8px;
+      padding-top: 10px;
+      border-top: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    /* Dock compacto: reutiliza los mismos nodos #profile-btn-* y mini chat */
+    #creator-profile-inner.profile-fan-conversion-ux .profile-fan-conversion-shell.profile-fan-conversion-shell--floated {
+      position: fixed;
+      left: 50%;
+      bottom: max(12px, env(safe-area-inset-bottom));
+      transform: translateX(-50%);
+      width: auto;
+      max-width: calc(100vw - 20px);
+      margin: 0;
+      z-index: 1990;
+      flex-direction: row;
+      flex-wrap: nowrap;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 10px 12px;
+      border-radius: 999px;
+      box-shadow:
+        0 12px 40px rgba(0, 0, 0, 0.45),
+        0 0 0 1px rgba(255, 255, 255, 0.08);
+      pointer-events: auto;
+      -webkit-tap-highlight-color: transparent;
+    }
+    #creator-profile-inner.profile-fan-conversion-ux .profile-fan-conversion-shell.profile-fan-conversion-shell--floated.profile-fan-conversion-shell--peek {
+      transform: translateX(-50%) translateY(14px) scale(0.97);
+      opacity: 0.42;
+    }
+    #creator-profile-inner.profile-fan-conversion-ux .profile-fan-conversion-shell--floated #profile-sidebar-metrics {
+      display: none !important;
+    }
+    #creator-profile-inner.profile-fan-conversion-ux .profile-fan-conversion-shell--floated #profile-sidebar-fan {
+      display: flex;
+      flex-direction: row;
+      flex-wrap: nowrap;
+      align-items: center;
+      gap: 8px;
+      margin: 0;
+      padding: 0;
+      border: 0;
+      flex: 0 1 auto;
+      min-width: 0;
+    }
+    #creator-profile-inner.profile-fan-conversion-ux .profile-fan-conversion-shell--floated #profile-sidebar-fan > *:not(#profile-action-buttons):not(#profile-message-wrap) {
+      display: none !important;
+    }
+    #creator-profile-inner.profile-fan-conversion-ux .profile-fan-conversion-shell--floated #profile-message-wrap {
+      margin: 0 !important;
+      padding: 0 !important;
+      border: 0 !important;
+    }
+    #creator-profile-inner.profile-fan-conversion-ux .profile-fan-conversion-shell--floated #profile-message-wrap h4 {
+      display: none !important;
+    }
+    #creator-profile-inner.profile-fan-conversion-ux .profile-fan-conversion-shell--floated #profile-msg-locked {
+      display: none !important;
+    }
+    /* Con mini chat activo, el botón «Enviar mensaje» no se duplica en el dock */
+    #creator-profile-inner.profile-fan-conversion-ux .profile-fan-conversion-shell--floated:has(
+        #miniChatContainer:not([style*='display: none']):not([style*='display:none'])
+      )
+      #profile-message-wrap {
+      display: none !important;
+    }
+    #creator-profile-inner.profile-fan-conversion-ux .profile-fan-conversion-shell--floated #profile-msg-subscriber .creator-actions {
+      margin: 0;
+    }
+    #creator-profile-inner.profile-fan-conversion-ux .profile-fan-conversion-shell--floated #profile-action-buttons {
+      flex-direction: row;
+      flex-wrap: nowrap;
+      gap: 8px;
+      margin: 0;
+    }
+    #creator-profile-inner.profile-fan-conversion-ux .profile-fan-conversion-shell--floated #profile-btn-subscribe,
+    #creator-profile-inner.profile-fan-conversion-ux .profile-fan-conversion-shell--floated #profile-btn-donate {
+      width: auto;
+      min-width: 52px;
+      min-height: 48px;
+      padding: 12px 16px;
+      border-radius: 999px;
+      font-size: 0.82rem;
+      font-weight: 800;
+      white-space: nowrap;
+    }
+    #creator-profile-inner.profile-fan-conversion-ux .profile-fan-conversion-shell--floated #profile-btn-subscribe .profile-act-ic,
+    #creator-profile-inner.profile-fan-conversion-ux .profile-fan-conversion-shell--floated #profile-btn-donate .profile-act-ic {
+      display: flex;
+    }
+    #creator-profile-inner.profile-fan-conversion-ux .profile-fan-conversion-shell--floated #profile-btn-subscribe .profile-act-label,
+    #creator-profile-inner.profile-fan-conversion-ux .profile-fan-conversion-shell--floated #profile-btn-donate .profile-act-label {
+      max-width: 76px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    #creator-profile-inner.profile-fan-conversion-ux .profile-fan-conversion-shell--floated #profile-btn-fan-messages {
+      width: auto;
+      min-width: 48px;
+      min-height: 48px;
+      padding: 12px 16px;
+      border-radius: 999px;
+      font-size: 0.78rem;
+    }
+    #creator-profile-inner.profile-fan-conversion-ux .profile-fan-conversion-shell--floated #miniChatContainer {
+      flex: 0 0 auto;
+      margin: 0 !important;
+      padding: 0 !important;
+      border: 0 !important;
+      max-width: 52vw;
+      position: relative;
+    }
+    #creator-profile-inner.profile-fan-conversion-ux .profile-fan-conversion-shell--floated .profile-fan-conversion-hint {
+      display: none !important;
+    }
+    #creator-profile-inner.profile-fan-conversion-ux .profile-fan-conversion-shell--floated #miniChatContainer[style*='display: none'],
+    #creator-profile-inner.profile-fan-conversion-ux .profile-fan-conversion-shell--floated #miniChatContainer[style*='display:none'] {
+      display: none !important;
+    }
+    #creator-profile-inner.profile-fan-conversion-ux .profile-fan-conversion-shell--floated .mini-chat {
+      border-radius: 999px;
+      border: 1px solid rgba(255, 255, 255, 0.12);
+    }
+    #creator-profile-inner.profile-fan-conversion-ux .profile-fan-conversion-shell--floated .mini-chat-header {
+      padding: 10px 14px;
+      min-height: 48px;
+      border-radius: 999px;
+      font-size: 0.78rem;
+      font-weight: 800;
+    }
+    #creator-profile-inner.profile-fan-conversion-ux .profile-fan-conversion-shell--floated .mini-chat-header-label {
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      max-width: 38vw;
+    }
+    #creator-profile-inner.profile-fan-conversion-ux
+      .profile-fan-conversion-shell--floated
+      #miniChatContainer.mini-chat-wrap--open
+      .mini-chat-panel {
+      position: absolute;
+      left: 0;
+      right: 0;
+      bottom: calc(100% + 8px);
+      max-height: min(52vh, 360px) !important;
+      border-radius: 16px;
+      background: rgba(28, 28, 28, 0.98);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      box-shadow: 0 -12px 40px rgba(0, 0, 0, 0.45);
+      z-index: 3;
+      overflow: auto;
+    }
   }
 
   #fan-sidebar-name {
@@ -5633,10 +5927,13 @@
     .profile-sidebar-col {
       max-width: 520px;
     }
-    .profile-sidebar-card {
-      position: relative;
-      top: auto;
-      max-height: none;
+    /* Sidebar sigue anclada al scroll en tablet / portátil ancho (monetización) */
+    @media (min-width: 769px) {
+      .profile-sidebar-card {
+        position: sticky;
+        top: 20px;
+        max-height: calc(100vh - 36px);
+      }
     }
   }
 
@@ -7048,6 +7345,7 @@
       </div>
     </div>
   </div>
+  <div id="profile-fan-scroll-sentinel" class="profile-fan-scroll-sentinel" aria-hidden="true"></div>
   <div class="profile-body">
     <div class="profile-feed">
       <h3>Publicaciones recientes</h3>
@@ -7062,6 +7360,8 @@
             <div class="profile-owner-plan-price" id="profile-owner-plan-price">—</div>
           </div>
         </div>
+        <div id="profile-fan-conversion-spacer" class="profile-fan-conversion-spacer" aria-hidden="true"></div>
+        <div id="profile-fan-conversion-shell" class="profile-fan-conversion-shell">
         <div id="profile-sidebar-metrics" class="profile-sidebar-metrics" aria-label="Estadísticas">
           <div class="profile-metric-row"><span class="profile-metric-label">Suscriptores</span><span class="profile-metric-num" id="metric-subs">0</span></div>
           <div class="profile-metric-row"><span class="profile-metric-label">Fotos</span><span class="profile-metric-num" id="metric-photos">0</span></div>
@@ -7072,12 +7372,13 @@
           <div id="promo-access-banner" style="display:none;" class="promo-banner">
             ✅ Tienes acceso activo a este creador
           </div>
-          <h4>Hazte patrocinador 💎</h4>
+          <h4 class="profile-fan-patron-h4"><span class="profile-fan-patron-h4-ic" aria-hidden="true"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 2L14.5 9.5L22 12l-7.5 2.5L12 22l-2.5-7.5L2 12l7.5-2.5L12 2z" stroke-linejoin="round"/></svg></span> Hazte patrocinador</h4>
           <p id="profile-plans-intro" style="font-size:0.88rem;color:var(--gray-600);margin-bottom:18px;line-height:1.5;">Accede a contenido exclusivo y apoya al creador</p>
           <div id="profile-action-buttons" class="profile-action-buttons">
-            <button type="button" class="btn btn-primary btn-full" id="profile-btn-donate" onclick="openDonateModal()">Donar</button>
-            <button type="button" class="btn btn-primary btn-full" id="profile-btn-subscribe" onclick="subscribeFromProfile()">Suscribirse</button>
+            <button type="button" class="btn btn-primary btn-full profile-btn-subscribe" id="profile-btn-subscribe" onclick="subscribeFromProfile()"><span class="profile-act-ic" aria-hidden="true"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75"><path d="M12 2L14.5 9.5L22 12l-7.5 2.5L12 22l-2.5-7.5L2 12l7.5-2.5L12 2z" stroke-linejoin="round"/></svg></span><span class="profile-act-label">Suscribirse</span></button>
+            <button type="button" class="btn btn-primary btn-full profile-btn-donate" id="profile-btn-donate" onclick="openDonateModal()"><span class="profile-act-ic" aria-hidden="true"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75"><rect x="3" y="8" width="18" height="13" rx="2"/><path d="M12 8V21"/><path d="M3 12h18"/><path d="M8 8c0-2 1.5-4 4-4s4 2 4 4"/></svg></span><span class="profile-act-label">Donar</span></button>
           </div>
+          <p class="profile-fan-conversion-hint">Apoya hoy y accede al contenido exclusivo</p>
           <div id="profile-subscribed-cta" class="profile-subscribed-cta" style="display:none;" role="status">✔ Ya estás suscrito</div>
           <div id="profile-single-plan-slot"></div>
           <div class="promo-box" style="margin-top:14px;padding-top:14px;border-top:1px solid rgba(255,255,255,0.12);">
@@ -7093,9 +7394,7 @@
               <div class="creator-actions profile-chat-cta">
                 <button type="button" class="btn btn-primary btn-full btn-chat" id="profile-btn-fan-messages">
                   <span class="btn-chat-icon" aria-hidden="true">
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                      <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
-                    </svg>
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/><path d="M8 10h.01M12 10h.01M16 10h.01"/></svg>
                   </span>
                   Enviar mensaje
                 </button>
@@ -7107,7 +7406,7 @@
         <div id="miniChatContainer" class="mini-chat-wrap" style="display:none;" aria-live="polite">
           <div class="mini-chat">
             <button type="button" class="mini-chat-header" id="miniChatToggle" aria-expanded="false" aria-controls="miniChatPanel">
-              <span class="mini-chat-header-label">💬 Mensajes</span>
+              <span class="mini-chat-header-label"><span class="mini-chat-header-ic" aria-hidden="true"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg></span> Mensajes</span>
               <span class="mini-chat-chevron" aria-hidden="true">▶</span>
             </button>
             <div id="miniChatPanel" class="mini-chat-panel">
@@ -7119,6 +7418,8 @@
             </div>
           </div>
         </div>
+        </div>
+        <!-- /profile-fan-conversion-shell -->
       </div>
     </div>
   </div>
@@ -7221,6 +7522,7 @@
       if (typeof stopProfileChatPolling === 'function') stopProfileChatPolling();
       if (typeof clearProfileChatState === 'function') clearProfileChatState();
       if (typeof teardownMiniChat === 'function') teardownMiniChat();
+      if (typeof teardownProfileFanConversionUX === 'function') teardownProfileFanConversionUX();
     }
     if (page === 'landing' && typeof closeLandingAuth === 'function') {
       closeLandingAuth();
@@ -7404,6 +7706,7 @@
       embed.style.display = 'none';
       embed.setAttribute('aria-hidden', 'true');
     }
+    if (typeof teardownProfileFanConversionUX === 'function') teardownProfileFanConversionUX();
     if (dash) dash.style.display = 'block';
   }
 
@@ -7754,7 +8057,9 @@
         if (grid && Array.isArray(content)) renderFanContent(grid, content, { profile: true });
         const plans = await api.get('/plans/' + creator.id);
         fillCreatorProfileSidebar(creator, plans);
-        void updateProfileMessageSection(creator.id);
+        void updateProfileMessageSection(creator.id).then(function () {
+          if (typeof syncProfileFanConversionUX === 'function') syncProfileFanConversionUX();
+        });
         void updatePromoAccessBanner();
         mountCreatorProfileToEmbed();
         document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
@@ -8494,6 +8799,134 @@ function fillCreatorProfileSidebar(creator, plans) {
       </div>`;
     }
   }
+  if (typeof syncProfileFanConversionUX === 'function') {
+    queueMicrotask(function () {
+      syncProfileFanConversionUX();
+    });
+  }
+}
+
+var profileFanConversionIO = null;
+var profileFanConversionScrollHandler = null;
+var profileFanConversionLastScrollY = 0;
+var profileFanConversionMqlBound = false;
+
+function isCreatorProfileShellVisible() {
+  var inner = document.getElementById('creator-profile-inner');
+  if (!inner) return false;
+  var page = document.getElementById('creator-profile');
+  var embed = document.getElementById('creator-profile-embed');
+  var onPage = page && page.classList.contains('active') && page.contains(inner);
+  var inEmbed =
+    embed &&
+    embed.contains(inner) &&
+    embed.style.display !== 'none' &&
+    embed.getAttribute('aria-hidden') !== 'true';
+  if (!onPage && !inEmbed) return false;
+  var r = inner.getBoundingClientRect();
+  return r.width > 0 && r.height > 0;
+}
+
+function isProfileOwnerSidebarVisible() {
+  var o = document.getElementById('profile-sidebar-owner');
+  return !!(o && getComputedStyle(o).display !== 'none');
+}
+
+function teardownProfileFanConversionUX() {
+  var inner = document.getElementById('creator-profile-inner');
+  var body = document.querySelector('#creator-profile-inner .profile-body');
+  var shell = document.getElementById('profile-fan-conversion-shell');
+  var spacer = document.getElementById('profile-fan-conversion-spacer');
+  if (profileFanConversionIO) {
+    profileFanConversionIO.disconnect();
+    profileFanConversionIO = null;
+  }
+  if (profileFanConversionScrollHandler) {
+    window.removeEventListener('scroll', profileFanConversionScrollHandler);
+    profileFanConversionScrollHandler = null;
+  }
+  if (inner) inner.classList.remove('profile-fan-conversion-ux');
+  if (body) {
+    body.classList.remove('profile-body--fan-mobile');
+    body.classList.remove('profile-body--fan-dock');
+  }
+  if (shell) {
+    shell.classList.remove('profile-fan-conversion-shell--floated');
+    shell.classList.remove('profile-fan-conversion-shell--peek');
+  }
+  if (spacer) spacer.style.height = '';
+}
+
+function profileFanConversionOnScrollPeek() {
+  var shell = document.getElementById('profile-fan-conversion-shell');
+  if (!shell || !shell.classList.contains('profile-fan-conversion-shell--floated')) return;
+  var y = window.scrollY || document.documentElement.scrollTop || 0;
+  var dy = y - profileFanConversionLastScrollY;
+  profileFanConversionLastScrollY = y;
+  if (dy < -22) {
+    shell.classList.add('profile-fan-conversion-shell--peek');
+  } else if (dy > 12) {
+    shell.classList.remove('profile-fan-conversion-shell--peek');
+  }
+}
+
+function setProfileFanConversionFloated(on) {
+  var shell = document.getElementById('profile-fan-conversion-shell');
+  var spacer = document.getElementById('profile-fan-conversion-spacer');
+  var body = document.querySelector('#creator-profile-inner .profile-body');
+  if (!shell || !spacer) return;
+  if (on) {
+    var rawH = shell.offsetHeight || 0;
+    var h = Math.min(Math.max(rawH, 56), 160);
+    spacer.style.height = h + 'px';
+    shell.classList.add('profile-fan-conversion-shell--floated');
+    profileFanConversionLastScrollY = window.scrollY || document.documentElement.scrollTop || 0;
+    if (!profileFanConversionScrollHandler) {
+      profileFanConversionScrollHandler = profileFanConversionOnScrollPeek;
+      window.addEventListener('scroll', profileFanConversionScrollHandler, { passive: true });
+    }
+    if (body) body.classList.add('profile-body--fan-dock');
+  } else {
+    shell.classList.remove('profile-fan-conversion-shell--floated');
+    shell.classList.remove('profile-fan-conversion-shell--peek');
+    spacer.style.height = '';
+    if (profileFanConversionScrollHandler) {
+      window.removeEventListener('scroll', profileFanConversionScrollHandler);
+      profileFanConversionScrollHandler = null;
+    }
+    if (body) body.classList.remove('profile-body--fan-dock');
+  }
+}
+
+function syncProfileFanConversionUX() {
+  teardownProfileFanConversionUX();
+  var mql = window.matchMedia('(max-width: 768px)');
+  if (!mql.matches || !isCreatorProfileShellVisible() || isProfileOwnerSidebarVisible()) {
+    return;
+  }
+  if (!profileFanConversionMqlBound) {
+    profileFanConversionMqlBound = true;
+    var onMq = function () {
+      syncProfileFanConversionUX();
+    };
+    if (mql.addEventListener) mql.addEventListener('change', onMq);
+    else mql.addListener(onMq);
+  }
+  var inner = document.getElementById('creator-profile-inner');
+  var body = document.querySelector('#creator-profile-inner .profile-body');
+  var sentinel = document.getElementById('profile-fan-scroll-sentinel');
+  if (!inner || !body || !sentinel || typeof IntersectionObserver === 'undefined') return;
+  inner.classList.add('profile-fan-conversion-ux');
+  body.classList.add('profile-body--fan-mobile');
+  profileFanConversionIO = new IntersectionObserver(
+    function (entries) {
+      var e = entries[0];
+      if (!e) return;
+      setProfileFanConversionFloated(!e.isIntersecting);
+    },
+    { root: null, threshold: 0, rootMargin: '0px 0px 0px 0px' }
+  );
+  profileFanConversionIO.observe(sentinel);
 }
 
 const api = {
@@ -11775,9 +12208,10 @@ async function openCreatorProfile(handle) {
   const plans = await api.get('/plans/' + creator.id);
   fillCreatorProfileSidebar(creator, plans);
   void updateProfileSubscribeButtonState(creator.id);
-  void updateProfileMessageSection(creator.id);
   void updatePromoAccessBanner();
+  await updateProfileMessageSection(creator.id);
   showPage('creator-profile');
+  if (typeof syncProfileFanConversionUX === 'function') syncProfileFanConversionUX();
 }
 
 async function updatePromoAccessBanner() {
