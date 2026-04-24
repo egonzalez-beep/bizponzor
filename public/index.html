@@ -2249,45 +2249,41 @@
     background: rgba(255, 255, 255, 0.08);
     border-color: rgba(56, 189, 248, 0.35);
   }
+  #creator-dashboard #dash-settings .settings-mp-legend {
+    margin: 0 0 14px;
+    max-width: 440px;
+    font-size: 0.84rem;
+    line-height: 1.5;
+    color: #cbd5e1;
+    font-weight: 500;
+  }
   #creator-dashboard #dash-settings .settings-mp-connect-btn {
     width: 100%;
     max-width: 440px;
-    padding: 14px 20px 12px;
-    border-radius: 14px;
-    border: 1px solid rgba(202, 138, 4, 0.95);
-    background: linear-gradient(180deg, #fef08a 0%, #facc15 38%, #eab308 72%, #ca8a04 100%);
+    padding: 12px 20px;
+    border-radius: 12px;
+    border: 1px solid rgba(202, 138, 4, 0.88);
+    background: linear-gradient(180deg, #fef08a 0%, #facc15 42%, #eab308 100%);
     color: #1c1917 !important;
     font-weight: 800;
+    font-size: 0.9rem;
     letter-spacing: 0.01em;
-    line-height: 1.28;
+    line-height: 1.3;
     text-align: center;
     box-shadow:
-      0 3px 0 rgba(161, 98, 7, 0.55),
-      0 10px 28px rgba(234, 179, 8, 0.35);
+      0 2px 0 rgba(161, 98, 7, 0.5),
+      0 4px 14px rgba(234, 179, 8, 0.16);
     transition: filter 0.2s ease, transform 0.15s ease, box-shadow 0.2s ease;
   }
   #creator-dashboard #dash-settings .settings-mp-connect-btn:hover {
-    filter: brightness(1.04);
+    filter: brightness(1.03);
     box-shadow:
-      0 3px 0 rgba(161, 98, 7, 0.6),
-      0 12px 32px rgba(234, 179, 8, 0.42);
+      0 2px 0 rgba(161, 98, 7, 0.55),
+      0 6px 18px rgba(234, 179, 8, 0.22);
   }
   #creator-dashboard #dash-settings .settings-mp-connect-btn:active {
-    transform: translateY(2px);
-    box-shadow: 0 1px 0 rgba(161, 98, 7, 0.5), 0 4px 14px rgba(234, 179, 8, 0.25);
-  }
-  #creator-dashboard #dash-settings .settings-mp-connect-title {
-    display: block;
-    font-size: 0.95rem;
-    font-weight: 900;
-    letter-spacing: -0.02em;
-  }
-  #creator-dashboard #dash-settings .settings-mp-connect-sub {
-    display: block;
-    margin-top: 4px;
-    font-size: 0.8rem;
-    font-weight: 700;
-    opacity: 0.92;
+    transform: translateY(1px);
+    box-shadow: 0 1px 0 rgba(161, 98, 7, 0.45), 0 2px 10px rgba(234, 179, 8, 0.14);
   }
 
   #creator-dashboard #dash-settings .settings-visibility-row {
@@ -3372,8 +3368,16 @@
     max-width: min(640px, 100%);
     padding-top: 2px;
   }
-  .profile-hero-text-block .profile-hero-cta {
+  .profile-hero-cta-row {
+    display: none;
+    flex-wrap: wrap;
+    align-items: stretch;
+    gap: 12px;
     margin-top: 18px;
+    max-width: min(560px, 100%);
+  }
+  #creator-profile-inner .profile-hero-cta-row {
+    gap: 10px;
   }
   /* Métricas en tarjeta lateral: mismo lenguaje que «Tu plan activo» */
   #creator-profile-inner .profile-sidebar-metrics {
@@ -3433,33 +3437,62 @@
     color: #c4b5fd;
     border-bottom-color: rgba(196, 181, 253, 0.55);
   }
-  .btn.profile-hero-cta {
-    align-self: flex-start;
-    width: auto;
-    min-width: 240px;
-    max-width: 100%;
-    padding: 14px 24px;
-    font-size: 0.92rem;
+  .profile-hero-cta-row .btn.profile-hero-cta {
+    flex: 1 1 200px;
+    min-width: 0;
+    align-self: stretch;
+    padding: 13px 20px;
+    font-size: 0.88rem;
     font-weight: 700;
     letter-spacing: 0.02em;
     border-radius: 12px;
-    border: 1px solid rgba(255, 255, 255, 0.14);
+    border: 1px solid rgba(255, 255, 255, 0.12);
     background: linear-gradient(180deg, #9333ea 0%, #7c3aed 48%, #6d28d9 100%);
     color: #ffffff;
     cursor: pointer;
-    box-shadow: 0 3px 0 #5b21b6, 0 6px 18px rgba(124, 58, 237, 0.28), 0 0 0 1px rgba(255, 255, 255, 0.06) inset;
+    box-shadow:
+      0 2px 0 #5b21b6,
+      0 4px 14px rgba(124, 58, 237, 0.2),
+      0 0 0 1px rgba(255, 255, 255, 0.05) inset;
     transform: translateY(0);
     transition: transform 0.15s ease, box-shadow 0.22s ease, filter 0.2s ease;
   }
-  .btn.profile-hero-cta:hover {
-    transform: translateY(-2px);
-    filter: brightness(1.03);
-    box-shadow: 0 5px 0 #5b21b6, 0 10px 22px rgba(124, 58, 237, 0.34), 0 0 28px rgba(139, 92, 246, 0.18);
+  .profile-hero-cta-row .btn.profile-hero-cta:hover {
+    transform: translateY(-1px);
+    filter: brightness(1.04);
+    box-shadow:
+      0 3px 0 #5b21b6,
+      0 8px 20px rgba(124, 58, 237, 0.26),
+      0 0 0 1px rgba(255, 255, 255, 0.06) inset;
   }
-  .btn.profile-hero-cta:active {
-    transform: translateY(2px);
+  .profile-hero-cta-row .btn.profile-hero-cta:active {
+    transform: translateY(1px);
     filter: brightness(0.98);
-    box-shadow: 0 2px 0 #5b21b6, 0 4px 12px rgba(124, 58, 237, 0.22);
+    box-shadow: 0 1px 0 #5b21b6, 0 3px 10px rgba(124, 58, 237, 0.18);
+  }
+  .profile-hero-cta-row .btn.profile-hero-cta-secondary {
+    flex: 1 1 200px;
+    min-width: 0;
+    align-self: stretch;
+    padding: 13px 20px;
+    font-size: 0.88rem;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+    border-radius: 12px;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    background: rgba(255, 255, 255, 0.06);
+    color: #fafafa;
+    cursor: pointer;
+    box-shadow: 0 1px 0 rgba(0, 0, 0, 0.35), 0 0 0 1px rgba(255, 255, 255, 0.04) inset;
+    transition: background 0.2s ease, border-color 0.2s ease, transform 0.15s ease;
+  }
+  .profile-hero-cta-row .btn.profile-hero-cta-secondary:hover {
+    background: rgba(255, 255, 255, 0.1);
+    border-color: rgba(167, 139, 250, 0.45);
+    transform: translateY(-1px);
+  }
+  .profile-hero-cta-row .btn.profile-hero-cta-secondary:active {
+    transform: translateY(1px);
   }
   .profile-owner-plan-wrap {
     padding: 0;
@@ -5584,7 +5617,10 @@
   }
 
   @media (max-width: 900px) {
-    .btn.profile-hero-cta { align-self: stretch; min-width: 0; }
+    .profile-hero-cta-row .btn.profile-hero-cta,
+    .profile-hero-cta-row .btn.profile-hero-cta-secondary {
+      flex: 1 1 100%;
+    }
   }
 
   /* Perfil: una columna en pantallas medianas para que las miniaturas no queden diminutas */
@@ -6595,11 +6631,8 @@
               </h3>
               <div class="form-group">
                 <label class="form-label">Mercado Pago</label>
-                <p class="settings-hint" style="margin-bottom:12px;">Vincula tu cuenta para recibir pagos de fans.</p>
-                <button type="button" id="settings-mp-connect-btn" class="btn settings-mp-connect-btn" onclick="redirectMercadoPagoOAuth()">
-                  <span class="settings-mp-connect-title">Conecta tu Mercado Pago y monetiza tu contenido</span>
-                  <span class="settings-mp-connect-sub">Es gratis para ti</span>
-                </button>
+                <p class="settings-mp-legend">Monetiza tu contenido, recibe suscripciones y donaciones al instante.</p>
+                <button type="button" id="settings-mp-connect-btn" class="btn settings-mp-connect-btn" onclick="redirectMercadoPagoOAuth()">Conecta tu Cuenta de Mercado Pago</button>
               </div>
             </section>
 
@@ -7007,7 +7040,10 @@
           <div class="profile-location" id="profile-location-row" style="display:none;"></div>
           <div class="profile-bio">Fotógrafa apasionada por capturar momentos únicos. Comparto mi proceso creativo y contenido exclusivo con mi comunidad especial. ✨</div>
           <div id="profile-social-links" class="profile-social-links" aria-label="Redes sociales"></div>
-          <button type="button" class="btn profile-hero-cta" id="profile-share-community-btn" onclick="shareCreatorProfile()" style="display:none;">Comparte tu Bizponzor</button>
+          <div id="profile-hero-cta-row" class="profile-hero-cta-row" aria-label="Acciones del perfil">
+            <button type="button" class="btn profile-hero-cta" id="profile-share-community-btn" onclick="shareCreatorProfile()">Comparte tu Bizponzor</button>
+            <button type="button" class="btn profile-hero-cta-secondary" id="profile-upload-panel-btn" onclick="openCreatorUploadFromOnboarding()">Subir contenido</button>
+          </div>
         </div>
       </div>
     </div>
@@ -8373,8 +8409,8 @@ function fillProfileSidebarMetrics(creator, opts) {
   if (st) {
     st.textContent = Number(starsVal ?? 0).toLocaleString('es');
   }
-  const shareBtn = document.getElementById('profile-share-community-btn');
-  if (shareBtn) shareBtn.style.display = opts.isOwnerView ? '' : 'none';
+  const ctaRow = document.getElementById('profile-hero-cta-row');
+  if (ctaRow) ctaRow.style.display = opts.isOwnerView ? 'flex' : 'none';
   const mEl = document.getElementById('profile-sidebar-metrics');
   if (mEl) {
     mEl.classList.toggle('profile-sidebar-metrics--under-plan', !!opts.isOwnerView);
