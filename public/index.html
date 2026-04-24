@@ -1715,6 +1715,12 @@
     aspect-ratio: 1 / 1;
     cursor: pointer;
   }
+  .content-thumb.bp-text-locked-tile {
+    aspect-ratio: 1 / 1;
+    background: linear-gradient(155deg, #2a2a2e 0%, #18181b 100%);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    cursor: default;
+  }
   .content-thumb .thumb-fill-media {
     position: absolute; inset: 0; width: 100%; height: 100%;
     object-fit: cover;
@@ -1726,10 +1732,6 @@
     padding: 3px 10px; border-radius: 999px; font-size: 0.68rem; font-weight: 700;
     text-transform: uppercase; letter-spacing: 0.5px;
     z-index: 2;
-  }
-  .content-type-badge.text-type-badge {
-    background: #6B7280;
-    text-transform: none;
   }
   /* Contenido protegido: fricción ante clic derecho / arrastre (JS + overlay) */
   .protected-content {
@@ -1830,83 +1832,134 @@
   }
   .plan-feature::before { content: '✓'; font-weight: 800; color: var(--black); }
 
-  /* Creator onboarding (perfil) — compacto en Configuración */
-  #creator-dashboard .onboarding-card {
-    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
-    border-radius: 16px;
-    padding: 16px 18px;
+  /* Onboarding monetización — hero en Configuración (termómetro + CTA) */
+  #creator-dashboard .settings-onboarding-hero {
+    max-width: 640px;
     margin-bottom: 20px;
-    max-width: 600px;
-    border: 1px solid rgba(56, 189, 248, 0.25);
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.18);
+    border-radius: 20px;
+    padding: 22px 22px 20px;
+    background: linear-gradient(145deg, rgba(30, 27, 24, 0.98) 0%, rgba(24, 22, 18, 0.98) 100%);
+    border: 1px solid rgba(251, 146, 60, 0.35);
+    box-shadow:
+      0 0 0 1px rgba(255, 255, 255, 0.04) inset,
+      0 12px 40px rgba(0, 0, 0, 0.35),
+      0 0 48px rgba(249, 115, 22, 0.12);
   }
-  #creator-dashboard .onboarding-header {
+  #creator-dashboard .settings-onboarding-hero.settings-onboarding-hero--complete {
+    border-color: rgba(34, 197, 94, 0.45);
+    box-shadow:
+      0 0 0 1px rgba(255, 255, 255, 0.05) inset,
+      0 12px 40px rgba(0, 0, 0, 0.3),
+      0 0 40px rgba(34, 197, 94, 0.15);
+  }
+  #creator-dashboard .settings-onboarding-hero-inner {
+    max-width: 100%;
+  }
+  #creator-dashboard .soh-title {
+    margin: 0 0 10px;
+    font-size: 1.15rem;
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    color: #fff;
+    line-height: 1.25;
+  }
+  #creator-dashboard .soh-sub {
+    margin: 0 0 18px;
+    font-size: 0.88rem;
+    line-height: 1.55;
+    color: #cbd5e1;
+  }
+  #creator-dashboard .soh-checklist {
+    list-style: none;
+    margin: 0 0 16px;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  #creator-dashboard .soh-checklist li {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 10px 12px;
+    border-radius: 12px;
+    font-size: 0.86rem;
+    font-weight: 600;
+    color: #e2e8f0;
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    transition: background 0.25s ease, border-color 0.25s ease, transform 0.2s ease;
+  }
+  #creator-dashboard .soh-checklist li.soh-row-done {
+    border-color: rgba(34, 197, 94, 0.35);
+    background: rgba(34, 197, 94, 0.08);
+  }
+  #creator-dashboard .soh-checklist li.soh-row-pending {
+    border-color: rgba(255, 255, 255, 0.08);
+    opacity: 0.95;
+  }
+  #creator-dashboard .soh-checklist li.soh-row-next {
+    border-color: rgba(251, 146, 60, 0.55);
+    background: rgba(249, 115, 22, 0.12);
+    box-shadow: 0 0 22px rgba(249, 115, 22, 0.1);
+    opacity: 1;
+  }
+  #creator-dashboard .soh-checklist li.soh-row-click {
+    cursor: pointer;
+  }
+  #creator-dashboard .soh-checklist li.soh-row-click:hover {
+    border-color: rgba(251, 146, 60, 0.45);
+    background: rgba(255, 255, 255, 0.06);
+  }
+  #creator-dashboard .soh-checklist li.bp-check-flash {
+    animation: bpOnboardingFlash 0.55s ease;
+  }
+  @keyframes bpOnboardingFlash {
+    0% { transform: scale(1); }
+    40% { transform: scale(1.02); }
+    100% { transform: scale(1); }
+  }
+  #creator-dashboard .soh-check-ic {
+    font-size: 1rem;
+    flex-shrink: 0;
+    font-weight: 800;
+  }
+  #creator-dashboard .soh-progress-wrap {
     display: flex;
     align-items: center;
     gap: 12px;
-    margin-bottom: 14px;
+    margin-bottom: 16px;
   }
-  #creator-dashboard .onboarding-icon { font-size: 1.75rem; line-height: 1; }
-  #creator-dashboard .onboarding-info { flex: 1; min-width: 0; }
-  #creator-dashboard .onboarding-title { font-size: 0.95rem; font-weight: 700; color: #ffffff; margin-bottom: 2px; }
-  #creator-dashboard .onboarding-subtitle { font-size: 0.72rem; color: #a3a3a3; line-height: 1.35; }
-  #creator-dashboard .onboarding-bar {
-    height: 8px;
-    background: #1e2a3a;
-    border-radius: 10px;
+  #creator-dashboard .soh-progress-bar {
+    flex: 1;
+    height: 10px;
+    border-radius: 999px;
+    background: rgba(0, 0, 0, 0.35);
     overflow: hidden;
-    margin-bottom: 0;
   }
-  #creator-dashboard .onboarding-fill {
+  #creator-dashboard .soh-progress-fill {
     height: 100%;
     width: 0%;
-    border-radius: 10px;
-    transition: width 0.35s ease;
+    border-radius: 999px;
+    background: linear-gradient(90deg, #f97316, #fbbf24);
+    transition: width 0.45s cubic-bezier(0.22, 1, 0.36, 1);
   }
-  #creator-dashboard #onboarding-steps.onboarding-steps {
-    display: none;
-    flex-direction: column;
-    gap: 6px;
-    margin-top: 12px;
+  #creator-dashboard .settings-onboarding-hero--complete .soh-progress-fill {
+    background: linear-gradient(90deg, #22c55e, #4ade80);
+  }
+  #creator-dashboard .soh-progress-label {
+    font-size: 0.78rem;
+    font-weight: 800;
+    color: #94a3b8;
+    min-width: 2.5rem;
+    text-align: right;
+  }
+  #creator-dashboard .soh-cta {
+    font-weight: 800;
+    border-radius: 12px;
     padding-top: 12px;
-    border-top: 1px solid rgba(255, 255, 255, 0.08);
-  }
-  #creator-dashboard .onboarding-toggle {
-    display: flex;
-    justify-content: flex-end;
-    align-items: center;
-    gap: 6px;
-    cursor: pointer;
-    font-size: 0.75rem;
-    color: #38bdf8;
-    margin-top: 10px;
-    user-select: none;
-  }
-  #creator-dashboard .onboarding-toggle:hover {
-    opacity: 0.9;
-  }
-  #creator-dashboard #toggle-icon {
-    transition: transform 0.2s ease;
-    font-size: 0.65rem;
-  }
-  #creator-dashboard .onboarding-step {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    padding: 6px 10px;
-    font-size: 0.8rem;
-    color: #c4c4c4;
-    cursor: pointer;
-    border-radius: 8px;
-    transition: background 0.15s ease;
-  }
-  #creator-dashboard .onboarding-step:hover {
-    background: rgba(56, 189, 248, 0.08);
-  }
-  #creator-dashboard .onboarding-step.next {
-    background: rgba(56, 189, 248, 0.12);
-    border-radius: 8px;
-    padding: 6px 10px;
+    padding-bottom: 12px;
   }
 
   #creator-dashboard .settings-onboarding-cards {
@@ -2047,13 +2100,6 @@
   }
   .creator-welcome-modal-x:hover {
     background: rgba(255, 255, 255, 0.14);
-  }
-
-  #creator-dashboard .onboarding-icon svg {
-    display: block;
-    width: 28px;
-    height: 28px;
-    color: #38bdf8;
   }
 
   /* Configuración — estudio premium (alineado con Subir / onboarding) */
@@ -3185,6 +3231,75 @@
     background-position: center;
     box-shadow: inset 0 -1px 0 rgba(0,0,0,0.12);
   }
+
+  /* Leyenda activación — perfil embebido (termómetro + CTA; el avatar no tapa el botón) */
+  #creator-profile-inner .creator-profile-onboarding-banner {
+    margin: 0;
+    padding: 14px 16px 16px;
+    background: linear-gradient(95deg, rgba(88, 28, 28, 0.55) 0%, rgba(24, 22, 20, 0.98) 52%, rgba(30, 27, 24, 0.98) 100%);
+    border-bottom: 1px solid rgba(251, 113, 133, 0.38);
+    position: relative;
+    z-index: 4;
+  }
+  #creator-profile-inner .creator-profile-onboarding-banner-inner {
+    max-width: 900px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 12px;
+  }
+  @media (min-width: 720px) {
+    #creator-profile-inner .creator-profile-onboarding-banner-inner {
+      flex-direction: row;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+    }
+  }
+  #creator-profile-inner .creator-profile-onboarding-banner-copy {
+    flex: 1;
+    min-width: 0;
+  }
+  #creator-profile-inner .creator-profile-onboarding-banner-text {
+    margin: 0;
+    font-size: clamp(0.8rem, 2.8vw, 0.9rem);
+    font-weight: 700;
+    color: #fecdd3;
+    line-height: 1.45;
+    overflow-wrap: anywhere;
+    word-break: break-word;
+  }
+  #creator-profile-inner .creator-profile-onboarding-banner-meter {
+    height: 6px;
+    margin-top: 10px;
+    border-radius: 999px;
+    background: rgba(0, 0, 0, 0.38);
+    overflow: hidden;
+  }
+  #creator-profile-inner .creator-profile-onboarding-banner-meter span {
+    display: block;
+    height: 100%;
+    width: 0%;
+    border-radius: 999px;
+    background: linear-gradient(90deg, #f97316, #fbbf24);
+    transition: width 0.45s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  #creator-profile-inner .creator-profile-onboarding-banner-btn {
+    flex-shrink: 0;
+    width: 100%;
+    font-weight: 800;
+    border-radius: 10px;
+    position: relative;
+    z-index: 5;
+  }
+  @media (min-width: 720px) {
+    #creator-profile-inner .creator-profile-onboarding-banner-btn {
+      width: auto;
+      min-width: 168px;
+    }
+  }
+
   .profile-info {
     max-width: 1320px; margin: 0 auto; padding: 0 40px;
   }
@@ -3217,6 +3332,14 @@
   @media (max-width: 540px) {
     #creator-profile-inner .profile-hero-identity > .profile-avatar-wrap {
       margin-top: -32px;
+    }
+  }
+  #creator-profile-inner.creator-profile--onboarding-alert .profile-hero-identity > .profile-avatar-wrap {
+    margin-top: 0;
+  }
+  @media (min-width: 720px) {
+    #creator-profile-inner.creator-profile--onboarding-alert .profile-hero-identity > .profile-avatar-wrap {
+      margin-top: -28px;
     }
   }
   .profile-hero-text-block {
@@ -3452,8 +3575,27 @@
     font-size: 0.8rem;
     color: #A3A3A3;
   }
+  #creator-profile-inner .creator-profile-grid .content-thumb.bp-text-thumb {
+    aspect-ratio: 5 / 6;
+    min-height: 220px;
+    padding: clamp(18px, 4.5vw, 32px) clamp(16px, 4vw, 26px);
+    font-size: clamp(0.82rem, 3.2vw, 1.05rem);
+    font-weight: 650;
+    letter-spacing: 0.03em;
+    line-height: 1.45;
+  }
+  #creator-profile-inner .creator-profile-grid .content-thumb.bp-text-thumb .bp-text-thumb-inner {
+    -webkit-line-clamp: 9;
+    text-shadow: 0 2px 20px rgba(0, 0, 0, 0.5);
+  }
   #creator-profile-inner .profile-avatar {
     border-color: #333333;
+  }
+  #creator-profile-inner #profile-hero-avatar.bp-avatar--xl {
+    box-shadow:
+      0 4px 16px rgba(0, 0, 0, 0.22),
+      0 0 0 2px rgba(255, 255, 255, 0.9),
+      0 0 28px color-mix(in srgb, var(--profile-accent, #6366f1) 42%, transparent);
   }
   #creator-profile-inner #profile-plans-intro {
     color: #A3A3A3 !important;
@@ -3634,7 +3776,8 @@
   #creator-profile-inner .profile-info span[style*="gray-500"] { color: #A3A3A3 !important; }
   #creator-profile-inner {
     background: #1A1A1A;
-    color: #FFFFFF;
+    color: #ffffff;
+    --profile-accent: #6366f1;
   }
 
   #fan-sidebar-name {
@@ -4273,25 +4416,29 @@
   }
 
   .content-thumb.bp-text-thumb {
-    padding: 8px;
-    font-size: 0.65rem;
+    padding: clamp(12px, 2.8vw, 18px) clamp(12px, 3vw, 20px);
+    font-size: clamp(0.72rem, 2.2vw, 0.84rem);
     font-weight: 650;
-    line-height: 1.25;
-    align-items: flex-start;
-    justify-content: flex-start;
+    line-height: 1.42;
+    align-items: center;
+    justify-content: center;
     overflow: hidden;
+    box-sizing: border-box;
+    text-align: center;
   }
   .content-thumb.bp-text-thumb .bp-text-thumb-inner {
     display: -webkit-box;
-    -webkit-line-clamp: 5;
+    -webkit-line-clamp: 6;
     -webkit-box-orient: vertical;
     overflow: hidden;
     width: 100%;
+    max-height: 100%;
+    margin: 0 auto;
     text-align: center;
     word-break: break-word;
-  }
-  .content-thumb.bp-text-thumb .content-type-badge {
-    z-index: 5;
+    overflow-wrap: anywhere;
+    text-shadow: 0 1px 14px rgba(0, 0, 0, 0.42);
+    align-self: center;
   }
 
   .text-modal-body-wrap {
@@ -6258,6 +6405,21 @@
           <p>Tu perfil público y la cuenta, en un solo lugar</p>
         </div>
 
+        <div id="settings-onboarding-hero" class="settings-onboarding-hero" style="display:none;" aria-label="Activar tu perfil">
+          <div class="settings-onboarding-hero-inner">
+            <div class="soh-head">
+              <h2 id="soh-title" class="soh-title">Empieza a ganar dinero en Bizponzor</h2>
+              <p id="soh-sub" class="soh-sub"></p>
+            </div>
+            <ul id="soh-checklist" class="soh-checklist" aria-label="Pasos para activar tu perfil"></ul>
+            <div class="soh-progress-wrap">
+              <div class="soh-progress-bar" aria-hidden="true"><div id="soh-progress-fill" class="soh-progress-fill"></div></div>
+              <div id="soh-progress-label" class="soh-progress-label">0%</div>
+            </div>
+            <button type="button" id="soh-cta-btn" class="btn btn-primary btn-full soh-cta" onclick="scrollToFirstIncompleteMonetization()">Activar mi perfil ahora</button>
+          </div>
+        </div>
+
         <div id="settings-onboarding-cards" class="settings-onboarding-cards" style="display:none;">
           <div class="settings-onboarding-card settings-onboarding-card--mp">
             <div class="settings-onboarding-card-ic" aria-hidden="true">💳</div>
@@ -6275,29 +6437,6 @@
               <button type="button" class="btn btn-primary btn-full" onclick="openCreatorUploadFromOnboarding()">Subir contenido</button>
             </div>
           </div>
-        </div>
-
-        <div id="onboarding-card" class="onboarding-card" style="display: none;">
-          <div class="onboarding-header">
-            <div class="onboarding-icon" aria-hidden="true">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4.5 16.5c-1.5 1.26-2 5-2 5s3.74-.5 5-2c.71-.84.7-2.13-.09-2.91a2.18 2.18 0 0 0-2.91-.09z"/><path d="m12 15-3-3a22 22 0 0 1 2-3.95A12.88 12.88 0 0 1 22 2c0 2.72-.78 7.5-6 11a22.35 22.35 0 0 1-4 2z"/><path d="M9 12H4s.55-3.03 2-4c1.62-1.08 5 0 5 0"/><path d="M12 15v5s3.03-.55 4-2c1.08-1.62 0-5 0-5"/></svg>
-            </div>
-            <div class="onboarding-info">
-              <div id="onboarding-title" class="onboarding-title">Configura tu perfil</div>
-              <div id="onboarding-subtitle" class="onboarding-subtitle"></div>
-            </div>
-          </div>
-
-          <div class="onboarding-bar">
-            <div id="onboarding-fill" class="onboarding-fill"></div>
-          </div>
-
-          <div class="onboarding-toggle" onclick="toggleOnboarding()">
-            <span id="toggle-text">Ver detalles</span>
-            <span id="toggle-icon">▼</span>
-          </div>
-
-          <div id="onboarding-steps" class="onboarding-steps"></div>
         </div>
 
         <div class="settings-studio">
@@ -6319,9 +6458,9 @@
                 <p class="settings-hint">JPG, PNG o WebP · máx. 2&nbsp;MB · se muestra a 512&nbsp;px en el perfil</p>
               </div>
               <div class="form-group">
-                <label class="form-label">Color del avatar</label>
+                <label class="form-label">Color de acento</label>
                 <input type="color" class="form-input" id="settings-avatar-color" value="#333333" style="height:44px;padding:6px 10px;max-width:120px;">
-                <div class="settings-hint">Inicial sobre este color si no hay foto</div>
+                <div class="settings-hint">Brillo alrededor de tu foto en el perfil público; si aún no tienes foto, la inicial va sobre este color.</div>
               </div>
               <div id="settings-anchor-banner" class="form-group">
                 <label class="form-label">Banner (portada)</label>
@@ -6828,6 +6967,15 @@
   <div id="profile-mount-standalone">
     <div id="creator-profile-inner">
   <div class="profile-banner"></div>
+  <div id="creator-profile-onboarding-banner" class="creator-profile-onboarding-banner" style="display:none;" role="region" aria-label="Perfil incompleto">
+    <div class="creator-profile-onboarding-banner-inner">
+      <div class="creator-profile-onboarding-banner-copy">
+        <p class="creator-profile-onboarding-banner-text">Tu perfil está incompleto — aún no monetizas tu contenido. Complétalo gratis en pocos minutos.</p>
+        <div class="creator-profile-onboarding-banner-meter" aria-hidden="true"><span id="creator-profile-onboarding-fill"></span></div>
+      </div>
+      <button type="button" class="btn btn-primary creator-profile-onboarding-banner-btn" onclick="openCreatorSettingsOnboarding()">Completar perfil</button>
+    </div>
+  </div>
   <div class="profile-info profile-info-hero">
     <div class="profile-hero-row">
       <div class="profile-hero-identity">
@@ -7216,6 +7364,7 @@
   }
 
   window.__lastOnboardingPayload = window.__lastOnboardingPayload || null;
+  window.__lastOnboardingPercent = typeof window.__lastOnboardingPercent === 'number' ? window.__lastOnboardingPercent : -1;
 
   function bpMergeSearchParams(mutator) {
     try {
@@ -7291,9 +7440,9 @@
     var sp = new URLSearchParams(window.location.search);
     if (sp.get('onboarding') !== '1') return;
     setTimeout(function () {
-      var ob = document.getElementById('onboarding-card');
+      var hero = document.getElementById('settings-onboarding-hero');
       var cards = document.getElementById('settings-onboarding-cards');
-      if (ob && ob.style.display !== 'none') ob.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      if (hero && hero.style.display !== 'none') hero.scrollIntoView({ behavior: 'smooth', block: 'start' });
       else if (cards && cards.style.display !== 'none') cards.scrollIntoView({ behavior: 'smooth', block: 'start' });
       bpMergeSearchParams(function (p) {
         p.delete('onboarding');
@@ -7309,6 +7458,14 @@
   function openCreatorUploadFromOnboarding() {
     var el = document.getElementById('sidebar-tab-upload');
     if (typeof setDashTab === 'function') setDashTab('upload', el);
+  }
+
+  function bpSettingsOnboardingGo(stepId) {
+    if (stepId === 'posts') {
+      goToStep('posts', 'upload');
+      return;
+    }
+    goToStep(stepId, 'settings');
   }
 
   function getMonetizationStepStates() {
@@ -7363,15 +7520,120 @@
   }
 
   function renderSettingsOnboardingHero(data) {
+    var hero = document.getElementById('settings-onboarding-hero');
     var cards = document.getElementById('settings-onboarding-cards');
-    if (!data) return;
+    var sub = document.getElementById('soh-sub');
+    var list = document.getElementById('soh-checklist');
+    var fill = document.getElementById('soh-progress-fill');
+    var label = document.getElementById('soh-progress-label');
+    var cta = document.getElementById('soh-cta-btn');
+    if (!hero || !data) return;
+    var coreComplete = data.coreComplete === true;
     if (cards) {
-      cards.style.display = data.coreComplete === true ? 'none' : 'grid';
+      cards.style.display = coreComplete ? 'none' : 'grid';
     }
+    if (coreComplete) {
+      hero.style.display = 'none';
+      return;
+    }
+    hero.style.display = 'block';
+    hero.classList.remove('settings-onboarding-hero--complete');
+    if (sub) {
+      sub.textContent =
+        'Tu perfil aún no está activado para monetizar: es gratis. Completa foto, portada, 5 publicaciones y Mercado Pago en menos de 2 minutos. Toca un paso para ir a su sección.';
+    }
+    var rows = [
+      { id: 'avatar', label: 'Foto de perfil' },
+      { id: 'banner', label: 'Foto de portada' },
+      { id: 'posts', label: '5 publicaciones' },
+      { id: 'mercadopago', label: 'Mercado Pago conectado' }
+    ];
+    var steps = data.steps || [];
+    var nextId = null;
+    for (var ri = 0; ri < rows.length; ri++) {
+      var st0 = steps.find(function (s) {
+        return s.id === rows[ri].id;
+      });
+      if (!st0 || !st0.done) {
+        nextId = rows[ri].id;
+        break;
+      }
+    }
+    var prevPct = window.__lastOnboardingPercent;
+    var pct = typeof data.percent === 'number' ? data.percent : 0;
+    if (list) {
+      list.innerHTML = rows
+        .map(function (r) {
+          var step = steps.find(function (s) {
+            return s.id === r.id;
+          });
+          var done = !!(step && step.done);
+          var isNext = !done && r.id === nextId;
+          var mark = done ? '✔' : isNext ? '→' : '○';
+          var cls =
+            (done ? 'soh-row-done' : 'soh-row-pending') +
+            (isNext ? ' soh-row-next' : '') +
+            ' soh-row-click';
+          return (
+            '<li class="' +
+            cls +
+            '" data-onb-row="' +
+            r.id +
+            '" role="button" tabindex="0" onclick="bpSettingsOnboardingGo(\'' +
+            r.id +
+            '\')"><span>' +
+            escapeHtml(r.label) +
+            '</span><span class="soh-check-ic" aria-hidden="true">' +
+            mark +
+            '</span></li>'
+          );
+        })
+        .join('');
+      if (prevPct >= 0 && pct > prevPct) {
+        list.querySelectorAll('li.soh-row-done').forEach(function (li) {
+          li.classList.add('bp-check-flash');
+          setTimeout(function () {
+            li.classList.remove('bp-check-flash');
+          }, 600);
+        });
+      }
+    }
+    if (fill) {
+      fill.style.width = pct + '%';
+    }
+    if (label) {
+      label.textContent = pct + '%';
+    }
+    if (cta) {
+      var pend = rows.filter(function (r) {
+        var st = steps.find(function (s) {
+          return s.id === r.id;
+        });
+        return !(st && st.done);
+      }).length;
+      cta.textContent = pend === 1 ? 'Completar último paso' : 'Activar mi perfil ahora';
+    }
+    window.__lastOnboardingPercent = pct;
   }
 
   function updateCreatorProfileOnboardingStrip() {
-    /* Franja “perfil incompleto” retirada: duplicaba onboarding y solapaba avatar/botón en móvil. */
+    var strip = document.getElementById('creator-profile-onboarding-banner');
+    var fill = document.getElementById('creator-profile-onboarding-fill');
+    var innerRoot = document.getElementById('creator-profile-inner');
+    var d = window.__lastOnboardingPayload;
+    if (!strip || !CURRENT_USER || CURRENT_USER.role !== 'creator') return;
+    var embed = document.getElementById('creator-profile-embed');
+    var inEmbed = embed && embed.style.display !== 'none' && embed.getAttribute('aria-hidden') !== 'true';
+    if (!inEmbed || d == null || d.coreComplete === true) {
+      strip.style.display = 'none';
+      if (innerRoot) innerRoot.classList.remove('creator-profile--onboarding-alert');
+      if (fill) fill.style.width = '0%';
+      return;
+    }
+    strip.style.display = 'block';
+    if (innerRoot) innerRoot.classList.add('creator-profile--onboarding-alert');
+    var pct = typeof d.percent === 'number' ? d.percent : 0;
+    if (fill) fill.style.width = pct + '%';
   }
 
   async function navigateCreatorAfterAuth(opts) {
@@ -7967,6 +8229,11 @@ function profileSocialLinkHref(raw) {
 }
 
 function applyCreatorHeroFields(creator) {
+  const innerRoot = document.getElementById('creator-profile-inner');
+  if (innerRoot) {
+    const ac = creator.avatar_color != null && String(creator.avatar_color).trim() ? String(creator.avatar_color).trim() : '';
+    innerRoot.style.setProperty('--profile-accent', ac || '#6366f1');
+  }
   const nameEl = document.querySelector('#creator-profile-inner .profile-name');
   const handleEl = document.querySelector('#creator-profile-inner .profile-handle');
   const bioEl = document.querySelector('#creator-profile-inner .profile-bio');
@@ -10237,21 +10504,6 @@ function logout() {
 }
 
 // ─── CREATOR DASHBOARD ──────────────────────────────────
-var onboardingExpanded = false;
-
-function toggleOnboarding() {
-  onboardingExpanded = !onboardingExpanded;
-
-  const steps = document.getElementById('onboarding-steps');
-  const text = document.getElementById('toggle-text');
-  const icon = document.getElementById('toggle-icon');
-
-  if (!steps) return;
-
-  steps.style.display = onboardingExpanded ? 'flex' : 'none';
-  if (text) text.textContent = onboardingExpanded ? 'Ocultar detalles' : 'Ver detalles';
-  if (icon) icon.style.transform = onboardingExpanded ? 'rotate(180deg)' : 'rotate(0deg)';
-}
 
 function goToStep(stepId, tabName) {
   if (!tabName) return;
@@ -10266,14 +10518,15 @@ function goToStep(stepId, tabName) {
       setDashTab(tabName, el);
     }
     setTimeout(function () {
+      if (tabName === 'upload') {
+        return;
+      }
       if (tabName === 'settings') {
         if (stepId === 'mercadopago' && typeof scrollToSettingsMpAnchor === 'function') scrollToSettingsMpAnchor();
         else if (stepId === 'avatar' && document.getElementById('settings-anchor-avatar')) {
           document.getElementById('settings-anchor-avatar').scrollIntoView({ behavior: 'smooth', block: 'center' });
         } else if (stepId === 'banner' && document.getElementById('settings-anchor-banner')) {
           document.getElementById('settings-anchor-banner').scrollIntoView({ behavior: 'smooth', block: 'center' });
-        } else if (stepId === 'posts' && typeof openCreatorUploadFromOnboarding === 'function') {
-          openCreatorUploadFromOnboarding();
         } else if (document.getElementById('settings-section-appearance')) {
           document.getElementById('settings-section-appearance').scrollIntoView({ behavior: 'smooth', block: 'start' });
         }
@@ -10286,86 +10539,9 @@ function goToStep(stepId, tabName) {
 
 function renderOnboardingCard(data) {
   if (!data) return;
-
   window.__lastOnboardingPayload = data;
-
-  const container = document.getElementById('onboarding-card');
-  const stepsContainer = document.getElementById('onboarding-steps');
-  const titleEl = document.getElementById('onboarding-title');
-  const subtitleEl = document.getElementById('onboarding-subtitle');
-  const fillEl = document.getElementById('onboarding-fill');
-  const toggleText = document.getElementById('toggle-text');
-  const toggleIcon = document.getElementById('toggle-icon');
-
-  if (!container || !stepsContainer || !titleEl || !subtitleEl || !fillEl) return;
-
-  const percent = typeof data.percent === 'number' ? data.percent : 0;
-  const steps = data.steps || [];
-  const coreComplete = data.coreComplete === true;
-
-  const coreIds = { avatar: true, banner: true, posts: true, mercadopago: true };
-  const coreSteps = steps.filter(function (s) {
-    return coreIds[s.id];
-  });
-  const completedCore = coreSteps.filter(function (s) {
-    return s.done;
-  }).length;
-  const totalCore = 4;
-  const remainingCore = totalCore - completedCore;
-
   if (typeof renderSettingsOnboardingHero === 'function') renderSettingsOnboardingHero(data);
   if (typeof updateCreatorProfileOnboardingStrip === 'function') updateCreatorProfileOnboardingStrip();
-
-  if (coreComplete) {
-    container.style.display = 'none';
-    return;
-  }
-
-  container.style.display = 'block';
-
-  if (completedCore === 0) titleEl.textContent = 'Activa tu perfil para cobrar';
-  else if (remainingCore > 0) titleEl.textContent = 'Ya casi monetizas';
-  else titleEl.textContent = 'Perfil listo para ingresos';
-
-  subtitleEl.textContent =
-    remainingCore > 0
-      ? 'Te faltan ' + remainingCore + ' paso' + (remainingCore !== 1 ? 's' : '') + ' para que tu perfil gane dinero'
-      : 'Listo. Ya puedes empezar a generar ingresos';
-
-  fillEl.style.width = percent + '%';
-  fillEl.style.background = 'linear-gradient(90deg, #1E3A5F, #06B6D4)';
-
-  onboardingExpanded = false;
-  stepsContainer.style.display = 'none';
-  if (toggleText) toggleText.textContent = 'Ver detalles';
-  if (toggleIcon) toggleIcon.style.transform = 'rotate(0deg)';
-
-  const nextStep = steps.find(function (s) {
-    return !s.done && !s.isBonus;
-  });
-
-  stepsContainer.innerHTML = steps
-    .map(function (step) {
-      const isNext = nextStep && step.id === nextStep.id;
-      const tab = step.tab != null ? step.tab : '';
-      const mark = step.isBonus ? (step.done ? '✓' : '○') : step.done ? '✔' : '❌';
-      return (
-        '<div class="onboarding-step' +
-        (isNext ? ' next' : '') +
-        '" onclick="goToStep(' +
-        JSON.stringify(step.id) +
-        ', ' +
-        JSON.stringify(tab) +
-        ')"><span>' +
-        escapeHtml(step.icon) +
-        '</span><span style="flex:1">' +
-        escapeHtml(step.name) +
-        '</span><span>' +
-        mark +
-        '</span></div>'
-      );
-    })
-    .join('');
 }
 
 async function refreshOnboarding() {
@@ -10802,7 +10978,7 @@ function renderContentGrid(container, items) {
       const bgJson = JSON.stringify(bgClass);
       const excerptRaw = String(c.text_body || '').trim();
       const excerpt = excerptRaw.length > 180 ? excerptRaw.slice(0, 177) + '…' : excerptRaw;
-      thumb = `<div class="content-thumb ${aspect} bp-text-thumb bp-text-style--${bgClass}" onclick='openTextModal(${tJson}, ${bJson}, ${bgJson})'><div class="bp-text-thumb-inner">${escapeHtml(excerpt)}</div><span class="content-type-badge text-type-badge">📝 Texto</span></div>`;
+      thumb = `<div class="content-thumb ${aspect} bp-text-thumb bp-text-style--${bgClass}" onclick='openTextModal(${tJson}, ${bJson}, ${bgJson})'><div class="bp-text-thumb-inner">${escapeHtml(excerpt)}</div></div>`;
     } else if (c.file_url) {
       const vidHint = isVid ? '<span style="position:absolute;bottom:10px;right:10px;background:rgba(0,0,0,0.60);padding:6px 10px;border-radius:999px;color:white;font-size:0.75rem;font-weight:700;z-index:5;">▶ Ver</span>' : '';
       const src = bpContentMediaUrl(c.id);
@@ -11430,7 +11606,7 @@ function renderFanContent(container, items, opts) {
     let thumbInner = '';
     if (isText) {
       if (locked) {
-        thumbInner = `<div class="content-thumb ${aspect}">📝<span class="content-type-badge text-type-badge">📝 Texto</span><div class="lock-overlay">🔒</div></div>`;
+        thumbInner = `<div class="content-thumb ${aspect} bp-text-locked-tile" aria-label="Contenido de texto bloqueado"><div class="lock-overlay" aria-hidden="true">🔒</div></div>`;
       } else {
         const tJson = JSON.stringify(c.title || '');
         const bJson = JSON.stringify(c.text_body || '');
@@ -11438,7 +11614,7 @@ function renderFanContent(container, items, opts) {
         const bgJson = JSON.stringify(bgClass);
         const excerptRaw = String(c.text_body || '').trim();
         const excerpt = excerptRaw.length > 180 ? excerptRaw.slice(0, 177) + '…' : excerptRaw;
-        thumbInner = `<div class="content-thumb ${aspect} bp-text-thumb bp-text-style--${bgClass}" onclick='openTextModal(${tJson}, ${bJson}, ${bgJson})'><div class="bp-text-thumb-inner">${escapeHtml(excerpt)}</div><span class="content-type-badge text-type-badge">📝 Texto</span></div>`;
+        thumbInner = `<div class="content-thumb ${aspect} bp-text-thumb bp-text-style--${bgClass}" onclick='openTextModal(${tJson}, ${bJson}, ${bgJson})'><div class="bp-text-thumb-inner">${escapeHtml(excerpt)}</div></div>`;
       }
     } else if (locked) {
       thumbInner = `<div class="content-thumb ${aspect}">${isVid ? '🎬' : '📸'}<span class="content-type-badge">${isVid ? 'VIDEO' : 'FOTO'}</span><div class="lock-overlay">🔒</div></div>`;
