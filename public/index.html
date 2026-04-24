@@ -1964,15 +1964,10 @@
 
   #creator-dashboard .settings-onboarding-cards {
     display: grid;
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: 1fr;
     gap: 14px;
     max-width: 640px;
     margin-bottom: 20px;
-  }
-  @media (max-width: 720px) {
-    #creator-dashboard .settings-onboarding-cards {
-      grid-template-columns: 1fr;
-    }
   }
   #creator-dashboard .settings-onboarding-card {
     border-radius: 16px;
@@ -2004,18 +1999,6 @@
     line-height: 1.45;
     color: #94a3b8;
   }
-  #creator-dashboard .settings-mp-teaser-btn {
-    background: linear-gradient(180deg, #fde047 0%, #eab308 100%);
-    color: #1a1a12;
-    font-weight: 800;
-    border: 1px solid rgba(234, 179, 8, 0.85);
-    border-radius: 10px;
-    box-shadow: 0 4px 16px rgba(234, 179, 8, 0.25);
-  }
-  #creator-dashboard .settings-mp-teaser-btn:hover {
-    filter: brightness(1.05);
-  }
-
   /* Modal bienvenida creador */
   .creator-welcome-modal {
     position: fixed;
@@ -2266,18 +2249,45 @@
     background: rgba(255, 255, 255, 0.08);
     border-color: rgba(56, 189, 248, 0.35);
   }
-  #creator-dashboard #dash-settings .settings-mp-btn {
-    background: rgba(56, 189, 248, 0.1);
-    border: 1px solid rgba(56, 189, 248, 0.42);
-    color: #e0f2fe !important;
-    font-weight: 600;
-    padding: 10px 22px;
-    border-radius: 12px;
-    transition: background 0.2s ease, border-color 0.2s ease;
+  #creator-dashboard #dash-settings .settings-mp-connect-btn {
+    width: 100%;
+    max-width: 440px;
+    padding: 14px 20px 12px;
+    border-radius: 14px;
+    border: 1px solid rgba(202, 138, 4, 0.95);
+    background: linear-gradient(180deg, #fef08a 0%, #facc15 38%, #eab308 72%, #ca8a04 100%);
+    color: #1c1917 !important;
+    font-weight: 800;
+    letter-spacing: 0.01em;
+    line-height: 1.28;
+    text-align: center;
+    box-shadow:
+      0 3px 0 rgba(161, 98, 7, 0.55),
+      0 10px 28px rgba(234, 179, 8, 0.35);
+    transition: filter 0.2s ease, transform 0.15s ease, box-shadow 0.2s ease;
   }
-  #creator-dashboard #dash-settings .settings-mp-btn:hover {
-    background: rgba(56, 189, 248, 0.18);
-    border-color: rgba(56, 189, 248, 0.6);
+  #creator-dashboard #dash-settings .settings-mp-connect-btn:hover {
+    filter: brightness(1.04);
+    box-shadow:
+      0 3px 0 rgba(161, 98, 7, 0.6),
+      0 12px 32px rgba(234, 179, 8, 0.42);
+  }
+  #creator-dashboard #dash-settings .settings-mp-connect-btn:active {
+    transform: translateY(2px);
+    box-shadow: 0 1px 0 rgba(161, 98, 7, 0.5), 0 4px 14px rgba(234, 179, 8, 0.25);
+  }
+  #creator-dashboard #dash-settings .settings-mp-connect-title {
+    display: block;
+    font-size: 0.95rem;
+    font-weight: 900;
+    letter-spacing: -0.02em;
+  }
+  #creator-dashboard #dash-settings .settings-mp-connect-sub {
+    display: block;
+    margin-top: 4px;
+    font-size: 0.8rem;
+    font-weight: 700;
+    opacity: 0.92;
   }
 
   #creator-dashboard #dash-settings .settings-visibility-row {
@@ -3334,12 +3344,26 @@
       margin-top: -32px;
     }
   }
+  /* Sin solape con la franja de activación: el avatar no sube sobre el banner en laptop */
   #creator-profile-inner.creator-profile--onboarding-alert .profile-hero-identity > .profile-avatar-wrap {
     margin-top: 0;
   }
+  #creator-profile-inner.creator-profile--onboarding-alert .profile-info.profile-info-hero {
+    padding-top: 6px;
+  }
   @media (min-width: 720px) {
-    #creator-profile-inner.creator-profile--onboarding-alert .profile-hero-identity > .profile-avatar-wrap {
-      margin-top: -28px;
+    #creator-profile-inner .creator-profile-onboarding-banner {
+      padding: 8px 16px 10px;
+    }
+    #creator-profile-inner .creator-profile-onboarding-banner-inner {
+      gap: 10px;
+    }
+    #creator-profile-inner .creator-profile-onboarding-banner-meter {
+      margin-top: 6px;
+    }
+    #creator-profile-inner .creator-profile-onboarding-banner-text {
+      font-size: 0.84rem;
+      line-height: 1.38;
     }
   }
   .profile-hero-text-block {
@@ -6421,14 +6445,6 @@
         </div>
 
         <div id="settings-onboarding-cards" class="settings-onboarding-cards" style="display:none;">
-          <div class="settings-onboarding-card settings-onboarding-card--mp">
-            <div class="settings-onboarding-card-ic" aria-hidden="true">💳</div>
-            <div class="settings-onboarding-card-body">
-              <h3 class="settings-onboarding-card-title">Conecta Mercado Pago</h3>
-              <p class="settings-onboarding-card-text">Aquí recibirás suscripciones, donaciones y tu bono</p>
-              <button type="button" class="btn btn-full settings-mp-teaser-btn" onclick="scrollToSettingsMpAnchor()">Conectar ahora</button>
-            </div>
-          </div>
           <div class="settings-onboarding-card settings-onboarding-card--upload">
             <div class="settings-onboarding-card-ic" aria-hidden="true">📸</div>
             <div class="settings-onboarding-card-body">
@@ -6580,7 +6596,10 @@
               <div class="form-group">
                 <label class="form-label">Mercado Pago</label>
                 <p class="settings-hint" style="margin-bottom:12px;">Vincula tu cuenta para recibir pagos de fans.</p>
-                <button type="button" class="btn settings-mp-btn" onclick="redirectMercadoPagoOAuth()">Conectar Mercado Pago</button>
+                <button type="button" id="settings-mp-connect-btn" class="btn settings-mp-connect-btn" onclick="redirectMercadoPagoOAuth()">
+                  <span class="settings-mp-connect-title">Conecta tu Mercado Pago y monetiza tu contenido</span>
+                  <span class="settings-mp-connect-sub">Es gratis para ti</span>
+                </button>
               </div>
             </section>
 
@@ -7451,8 +7470,10 @@
   }
 
   function scrollToSettingsMpAnchor() {
+    var btn = document.getElementById('settings-mp-connect-btn');
     var sec = document.getElementById('settings-section-cobros');
-    if (sec) sec.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    if (btn) btn.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    else if (sec) sec.scrollIntoView({ behavior: 'smooth', block: 'center' });
   }
 
   function openCreatorUploadFromOnboarding() {
