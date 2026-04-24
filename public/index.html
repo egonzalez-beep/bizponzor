@@ -3588,12 +3588,11 @@
     width: 100%;
     max-width: 100%;
     display: flex;
-    flex-direction: row;
-    flex-wrap: nowrap;
-    align-items: center;
-    justify-content: space-between;
-    gap: 14px 20px;
-    padding: 14px 20px;
+    flex-direction: column;
+    align-items: stretch;
+    justify-content: flex-start;
+    gap: 10px;
+    padding: 12px 18px 14px;
     border-radius: 16px;
     background: rgba(12, 10, 18, 0.48);
     -webkit-backdrop-filter: blur(18px);
@@ -3602,111 +3601,132 @@
     box-shadow: 0 8px 32px rgba(0, 0, 0, 0.35), 0 1px 0 rgba(255, 255, 255, 0.05) inset;
   }
   #creator-profile-inner.creator-profile--hero-stats--mobile .profile-hero-stats-bar {
-    padding: 10px 14px;
+    padding: 10px 12px 12px;
     border-radius: 14px;
-    gap: 10px 14px;
+    gap: 8px;
   }
+  /* Fila 1: plan en un solo renglón (etiqueta + nombre + precio) */
   #creator-profile-inner.creator-profile--hero-stats .profile-hero-stats-bar .profile-sidebar-owner,
   #creator-profile-inner.creator-profile--hero-stats .profile-hero-stats-bar .profile-hero-fan-plan {
-    flex: 0 1 auto;
+    flex: 0 0 auto;
+    width: 100%;
     min-width: 0;
     margin: 0;
-    padding: 0 18px 0 0;
+    padding: 0 0 10px;
     border: none;
-    border-right: 1px solid rgba(255, 255, 255, 0.14);
-    align-self: stretch;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-  }
-  #creator-profile-inner.creator-profile--hero-stats .profile-hero-stats-bar .profile-hero-fan-plan:last-child {
-    border-right: none;
-    padding-right: 0;
-  }
-  #creator-profile-inner.creator-profile--hero-stats .profile-hero-stats-bar .profile-sidebar-owner:only-child,
-  #creator-profile-inner.creator-profile--hero-stats .profile-hero-stats-bar .profile-hero-fan-plan:only-child {
-    border-right: none;
-    padding-right: 0;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+    display: block;
   }
   #creator-profile-inner.creator-profile--hero-stats--mobile .profile-hero-stats-bar .profile-sidebar-owner,
   #creator-profile-inner.creator-profile--hero-stats--mobile .profile-hero-stats-bar .profile-hero-fan-plan {
-    padding-right: 12px;
+    padding-bottom: 8px;
   }
-  #creator-profile-inner.creator-profile--hero-stats .profile-owner-plan-title {
-    font-size: 0.62rem;
-    letter-spacing: 0.11em;
-    margin-bottom: 4px;
+  #creator-profile-inner.creator-profile--hero-stats .profile-hero-stats-bar .profile-owner-plan-wrap {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    align-items: baseline;
+    justify-content: center;
+    gap: 10px 12px;
+    width: 100%;
+    min-width: 0;
+    text-align: center;
   }
-  #creator-profile-inner.creator-profile--hero-stats--mobile .profile-owner-plan-title {
+  #creator-profile-inner.creator-profile--hero-stats .profile-hero-stats-bar .profile-owner-plan-title {
+    margin: 0;
+    flex: 0 0 auto;
     font-size: 0.58rem;
-    margin-bottom: 2px;
+    letter-spacing: 0.1em;
+    line-height: 1.2;
+    white-space: nowrap;
+    color: rgba(255, 255, 255, 0.48);
   }
-  #creator-profile-inner.creator-profile--hero-stats .profile-owner-plan-name {
-    font-size: 1.02rem;
-    margin-bottom: 2px;
+  #creator-profile-inner.creator-profile--hero-stats .profile-hero-stats-bar .profile-owner-plan-name {
+    margin: 0;
+    flex: 1 1 auto;
+    min-width: 0;
+    font-size: 0.95rem;
+    font-weight: 700;
     letter-spacing: -0.02em;
+    line-height: 1.2;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    color: #fafafa;
   }
-  #creator-profile-inner.creator-profile--hero-stats--mobile .profile-owner-plan-name {
-    font-size: 0.92rem;
+  #creator-profile-inner.creator-profile--hero-stats .profile-hero-stats-bar .profile-owner-plan-price {
+    margin: 0;
+    flex: 0 0 auto;
+    font-size: 0.78rem;
+    font-weight: 600;
+    line-height: 1.2;
+    white-space: nowrap;
+    color: rgba(255, 255, 255, 0.55);
   }
-  #creator-profile-inner.creator-profile--hero-stats .profile-owner-plan-price {
-    font-size: 0.8rem;
+  #creator-profile-inner.creator-profile--hero-stats--mobile .profile-hero-stats-bar .profile-owner-plan-title {
+    font-size: 0.52rem;
   }
-  #creator-profile-inner.creator-profile--hero-stats--mobile .profile-owner-plan-price {
-    font-size: 0.74rem;
+  #creator-profile-inner.creator-profile--hero-stats--mobile .profile-hero-stats-bar .profile-owner-plan-name {
+    font-size: 0.86rem;
   }
+  #creator-profile-inner.creator-profile--hero-stats--mobile .profile-hero-stats-bar .profile-owner-plan-price {
+    font-size: 0.72rem;
+  }
+  /* Solo métricas (sin plan): sin borde inferior vacío */
+  #creator-profile-inner.creator-profile--hero-stats .profile-hero-stats-bar > .profile-sidebar-metrics:first-child {
+    padding-top: 0;
+    border-top: none;
+  }
+  /* Fila 2: solo iconos + cifras, centrados, mismo ancho que la fila del plan */
   #creator-profile-inner.creator-profile--hero-stats .profile-hero-stats-bar .profile-sidebar-metrics {
     margin: 0 !important;
-    padding: 0 !important;
+    padding: 4px 0 0 !important;
     border: none !important;
-    flex: 1 1 auto;
+    width: 100%;
     min-width: 0;
     display: flex;
     flex-direction: row;
     flex-wrap: wrap;
     align-items: center;
-    justify-content: flex-end;
-    gap: 4px 0;
-  }
-  #creator-profile-inner.creator-profile--hero-stats .profile-hero-stats-bar > .profile-sidebar-metrics:first-child {
     justify-content: center;
+    gap: 10px 20px;
   }
-  @media (min-width: 480px) {
-    #creator-profile-inner.creator-profile--hero-stats .profile-hero-stats-bar > .profile-sidebar-metrics:first-child {
-      justify-content: flex-end;
-    }
+  #creator-profile-inner.creator-profile--hero-stats--mobile .profile-hero-stats-bar .profile-sidebar-metrics {
+    gap: 8px 14px;
+  }
+  #creator-profile-inner.creator-profile--hero-stats .profile-hero-stats-bar .profile-metric-label {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
   }
   #creator-profile-inner.creator-profile--hero-stats .profile-hero-stats-bar .profile-metric-row {
     padding: 0 !important;
     border: none !important;
-    gap: 5px;
+    gap: 6px;
+    flex: 0 1 auto;
+    justify-content: center;
+    align-items: center;
+    min-width: 0;
   }
   #creator-profile-inner.creator-profile--hero-stats .profile-hero-stats-bar .profile-metric-row + .profile-metric-row {
     border: none !important;
-    border-left: 1px solid rgba(255, 255, 255, 0.12) !important;
-    margin-left: 8px;
-    padding-left: 10px !important;
-  }
-  #creator-profile-inner.creator-profile--hero-stats--mobile .profile-hero-stats-bar .profile-metric-row + .profile-metric-row {
-    margin-left: 6px;
-    padding-left: 8px !important;
-  }
-  #creator-profile-inner.creator-profile--hero-stats .profile-hero-stats-bar .profile-metric-label {
-    font-size: 0.66rem;
-    font-weight: 600;
-    color: rgba(255, 255, 255, 0.52);
-    letter-spacing: 0.04em;
-  }
-  #creator-profile-inner.creator-profile--hero-stats--mobile .profile-hero-stats-bar .profile-metric-label {
-    font-size: 0.58rem;
+    padding-left: 0 !important;
+    margin-left: 0;
   }
   #creator-profile-inner.creator-profile--hero-stats .profile-hero-stats-bar .profile-metric-num {
-    font-size: 0.84rem;
+    font-size: 0.82rem;
     font-weight: 700;
     color: #fafafa;
+    font-variant-numeric: tabular-nums;
   }
   #creator-profile-inner.creator-profile--hero-stats--mobile .profile-hero-stats-bar .profile-metric-num {
-    font-size: 0.78rem;
+    font-size: 0.76rem;
   }
   #creator-profile-inner.creator-profile--hero-stats #profile-single-plan-slot {
     display: none !important;
@@ -7739,15 +7759,17 @@
         <div id="profile-fan-conversion-spacer" class="profile-fan-conversion-spacer" aria-hidden="true"></div>
         <div id="profile-fan-conversion-shell" class="profile-fan-conversion-shell">
         <div id="profile-hero-fan-plan" class="profile-hero-fan-plan" style="display:none;" aria-hidden="true">
-          <div class="profile-owner-plan-title">Plan disponible</div>
-          <div class="profile-owner-plan-name" id="profile-hero-fan-plan-name">—</div>
-          <div class="profile-owner-plan-price" id="profile-hero-fan-plan-price">—</div>
+          <div class="profile-owner-plan-wrap">
+            <div class="profile-owner-plan-title">Plan disponible</div>
+            <div class="profile-owner-plan-name" id="profile-hero-fan-plan-name">—</div>
+            <div class="profile-owner-plan-price" id="profile-hero-fan-plan-price">—</div>
+          </div>
         </div>
         <div id="profile-sidebar-metrics" class="profile-sidebar-metrics" aria-label="Estadísticas">
-          <div class="profile-metric-row"><span class="profile-metric-ic" aria-hidden="true"><svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" opacity="0.45"/><circle cx="9" cy="7" r="4" stroke="currentColor" stroke-width="1.5" opacity="0.9"/><path d="M22 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" opacity="0.55"/></svg></span><span class="profile-metric-label">Suscriptores</span><span class="profile-metric-num" id="metric-subs">0</span></div>
-          <div class="profile-metric-row"><span class="profile-metric-ic" aria-hidden="true"><svg width="18" height="18" viewBox="0 0 24 24" fill="none"><rect x="3" y="5" width="18" height="14" rx="2" stroke="currentColor" stroke-width="1.5" opacity="0.45"/><circle cx="8.5" cy="10.5" r="1.5" fill="currentColor" opacity="0.55"/><path d="M21 19l-5-5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" opacity="0.85"/></svg></span><span class="profile-metric-label">Fotos</span><span class="profile-metric-num" id="metric-photos">0</span></div>
-          <div class="profile-metric-row"><span class="profile-metric-ic" aria-hidden="true"><svg width="18" height="18" viewBox="0 0 24 24" fill="none"><rect x="2" y="7" width="20" height="12" rx="2" stroke="currentColor" stroke-width="1.5" opacity="0.45"/><path d="M7 7V5a5 5 0 0 1 10 0v2" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" opacity="0.75"/><polygon points="10 12 14 14 10 16" fill="currentColor" opacity="0.55"/></svg></span><span class="profile-metric-label">Videos</span><span class="profile-metric-num" id="metric-videos">0</span></div>
-          <div class="profile-metric-row profile-metric-row--stars"><span class="profile-metric-ic profile-metric-ic--stars" aria-hidden="true"><svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12 2.2l2.35 5.95L20.8 9l-4.9 3.75 1.55 6.25L12 16.35 6.55 19l1.55-6.25L3.2 9l6.45-.85L12 2.2z" opacity="0.92"/></svg></span><span class="profile-metric-label">Estrellas</span><span class="profile-metric-num" id="metric-stars">0</span></div>
+          <div class="profile-metric-row" aria-label="Suscriptores"><span class="profile-metric-ic" aria-hidden="true"><svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" opacity="0.45"/><circle cx="9" cy="7" r="4" stroke="currentColor" stroke-width="1.5" opacity="0.9"/><path d="M22 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" opacity="0.55"/></svg></span><span class="profile-metric-label">Suscriptores</span><span class="profile-metric-num" id="metric-subs">0</span></div>
+          <div class="profile-metric-row" aria-label="Fotos"><span class="profile-metric-ic" aria-hidden="true"><svg width="18" height="18" viewBox="0 0 24 24" fill="none"><rect x="3" y="5" width="18" height="14" rx="2" stroke="currentColor" stroke-width="1.5" opacity="0.45"/><circle cx="8.5" cy="10.5" r="1.5" fill="currentColor" opacity="0.55"/><path d="M21 19l-5-5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" opacity="0.85"/></svg></span><span class="profile-metric-label">Fotos</span><span class="profile-metric-num" id="metric-photos">0</span></div>
+          <div class="profile-metric-row" aria-label="Videos"><span class="profile-metric-ic" aria-hidden="true"><svg width="18" height="18" viewBox="0 0 24 24" fill="none"><rect x="2" y="7" width="20" height="12" rx="2" stroke="currentColor" stroke-width="1.5" opacity="0.45"/><path d="M7 7V5a5 5 0 0 1 10 0v2" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" opacity="0.75"/><polygon points="10 12 14 14 10 16" fill="currentColor" opacity="0.55"/></svg></span><span class="profile-metric-label">Videos</span><span class="profile-metric-num" id="metric-videos">0</span></div>
+          <div class="profile-metric-row profile-metric-row--stars" aria-label="Estrellas"><span class="profile-metric-ic profile-metric-ic--stars" aria-hidden="true"><svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12 2.2l2.35 5.95L20.8 9l-4.9 3.75 1.55 6.25L12 16.35 6.55 19l1.55-6.25L3.2 9l6.45-.85L12 2.2z" opacity="0.92"/></svg></span><span class="profile-metric-label">Estrellas</span><span class="profile-metric-num" id="metric-stars">0</span></div>
         </div>
         <div id="profile-sidebar-fan">
           <div id="promo-access-banner" style="display:none;" class="promo-banner">
