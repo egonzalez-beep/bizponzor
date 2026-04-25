@@ -4342,17 +4342,6 @@
     flex-shrink: 0;
     pointer-events: none;
   }
-  @keyframes profileFanDockIn {
-    from {
-      opacity: 0;
-      transform: translateX(-50%) translateY(16px) scale(0.96);
-    }
-    to {
-      opacity: 1;
-      transform: translateX(-50%) translateY(0) scale(1);
-    }
-  }
-
   /* ═══ Perfil creador · vista fan · móvil (≤768): sub-isla + dock flotante ═══ */
   @media (max-width: 768px) {
     #creator-profile-inner.profile-fan-conversion-ux .profile-hero-row {
@@ -4422,7 +4411,10 @@
       margin-bottom: -18px;
       position: relative;
       z-index: 1;
-      transition: opacity 0.36s ease-out, transform 0.36s ease-out, box-shadow 0.32s ease-out;
+      transition:
+        opacity 300ms cubic-bezier(0.4, 0, 0.2, 1),
+        transform 300ms cubic-bezier(0.4, 0, 0.2, 1),
+        box-shadow 300ms cubic-bezier(0.4, 0, 0.2, 1);
     }
     #creator-profile-inner.profile-fan-conversion-ux #profile-sidebar-fan {
       order: 1;
@@ -4454,7 +4446,7 @@
       position: fixed;
       left: 50%;
       bottom: max(12px, env(safe-area-inset-bottom));
-      transform: translateX(-50%);
+      transform: translateX(-50%) translateY(0);
       width: auto;
       max-width: calc(100vw - 20px);
       margin: 0;
@@ -4466,19 +4458,25 @@
       gap: 8px;
       padding: 10px 12px;
       border-radius: 999px;
-      background: linear-gradient(145deg, rgba(36, 24, 58, 0.96), rgba(22, 18, 34, 0.94));
-      border: 1px solid rgba(168, 85, 247, 0.28);
+      background: rgba(255, 255, 255, 0.15);
+      -webkit-backdrop-filter: blur(12px);
+      backdrop-filter: blur(12px);
+      border: 1px solid rgba(255, 255, 255, 0.2);
       box-shadow:
-        0 14px 44px rgba(0, 0, 0, 0.5),
+        0 14px 44px rgba(0, 0, 0, 0.45),
         0 0 0 1px rgba(255, 255, 255, 0.06) inset,
-        0 0 28px rgba(108, 59, 255, 0.2);
+        0 0 24px rgba(108, 59, 255, 0.18);
       pointer-events: auto;
       -webkit-tap-highlight-color: transparent;
-      animation: profileFanDockIn 0.38s ease-out both;
+      transition:
+        opacity 300ms cubic-bezier(0.4, 0, 0.2, 1),
+        transform 300ms cubic-bezier(0.4, 0, 0.2, 1),
+        box-shadow 300ms cubic-bezier(0.4, 0, 0.2, 1);
     }
-    #creator-profile-inner.profile-fan-conversion-ux .profile-fan-conversion-shell.profile-fan-conversion-shell--floated.profile-fan-conversion-shell--peek {
-      transform: translateX(-50%) translateY(14px) scale(0.97);
-      opacity: 0.42;
+    #creator-profile-inner.profile-fan-conversion-ux
+      .profile-fan-conversion-shell.profile-fan-conversion-shell--floated.profile-fan-conversion-shell--scroll-dim {
+      transform: translateX(-50%) translateY(12px);
+      opacity: 0.4;
     }
     #creator-profile-inner.profile-fan-conversion-ux .profile-fan-conversion-shell--floated #profile-sidebar-metrics {
       display: none !important;
@@ -4527,20 +4525,26 @@
     }
     #creator-profile-inner.profile-fan-conversion-ux .profile-fan-conversion-shell--floated #profile-btn-subscribe,
     #creator-profile-inner.profile-fan-conversion-ux .profile-fan-conversion-shell--floated #profile-btn-donate {
-      width: auto;
-      min-width: 52px;
+      width: 48px;
+      min-width: 48px;
+      max-width: 48px;
       min-height: 48px;
-      padding: 12px 16px;
+      padding: 0;
       border-radius: 999px;
       font-size: 0.82rem;
       font-weight: 800;
       white-space: nowrap;
-      border: none !important;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      border: 1px solid rgba(255, 255, 255, 0.2) !important;
       box-shadow: 0 6px 20px rgba(0, 0, 0, 0.35);
+      -webkit-backdrop-filter: blur(10px);
+      backdrop-filter: blur(10px);
       transition: transform 0.15s ease, filter 0.15s ease, box-shadow 0.2s ease;
     }
     #creator-profile-inner.profile-fan-conversion-ux .profile-fan-conversion-shell--floated #profile-btn-subscribe {
-      background: linear-gradient(135deg, #6c3bff, #a855f7) !important;
+      background: linear-gradient(135deg, rgba(108, 59, 255, 0.92), rgba(168, 85, 247, 0.88)) !important;
       color: #fff !important;
       box-shadow: 0 8px 26px rgba(108, 59, 255, 0.5);
     }
@@ -4548,9 +4552,8 @@
       transform: scale(0.97);
     }
     #creator-profile-inner.profile-fan-conversion-ux .profile-fan-conversion-shell--floated #profile-btn-donate {
-      background: linear-gradient(135deg, rgba(168, 85, 247, 0.55), rgba(108, 59, 255, 0.35)) !important;
+      background: rgba(255, 255, 255, 0.12) !important;
       color: #faf5ff !important;
-      border: 1px solid rgba(255, 255, 255, 0.2) !important;
     }
     #creator-profile-inner.profile-fan-conversion-ux .profile-fan-conversion-shell--floated #profile-btn-donate:active {
       transform: scale(0.97);
@@ -4559,22 +4562,34 @@
     #creator-profile-inner.profile-fan-conversion-ux .profile-fan-conversion-shell--floated #profile-btn-donate .profile-act-ic {
       display: flex;
     }
+    #creator-profile-inner.profile-fan-conversion-ux .profile-fan-conversion-shell--floated #profile-btn-subscribe .profile-btn-text-stack,
+    #creator-profile-inner.profile-fan-conversion-ux .profile-fan-conversion-shell--floated #profile-btn-donate .profile-btn-text-stack {
+      display: none !important;
+    }
     #creator-profile-inner.profile-fan-conversion-ux .profile-fan-conversion-shell--floated #profile-btn-subscribe .profile-act-label,
     #creator-profile-inner.profile-fan-conversion-ux .profile-fan-conversion-shell--floated #profile-btn-donate .profile-act-label {
-      max-width: 76px;
-      overflow: hidden;
-      text-overflow: ellipsis;
+      display: none !important;
     }
     #creator-profile-inner.profile-fan-conversion-ux .profile-fan-conversion-shell--floated #profile-btn-subscribe .profile-act-sub,
     #creator-profile-inner.profile-fan-conversion-ux .profile-fan-conversion-shell--floated #profile-btn-donate .profile-act-sub {
       display: none !important;
     }
     #creator-profile-inner.profile-fan-conversion-ux .profile-fan-conversion-shell--floated #profile-btn-subscribe.profile-btn-subscribe--vip .profile-subscribe-vip {
-      font-size: 0.74rem;
-      max-width: 42vw;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      white-space: nowrap;
+      display: none !important;
+    }
+    #creator-profile-inner.profile-fan-conversion-ux .profile-fan-conversion-shell--floated #profile-btn-subscribe.profile-btn-subscribe--vip .profile-subscribe-default {
+      display: flex !important;
+      align-items: center;
+      justify-content: center;
+      gap: 0;
+      width: 100%;
+    }
+    #creator-profile-inner.profile-fan-conversion-ux .profile-fan-conversion-shell--floated #profile-btn-subscribe:not(.profile-btn-subscribe--vip) .profile-subscribe-default {
+      display: flex !important;
+      align-items: center;
+      justify-content: center;
+      gap: 0;
+      width: 100%;
     }
     #creator-profile-inner.profile-fan-conversion-ux .profile-fan-conversion-shell--floated #profile-btn-fan-messages {
       width: auto;
@@ -4599,6 +4614,10 @@
       max-width: 52vw;
       position: relative;
     }
+    #creator-profile-inner.profile-fan-conversion-ux .profile-fan-conversion-shell--floated #miniChatContainer.mini-chat-wrap--open {
+      z-index: 7200;
+      isolation: isolate;
+    }
     #creator-profile-inner.profile-fan-conversion-ux .profile-fan-conversion-shell--floated #miniChatContainer[style*='display: none'],
     #creator-profile-inner.profile-fan-conversion-ux .profile-fan-conversion-shell--floated #miniChatContainer[style*='display:none'] {
       display: none !important;
@@ -4613,9 +4632,11 @@
       border-radius: 999px;
       font-size: 0.78rem;
       font-weight: 800;
-      background: linear-gradient(135deg, rgba(76, 29, 149, 0.85), rgba(124, 58, 237, 0.65)) !important;
+      background: rgba(255, 255, 255, 0.15) !important;
+      -webkit-backdrop-filter: blur(12px);
+      backdrop-filter: blur(12px);
       color: #fff !important;
-      border: 1px solid rgba(255, 255, 255, 0.16) !important;
+      border: 1px solid rgba(255, 255, 255, 0.2) !important;
       box-shadow: 0 4px 18px rgba(88, 28, 135, 0.35);
       transition: transform 0.15s ease, filter 0.15s ease;
     }
@@ -4641,7 +4662,7 @@
       background: rgba(28, 28, 28, 0.98);
       border: 1px solid rgba(255, 255, 255, 0.12);
       box-shadow: 0 -12px 40px rgba(0, 0, 0, 0.45);
-      z-index: 3;
+      z-index: 10;
       overflow: auto;
     }
   }
@@ -7906,7 +7927,7 @@
               <span class="profile-subscribe-vip" role="status">💎 Ya eres patrocinador</span>
             </button>
             <button type="button" class="btn btn-primary btn-full profile-btn-donate" id="profile-btn-donate" onclick="openDonateModal()">
-              <span class="profile-act-ic" aria-hidden="true"><svg class="profile-act-svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.65" stroke-linecap="round" stroke-linejoin="round"><path d="M4 11h16v9a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2v-9z"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/><path d="M12 8v14"/></svg></span>
+              <span class="profile-act-ic" aria-hidden="true"><svg class="profile-act-svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.65" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="7.75"/><ellipse cx="12" cy="12" rx="4.5" ry="7.75" opacity="0.35"/><path d="M12 5v14"/></svg></span>
               <span class="profile-btn-text-stack">
                 <span class="profile-act-label">Donar</span>
                 <span class="profile-act-sub" id="profile-btn-donate-sub">Apoya al creador</span>
@@ -9466,7 +9487,9 @@ var profileFanConversionIO = null;
 var profileFanConversionScrollHandler = null;
 var profileFanConversionLastScrollY = 0;
 var profileFanConversionMqlBound = false;
-var profileFanIoDebounceTimer = null;
+var profileFanDockIoRaf = null;
+var profileFanDockScrollRaf = null;
+var profileFanDockFloatLast = null;
 
 function restoreProfileMetricsToShell() {
   var m = document.getElementById('profile-sidebar-metrics');
@@ -9501,10 +9524,15 @@ function isProfileOwnerSidebarVisible() {
 function teardownProfileFanConversionUX() {
   if (typeof restoreProfileHeroStatsBar === 'function') restoreProfileHeroStatsBar();
   restoreProfileMetricsToShell();
-  if (profileFanIoDebounceTimer) {
-    clearTimeout(profileFanIoDebounceTimer);
-    profileFanIoDebounceTimer = null;
+  if (profileFanDockIoRaf != null) {
+    cancelAnimationFrame(profileFanDockIoRaf);
+    profileFanDockIoRaf = null;
   }
+  if (profileFanDockScrollRaf != null) {
+    cancelAnimationFrame(profileFanDockScrollRaf);
+    profileFanDockScrollRaf = null;
+  }
+  profileFanDockFloatLast = null;
   var inner = document.getElementById('creator-profile-inner');
   var body = document.querySelector('#creator-profile-inner .profile-body');
   var shell = document.getElementById('profile-fan-conversion-shell');
@@ -9524,22 +9552,46 @@ function teardownProfileFanConversionUX() {
   }
   if (shell) {
     shell.classList.remove('profile-fan-conversion-shell--floated');
+    shell.classList.remove('profile-fan-conversion-shell--scroll-dim');
     shell.classList.remove('profile-fan-conversion-shell--peek');
   }
   if (spacer) spacer.style.height = '';
 }
 
+function profileFanDockApplyIoFloat(isIntersecting) {
+  if (profileFanDockIoRaf != null) cancelAnimationFrame(profileFanDockIoRaf);
+  profileFanDockIoRaf = requestAnimationFrame(function () {
+    profileFanDockIoRaf = null;
+    var inner = document.getElementById('creator-profile-inner');
+    if (!inner || !inner.classList.contains('profile-fan-conversion-ux')) return;
+    var mini = document.getElementById('miniChatContainer');
+    if (mini && mini.classList.contains('mini-chat-wrap--open')) return;
+    var wantF = !isIntersecting;
+    if (profileFanDockFloatLast === wantF) return;
+    profileFanDockFloatLast = wantF;
+    setProfileFanConversionFloated(!!wantF);
+  });
+}
+
 function profileFanConversionOnScrollPeek() {
   var shell = document.getElementById('profile-fan-conversion-shell');
   if (!shell || !shell.classList.contains('profile-fan-conversion-shell--floated')) return;
-  var y = window.scrollY || document.documentElement.scrollTop || 0;
-  var dy = y - profileFanConversionLastScrollY;
-  profileFanConversionLastScrollY = y;
-  if (dy < -22) {
-    shell.classList.add('profile-fan-conversion-shell--peek');
-  } else if (dy > 12) {
-    shell.classList.remove('profile-fan-conversion-shell--peek');
-  }
+  var mini = document.getElementById('miniChatContainer');
+  if (mini && mini.classList.contains('mini-chat-wrap--open')) return;
+  if (profileFanDockScrollRaf != null) return;
+  profileFanDockScrollRaf = requestAnimationFrame(function () {
+    profileFanDockScrollRaf = null;
+    shell = document.getElementById('profile-fan-conversion-shell');
+    if (!shell || !shell.classList.contains('profile-fan-conversion-shell--floated')) return;
+    var y = window.scrollY || document.documentElement.scrollTop || 0;
+    var dy = y - profileFanConversionLastScrollY;
+    profileFanConversionLastScrollY = y;
+    if (dy < -4) {
+      shell.classList.add('profile-fan-conversion-shell--scroll-dim');
+    } else if (dy > 4) {
+      shell.classList.remove('profile-fan-conversion-shell--scroll-dim');
+    }
+  });
 }
 
 function setProfileFanConversionFloated(on) {
@@ -9552,6 +9604,7 @@ function setProfileFanConversionFloated(on) {
     var h = Math.min(Math.max(rawH, 56), 160);
     spacer.style.height = h + 'px';
     shell.classList.add('profile-fan-conversion-shell--floated');
+    shell.classList.remove('profile-fan-conversion-shell--scroll-dim');
     profileFanConversionLastScrollY = window.scrollY || document.documentElement.scrollTop || 0;
     if (!profileFanConversionScrollHandler) {
       profileFanConversionScrollHandler = profileFanConversionOnScrollPeek;
@@ -9560,6 +9613,7 @@ function setProfileFanConversionFloated(on) {
     if (body) body.classList.add('profile-body--fan-dock');
   } else {
     shell.classList.remove('profile-fan-conversion-shell--floated');
+    shell.classList.remove('profile-fan-conversion-shell--scroll-dim');
     shell.classList.remove('profile-fan-conversion-shell--peek');
     spacer.style.height = '';
     if (profileFanConversionScrollHandler) {
@@ -9595,25 +9649,9 @@ function syncProfileFanConversionUX() {
       function (entries) {
         var e = entries[0];
         if (!e) return;
-        if (profileFanIoDebounceTimer) clearTimeout(profileFanIoDebounceTimer);
-        profileFanIoDebounceTimer = setTimeout(function () {
-          profileFanIoDebounceTimer = null;
-          var sen = document.getElementById('profile-fan-scroll-sentinel');
-          if (!sen) return;
-          var r = sen.getBoundingClientRect();
-          var vh = window.innerHeight || document.documentElement.clientHeight || 0;
-          var intersecting = r.top < vh && r.bottom > 0;
-          var wantF = !intersecting;
-          if (!wantF) {
-            var w2 = document.getElementById('miniChatContainer');
-            if (w2 && w2.classList.contains('mini-chat-wrap--open')) {
-              return;
-            }
-          }
-          setProfileFanConversionFloated(!!wantF);
-        }, 110);
+        profileFanDockApplyIoFloat(e.isIntersecting);
       },
-      { root: null, threshold: 0, rootMargin: '0px 0px -6% 0px' }
+      { root: null, threshold: [0, 0.02, 0.08, 0.15], rootMargin: '0px 0px -8% 0px' }
     );
     profileFanConversionIO.observe(sentinel);
   } finally {
@@ -10432,6 +10470,10 @@ function teardownMiniChat() {
   MINI_CHAT_CREATOR_ID = null;
   const box = document.getElementById('miniChatContainer');
   if (box) {
+    if (box.dataset.bpPrevOverflow !== undefined) {
+      document.body.style.overflow = box.dataset.bpPrevOverflow || '';
+      delete box.dataset.bpPrevOverflow;
+    }
     box.style.display = 'none';
     box.classList.remove('mini-chat-wrap--open');
   }
@@ -10448,8 +10490,25 @@ function toggleMiniChat() {
   wrap.classList.toggle('mini-chat-wrap--open', open);
   const btn = document.getElementById('miniChatToggle');
   if (btn) btn.setAttribute('aria-expanded', open ? 'true' : 'false');
-  if (open && MINI_CHAT_CREATOR_ID) {
-    loadMiniChat(MINI_CHAT_CREATOR_ID);
+  if (open) {
+    if (wrap.dataset.bpPrevOverflow === undefined) {
+      wrap.dataset.bpPrevOverflow = document.body.style.overflow || '';
+    }
+    document.body.style.overflow = 'hidden';
+    if (MINI_CHAT_CREATOR_ID) {
+      loadMiniChat(MINI_CHAT_CREATOR_ID);
+    }
+  } else {
+    if (wrap.dataset.bpPrevOverflow !== undefined) {
+      document.body.style.overflow = wrap.dataset.bpPrevOverflow || '';
+      delete wrap.dataset.bpPrevOverflow;
+    }
+    if (typeof profileFanConversionIO !== 'undefined' && profileFanConversionIO && typeof profileFanDockApplyIoFloat === 'function') {
+      var rec = profileFanConversionIO.takeRecords();
+      if (rec && rec.length) {
+        profileFanDockApplyIoFloat(rec[rec.length - 1].isIntersecting);
+      }
+    }
   }
 }
 
@@ -10458,15 +10517,23 @@ function bindMiniChatOnce() {
   const send = document.getElementById('miniChatSend');
   const input = document.getElementById('miniChatInput');
   const toggle = document.getElementById('miniChatToggle');
+  const miniBox = document.getElementById('miniChatContainer');
   if (!send || !input) return;
   miniChatBound = true;
+  if (miniBox && !miniBox._bpMiniChatCapture) {
+    miniBox._bpMiniChatCapture = true;
+    miniBox.addEventListener('click', function (ev) {
+      if (ev && typeof ev.stopPropagation === 'function') ev.stopPropagation();
+    });
+  }
   if (toggle) {
     toggle.addEventListener('click', function (ev) {
       if (ev && typeof ev.stopPropagation === 'function') ev.stopPropagation();
       toggleMiniChat();
     });
   }
-  send.addEventListener('click', function () {
+  send.addEventListener('click', function (ev) {
+    if (ev && typeof ev.stopPropagation === 'function') ev.stopPropagation();
     sendMiniMessage();
   });
   input.addEventListener('keydown', function (e) {
@@ -11228,10 +11295,18 @@ async function updateProfileMessageSection(creatorId) {
   subForm.style.display = 'none';
   locked.style.display = 'none';
   wrap.style.display = 'none';
-  if (typeof teardownMiniChat === 'function') teardownMiniChat();
-  if (!CURRENT_USER || CURRENT_USER.role !== 'fan') return;
+  if (!CURRENT_USER || CURRENT_USER.role !== 'fan') {
+    if (typeof teardownMiniChat === 'function') teardownMiniChat();
+    return;
+  }
+  var sameCreator =
+    MINI_CHAT_CREATOR_ID != null && String(MINI_CHAT_CREATOR_ID) === String(creatorId);
+  if (!sameCreator && typeof teardownMiniChat === 'function') {
+    teardownMiniChat();
+  }
   wrap.style.display = 'block';
   if (!TOKEN) {
+    if (typeof teardownMiniChat === 'function') teardownMiniChat();
     locked.style.display = 'block';
     locked.innerHTML =
       '🔒 <a href="#" onclick="showAuth(\'login\');return false;" style="color:#93C5FD;font-weight:700;">Inicia sesión</a> y suscríbete para enviar mensajes.';
@@ -11263,6 +11338,7 @@ async function updateProfileMessageSection(creatorId) {
     }
     wrap.style.display = 'none';
   } else {
+    if (typeof teardownMiniChat === 'function') teardownMiniChat();
     locked.style.display = 'block';
     locked.innerHTML =
       '🔒 Suscríbete para enviar mensajes. <a href="#" onclick="subscribeFromProfile();return false;" style="color:#93C5FD;font-weight:700;">Suscribirse</a>';
