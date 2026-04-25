@@ -4344,6 +4344,13 @@
   }
   /* ═══ Perfil creador · vista fan · móvil (≤768): sub-isla + dock flotante ═══ */
   @media (max-width: 768px) {
+    /* Sin “marco sobre marco”: la card lateral no compite con el shell de conversión */
+    #creator-profile-inner.profile-fan-conversion-ux #profile-plans-card.profile-sidebar-card {
+      background: transparent;
+      border: none;
+      box-shadow: none;
+      padding: 8px 4px 12px;
+    }
     #creator-profile-inner.profile-fan-conversion-ux .profile-hero-row {
       flex-wrap: wrap;
       justify-content: space-between;
@@ -4387,34 +4394,30 @@
       display: none !important;
     }
     #creator-profile-inner.profile-fan-conversion-ux #profile-sidebar-fan .promo-box {
-      margin-top: 8px !important;
-      padding-top: 8px !important;
+      margin-top: 6px !important;
+      padding-top: 4px !important;
+      border-top: none;
     }
     #creator-profile-inner.profile-fan-conversion-ux .profile-fan-conversion-shell {
       display: flex;
       flex-direction: column;
-      gap: 10px;
-      padding: 12px 14px 14px;
-      border-radius: 16px;
-      background: linear-gradient(
-        165deg,
-        rgba(55, 40, 85, 0.55) 0%,
-        rgba(28, 26, 38, 0.82) 48%,
-        rgba(22, 22, 28, 0.9) 100%
-      );
-      -webkit-backdrop-filter: blur(16px);
-      backdrop-filter: blur(16px);
-      border: 1px solid rgba(167, 139, 250, 0.18);
-      box-shadow:
-        0 8px 32px rgba(0, 0, 0, 0.38),
-        0 1px 0 rgba(255, 255, 255, 0.06) inset;
-      margin-bottom: -18px;
+      gap: 8px;
       position: relative;
       z-index: 1;
       transition:
         opacity 300ms cubic-bezier(0.4, 0, 0.2, 1),
         transform 300ms cubic-bezier(0.4, 0, 0.2, 1),
         box-shadow 300ms cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    #creator-profile-inner.profile-fan-conversion-ux .profile-fan-conversion-shell:not(.profile-fan-conversion-shell--floated) {
+      padding: 0;
+      border-radius: 0;
+      background: transparent;
+      -webkit-backdrop-filter: none;
+      backdrop-filter: none;
+      border: none;
+      box-shadow: none;
+      margin-bottom: 0;
     }
     #creator-profile-inner.profile-fan-conversion-ux #profile-sidebar-fan {
       order: 1;
@@ -4428,17 +4431,95 @@
       margin-bottom: 0;
     }
     #creator-profile-inner.profile-fan-conversion-ux .profile-action-buttons .btn {
-      min-height: 48px;
+      min-height: 40px;
+      padding: 8px 12px;
       border-radius: 12px;
       transition: transform 0.15s ease, filter 0.15s ease;
     }
     #creator-profile-inner.profile-fan-conversion-ux .profile-action-buttons .btn:active {
       transform: scale(0.98);
     }
+    #creator-profile-inner.profile-fan-conversion-ux #profile-btn-subscribe.profile-btn-subscribe--vip:disabled {
+      min-height: 40px;
+      padding: 8px 12px;
+    }
+    #creator-profile-inner.profile-fan-conversion-ux #profile-btn-subscribe.profile-btn-subscribe--vip:disabled .profile-subscribe-vip {
+      white-space: nowrap;
+      font-size: clamp(0.68rem, 2.8vw, 0.82rem);
+      line-height: 1.2;
+      text-align: center;
+      width: 100%;
+    }
+    #creator-profile-inner.profile-fan-conversion-ux #profile-btn-donate .profile-btn-text-stack {
+      flex-direction: row;
+      flex-wrap: nowrap;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      width: 100%;
+      min-width: 0;
+      max-width: 100%;
+      text-align: center;
+    }
+    #creator-profile-inner.profile-fan-conversion-ux #profile-btn-donate .profile-act-label {
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
+    #creator-profile-inner.profile-fan-conversion-ux #profile-btn-donate .profile-act-sub {
+      white-space: nowrap;
+      font-size: 0.68rem;
+      line-height: 1.2;
+      min-width: 0;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    #creator-profile-inner.profile-fan-conversion-ux #profile-btn-subscribe:not(.profile-btn-subscribe--vip) .profile-btn-text-stack {
+      flex-direction: row;
+      flex-wrap: nowrap;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      width: 100%;
+      min-width: 0;
+      max-width: 100%;
+      text-align: center;
+    }
+    #creator-profile-inner.profile-fan-conversion-ux #profile-btn-subscribe:not(.profile-btn-subscribe--vip) .profile-act-label {
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
+    #creator-profile-inner.profile-fan-conversion-ux #profile-btn-subscribe:not(.profile-btn-subscribe--vip) .profile-act-sub {
+      white-space: nowrap;
+      font-size: 0.68rem;
+      line-height: 1.2;
+      min-width: 0;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    #creator-profile-inner.profile-fan-conversion-ux .profile-promo-toggle {
+      width: 100%;
+      max-width: 100%;
+      justify-content: center;
+      flex-wrap: nowrap;
+      white-space: nowrap;
+      line-height: 1.15 !important;
+      padding: 2px 0 !important;
+      font-size: clamp(0.68rem, 2.9vw, 0.78rem) !important;
+      gap: 6px;
+      box-sizing: border-box;
+    }
+    #creator-profile-inner.profile-fan-conversion-ux .profile-promo-toggle-ic {
+      flex-shrink: 0;
+    }
     #creator-profile-inner.profile-fan-conversion-ux .profile-sidebar-card .mini-chat-wrap {
       margin-top: 4px;
-      padding-top: 8px;
-      border-top: 1px solid rgba(255, 255, 255, 0.07);
+      padding-top: 6px;
+      border-top: none;
+    }
+    #creator-profile-inner.profile-fan-conversion-ux .profile-sidebar-card .mini-chat {
+      border: none;
+      background: rgba(255, 255, 255, 0.04);
+      border-radius: 12px;
     }
 
     /* Dock compacto: mismos nodos + gradiente marca */
@@ -4451,6 +4532,7 @@
       max-width: calc(100vw - 20px);
       margin: 0;
       z-index: 1990;
+      display: flex;
       flex-direction: row;
       flex-wrap: nowrap;
       align-items: center;
@@ -10460,9 +10542,11 @@ function clearProfileChatState() {}
 
 var miniChatPollInterval = null;
 var miniChatBound = false;
+var miniChatToggleSuppressClick = false;
 var MINI_CHAT_CREATOR_ID = null;
 
 function teardownMiniChat() {
+  miniChatToggleSuppressClick = false;
   if (miniChatPollInterval) {
     clearInterval(miniChatPollInterval);
     miniChatPollInterval = null;
@@ -10527,7 +10611,27 @@ function bindMiniChatOnce() {
     });
   }
   if (toggle) {
+    toggle.addEventListener(
+      'touchend',
+      function (ev) {
+        if (!ev.changedTouches || ev.changedTouches.length === 0) return;
+        miniChatToggleSuppressClick = true;
+        window.clearTimeout(toggle._bpMiniChatSuppressT);
+        toggle._bpMiniChatSuppressT = window.setTimeout(function () {
+          miniChatToggleSuppressClick = false;
+        }, 500);
+        if (typeof ev.stopPropagation === 'function') ev.stopPropagation();
+        ev.preventDefault();
+        toggleMiniChat();
+      },
+      { passive: false }
+    );
     toggle.addEventListener('click', function (ev) {
+      if (miniChatToggleSuppressClick) {
+        if (ev && typeof ev.preventDefault === 'function') ev.preventDefault();
+        if (ev && typeof ev.stopPropagation === 'function') ev.stopPropagation();
+        return;
+      }
       if (ev && typeof ev.stopPropagation === 'function') ev.stopPropagation();
       toggleMiniChat();
     });
