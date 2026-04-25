@@ -4029,6 +4029,16 @@
     gap: 12px;
     min-width: 0;
   }
+  /* CTA vs estado VIP: solo uno visible (el atributo hidden falla mal dentro del flex del botón en algunos casos) */
+  #creator-profile-inner #profile-btn-subscribe:not(.profile-btn-subscribe--vip) .profile-subscribe-vip {
+    display: none !important;
+  }
+  #creator-profile-inner #profile-btn-subscribe.profile-btn-subscribe--vip .profile-subscribe-default {
+    display: none !important;
+  }
+  #creator-profile-inner #profile-btn-subscribe.profile-btn-subscribe--vip .profile-subscribe-vip {
+    display: block !important;
+  }
   #creator-profile-inner .profile-btn-text-stack {
     display: flex;
     flex-direction: column;
@@ -7893,7 +7903,7 @@
                   <span class="profile-act-sub">Desbloquea contenido exclusivo</span>
                 </span>
               </span>
-              <span class="profile-subscribe-vip" hidden role="status">💎 Ya eres patrocinador</span>
+              <span class="profile-subscribe-vip" role="status">💎 Ya eres patrocinador</span>
             </button>
             <button type="button" class="btn btn-primary btn-full profile-btn-donate" id="profile-btn-donate" onclick="openDonateModal()">
               <span class="profile-act-ic" aria-hidden="true"><svg class="profile-act-svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.65" stroke-linecap="round" stroke-linejoin="round"><path d="M4 11h16v9a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2v-9z"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/><path d="M12 8v14"/></svg></span>
@@ -9041,10 +9051,6 @@ async function updateProfileSubscribeButtonState(creatorId) {
   if (!CURRENT_USER || CURRENT_USER.role !== 'fan' || !creatorId) {
     btn.disabled = false;
     btn.classList.remove('profile-btn-subscribe--vip');
-    var d0 = btn.querySelector('.profile-subscribe-default');
-    var v0 = btn.querySelector('.profile-subscribe-vip');
-    if (d0) d0.hidden = false;
-    if (v0) v0.hidden = true;
     btn.removeAttribute('aria-label');
     hint.style.display = 'none';
     return;
@@ -9060,27 +9066,15 @@ async function updateProfileSubscribeButtonState(creatorId) {
     if (active) {
       btn.disabled = true;
       btn.classList.add('profile-btn-subscribe--vip');
-      var d = btn.querySelector('.profile-subscribe-default');
-      var v = btn.querySelector('.profile-subscribe-vip');
-      if (d) d.hidden = true;
-      if (v) v.hidden = false;
       btn.setAttribute('aria-label', 'Ya eres patrocinador de este creador');
     } else {
       btn.disabled = false;
       btn.classList.remove('profile-btn-subscribe--vip');
-      var d1 = btn.querySelector('.profile-subscribe-default');
-      var v1 = btn.querySelector('.profile-subscribe-vip');
-      if (d1) d1.hidden = false;
-      if (v1) v1.hidden = true;
       btn.removeAttribute('aria-label');
     }
   } catch (e) {
     btn.disabled = false;
     btn.classList.remove('profile-btn-subscribe--vip');
-    var d2 = btn.querySelector('.profile-subscribe-default');
-    var v2 = btn.querySelector('.profile-subscribe-vip');
-    if (d2) d2.hidden = false;
-    if (v2) v2.hidden = true;
     btn.removeAttribute('aria-label');
     hint.style.display = 'none';
   }
