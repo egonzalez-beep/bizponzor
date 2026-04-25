@@ -4326,23 +4326,7 @@
     --profile-accent: #6366f1;
   }
 
-  /* Sentinel para anclar el dock móvil (sin altura visual) */
-  .profile-fan-scroll-sentinel {
-    height: 1px;
-    width: 100%;
-    margin: 0;
-    padding: 0;
-    pointer-events: none;
-    visibility: hidden;
-    overflow: hidden;
-  }
-  .profile-fan-conversion-spacer {
-    width: 100%;
-    height: 0;
-    flex-shrink: 0;
-    pointer-events: none;
-  }
-  /* ═══ Perfil creador · vista fan · móvil (≤768): sub-isla + dock flotante ═══ */
+  /* ═══ Perfil creador · vista fan · móvil (≤768): columna + banner CTAs en flujo ═══ */
   @media (max-width: 768px) {
     /* Sin “marco sobre marco”: la card lateral no compite con el shell de conversión */
     #creator-profile-inner.profile-fan-conversion-ux #profile-plans-card.profile-sidebar-card {
@@ -4375,9 +4359,6 @@
       gap: 14px;
       padding-bottom: max(36px, calc(28px + env(safe-area-inset-bottom)));
     }
-    #creator-profile-inner.profile-fan-conversion-ux .profile-body.profile-body--fan-mobile.profile-body--fan-dock .profile-feed {
-      padding-bottom: max(72px, calc(56px + env(safe-area-inset-bottom)));
-    }
     #creator-profile-inner.profile-fan-conversion-ux .profile-body--fan-mobile .profile-sidebar-col {
       order: 1;
       width: 100%;
@@ -4402,14 +4383,6 @@
       display: flex;
       flex-direction: column;
       gap: 8px;
-      position: relative;
-      z-index: 1;
-      transition:
-        opacity 300ms cubic-bezier(0.4, 0, 0.2, 1),
-        transform 300ms cubic-bezier(0.4, 0, 0.2, 1),
-        box-shadow 300ms cubic-bezier(0.4, 0, 0.2, 1);
-    }
-    #creator-profile-inner.profile-fan-conversion-ux .profile-fan-conversion-shell:not(.profile-fan-conversion-shell--floated) {
       padding: 0;
       border-radius: 0;
       background: transparent;
@@ -4418,6 +4391,12 @@
       border: none;
       box-shadow: none;
       margin-bottom: 0;
+      position: relative;
+      z-index: 1;
+      transition:
+        opacity 300ms cubic-bezier(0.4, 0, 0.2, 1),
+        transform 300ms cubic-bezier(0.4, 0, 0.2, 1),
+        box-shadow 300ms cubic-bezier(0.4, 0, 0.2, 1);
     }
     #creator-profile-inner.profile-fan-conversion-ux #profile-sidebar-fan {
       order: 1;
@@ -4520,232 +4499,6 @@
       border: none;
       background: rgba(255, 255, 255, 0.04);
       border-radius: 12px;
-    }
-
-    /* Dock compacto: mismos nodos + gradiente marca */
-    #creator-profile-inner.profile-fan-conversion-ux .profile-fan-conversion-shell.profile-fan-conversion-shell--floated {
-      position: fixed;
-      left: 50%;
-      bottom: max(12px, env(safe-area-inset-bottom));
-      transform: translateX(-50%) translateY(0);
-      width: auto;
-      max-width: calc(100vw - 20px);
-      margin: 0;
-      z-index: 1990;
-      display: flex;
-      flex-direction: row;
-      flex-wrap: nowrap;
-      align-items: center;
-      justify-content: center;
-      gap: 8px;
-      padding: 10px 12px;
-      border-radius: 999px;
-      background: rgba(255, 255, 255, 0.15);
-      -webkit-backdrop-filter: blur(12px);
-      backdrop-filter: blur(12px);
-      border: 1px solid rgba(255, 255, 255, 0.2);
-      box-shadow:
-        0 14px 44px rgba(0, 0, 0, 0.45),
-        0 0 0 1px rgba(255, 255, 255, 0.06) inset,
-        0 0 24px rgba(108, 59, 255, 0.18);
-      pointer-events: auto;
-      -webkit-tap-highlight-color: transparent;
-      transition:
-        opacity 300ms cubic-bezier(0.4, 0, 0.2, 1),
-        transform 300ms cubic-bezier(0.4, 0, 0.2, 1),
-        box-shadow 300ms cubic-bezier(0.4, 0, 0.2, 1);
-    }
-    #creator-profile-inner.profile-fan-conversion-ux
-      .profile-fan-conversion-shell.profile-fan-conversion-shell--floated.profile-fan-conversion-shell--scroll-dim {
-      transform: translateX(-50%) translateY(12px);
-      opacity: 0.4;
-    }
-    #creator-profile-inner.profile-fan-conversion-ux .profile-fan-conversion-shell--floated #profile-sidebar-metrics {
-      display: none !important;
-    }
-    #creator-profile-inner.profile-fan-conversion-ux .profile-fan-conversion-shell--floated #profile-sidebar-fan {
-      display: flex;
-      flex-direction: row;
-      flex-wrap: nowrap;
-      align-items: center;
-      gap: 8px;
-      margin: 0;
-      padding: 0;
-      border: 0;
-      flex: 0 1 auto;
-      min-width: 0;
-    }
-    #creator-profile-inner.profile-fan-conversion-ux .profile-fan-conversion-shell--floated #profile-sidebar-fan > *:not(#profile-action-buttons):not(#profile-message-wrap) {
-      display: none !important;
-    }
-    #creator-profile-inner.profile-fan-conversion-ux .profile-fan-conversion-shell--floated #profile-message-wrap {
-      margin: 0 !important;
-      padding: 0 !important;
-      border: 0 !important;
-    }
-    #creator-profile-inner.profile-fan-conversion-ux .profile-fan-conversion-shell--floated #profile-message-wrap h4 {
-      display: none !important;
-    }
-    #creator-profile-inner.profile-fan-conversion-ux .profile-fan-conversion-shell--floated #profile-msg-locked {
-      display: none !important;
-    }
-    /* Con mini chat activo, el botón «Enviar mensaje» no se duplica en el dock */
-    #creator-profile-inner.profile-fan-conversion-ux .profile-fan-conversion-shell--floated:has(
-        #miniChatContainer:not([style*='display: none']):not([style*='display:none'])
-      )
-      #profile-message-wrap {
-      display: none !important;
-    }
-    #creator-profile-inner.profile-fan-conversion-ux .profile-fan-conversion-shell--floated #profile-msg-subscriber .creator-actions {
-      margin: 0;
-    }
-    #creator-profile-inner.profile-fan-conversion-ux .profile-fan-conversion-shell--floated #profile-action-buttons {
-      flex-direction: row;
-      flex-wrap: nowrap;
-      gap: 8px;
-      margin: 0;
-    }
-    #creator-profile-inner.profile-fan-conversion-ux .profile-fan-conversion-shell--floated #profile-btn-subscribe,
-    #creator-profile-inner.profile-fan-conversion-ux .profile-fan-conversion-shell--floated #profile-btn-donate {
-      width: 48px;
-      min-width: 48px;
-      max-width: 48px;
-      min-height: 48px;
-      padding: 0;
-      border-radius: 999px;
-      font-size: 0.82rem;
-      font-weight: 800;
-      white-space: nowrap;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      border: 1px solid rgba(255, 255, 255, 0.2) !important;
-      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.35);
-      -webkit-backdrop-filter: blur(10px);
-      backdrop-filter: blur(10px);
-      transition: transform 0.15s ease, filter 0.15s ease, box-shadow 0.2s ease;
-    }
-    #creator-profile-inner.profile-fan-conversion-ux .profile-fan-conversion-shell--floated #profile-btn-subscribe {
-      background: linear-gradient(135deg, rgba(108, 59, 255, 0.92), rgba(168, 85, 247, 0.88)) !important;
-      color: #fff !important;
-      box-shadow: 0 8px 26px rgba(108, 59, 255, 0.5);
-    }
-    #creator-profile-inner.profile-fan-conversion-ux .profile-fan-conversion-shell--floated #profile-btn-subscribe:active {
-      transform: scale(0.97);
-    }
-    #creator-profile-inner.profile-fan-conversion-ux .profile-fan-conversion-shell--floated #profile-btn-donate {
-      background: rgba(255, 255, 255, 0.12) !important;
-      color: #faf5ff !important;
-    }
-    #creator-profile-inner.profile-fan-conversion-ux .profile-fan-conversion-shell--floated #profile-btn-donate:active {
-      transform: scale(0.97);
-    }
-    #creator-profile-inner.profile-fan-conversion-ux .profile-fan-conversion-shell--floated #profile-btn-subscribe .profile-act-ic,
-    #creator-profile-inner.profile-fan-conversion-ux .profile-fan-conversion-shell--floated #profile-btn-donate .profile-act-ic {
-      display: flex;
-    }
-    #creator-profile-inner.profile-fan-conversion-ux .profile-fan-conversion-shell--floated #profile-btn-subscribe .profile-btn-text-stack,
-    #creator-profile-inner.profile-fan-conversion-ux .profile-fan-conversion-shell--floated #profile-btn-donate .profile-btn-text-stack {
-      display: none !important;
-    }
-    #creator-profile-inner.profile-fan-conversion-ux .profile-fan-conversion-shell--floated #profile-btn-subscribe .profile-act-label,
-    #creator-profile-inner.profile-fan-conversion-ux .profile-fan-conversion-shell--floated #profile-btn-donate .profile-act-label {
-      display: none !important;
-    }
-    #creator-profile-inner.profile-fan-conversion-ux .profile-fan-conversion-shell--floated #profile-btn-subscribe .profile-act-sub,
-    #creator-profile-inner.profile-fan-conversion-ux .profile-fan-conversion-shell--floated #profile-btn-donate .profile-act-sub {
-      display: none !important;
-    }
-    #creator-profile-inner.profile-fan-conversion-ux .profile-fan-conversion-shell--floated #profile-btn-subscribe.profile-btn-subscribe--vip .profile-subscribe-vip {
-      display: none !important;
-    }
-    #creator-profile-inner.profile-fan-conversion-ux .profile-fan-conversion-shell--floated #profile-btn-subscribe.profile-btn-subscribe--vip .profile-subscribe-default {
-      display: flex !important;
-      align-items: center;
-      justify-content: center;
-      gap: 0;
-      width: 100%;
-    }
-    #creator-profile-inner.profile-fan-conversion-ux .profile-fan-conversion-shell--floated #profile-btn-subscribe:not(.profile-btn-subscribe--vip) .profile-subscribe-default {
-      display: flex !important;
-      align-items: center;
-      justify-content: center;
-      gap: 0;
-      width: 100%;
-    }
-    #creator-profile-inner.profile-fan-conversion-ux .profile-fan-conversion-shell--floated #profile-btn-fan-messages {
-      width: auto;
-      min-width: 48px;
-      min-height: 48px;
-      padding: 12px 16px;
-      border-radius: 999px;
-      font-size: 0.78rem;
-      background: linear-gradient(135deg, rgba(76, 29, 149, 0.75), rgba(124, 58, 237, 0.55)) !important;
-      border: 1px solid rgba(255, 255, 255, 0.18) !important;
-      color: #fff !important;
-      transition: transform 0.15s ease, filter 0.15s ease;
-    }
-    #creator-profile-inner.profile-fan-conversion-ux .profile-fan-conversion-shell--floated #profile-btn-fan-messages:active {
-      transform: scale(0.97);
-    }
-    #creator-profile-inner.profile-fan-conversion-ux .profile-fan-conversion-shell--floated #miniChatContainer {
-      flex: 0 0 auto;
-      margin: 0 !important;
-      padding: 0 !important;
-      border: 0 !important;
-      max-width: 52vw;
-      position: relative;
-    }
-    #creator-profile-inner.profile-fan-conversion-ux .profile-fan-conversion-shell--floated #miniChatContainer.mini-chat-wrap--open {
-      z-index: 7200;
-      isolation: isolate;
-    }
-    #creator-profile-inner.profile-fan-conversion-ux .profile-fan-conversion-shell--floated #miniChatContainer[style*='display: none'],
-    #creator-profile-inner.profile-fan-conversion-ux .profile-fan-conversion-shell--floated #miniChatContainer[style*='display:none'] {
-      display: none !important;
-    }
-    #creator-profile-inner.profile-fan-conversion-ux .profile-fan-conversion-shell--floated .mini-chat {
-      border-radius: 999px;
-      border: 1px solid rgba(255, 255, 255, 0.12);
-    }
-    #creator-profile-inner.profile-fan-conversion-ux .profile-fan-conversion-shell--floated .mini-chat-header {
-      padding: 10px 14px;
-      min-height: 48px;
-      border-radius: 999px;
-      font-size: 0.78rem;
-      font-weight: 800;
-      background: rgba(255, 255, 255, 0.15) !important;
-      -webkit-backdrop-filter: blur(12px);
-      backdrop-filter: blur(12px);
-      color: #fff !important;
-      border: 1px solid rgba(255, 255, 255, 0.2) !important;
-      box-shadow: 0 4px 18px rgba(88, 28, 135, 0.35);
-      transition: transform 0.15s ease, filter 0.15s ease;
-    }
-    #creator-profile-inner.profile-fan-conversion-ux .profile-fan-conversion-shell--floated .mini-chat-header:active {
-      transform: scale(0.98);
-    }
-    #creator-profile-inner.profile-fan-conversion-ux .profile-fan-conversion-shell--floated .mini-chat-header-label {
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      max-width: 38vw;
-    }
-    #creator-profile-inner.profile-fan-conversion-ux
-      .profile-fan-conversion-shell--floated
-      #miniChatContainer.mini-chat-wrap--open
-      .mini-chat-panel {
-      position: absolute;
-      left: 0;
-      right: 0;
-      bottom: calc(100% + 8px);
-      max-height: min(52vh, 360px) !important;
-      border-radius: 16px;
-      background: rgba(28, 28, 28, 0.98);
-      border: 1px solid rgba(255, 255, 255, 0.12);
-      box-shadow: 0 -12px 40px rgba(0, 0, 0, 0.45);
-      z-index: 10;
-      overflow: auto;
     }
   }
 
@@ -7964,7 +7717,6 @@
       <div id="profile-hero-stats-slot" class="profile-hero-stats-slot" aria-live="polite"></div>
     </div>
   </div>
-  <div id="profile-fan-scroll-sentinel" class="profile-fan-scroll-sentinel" aria-hidden="true"></div>
   <div class="profile-body">
     <div class="profile-feed">
       <h3>Publicaciones recientes</h3>
@@ -7979,7 +7731,6 @@
             <div class="profile-owner-plan-price" id="profile-owner-plan-price">—</div>
           </div>
         </div>
-        <div id="profile-fan-conversion-spacer" class="profile-fan-conversion-spacer" aria-hidden="true"></div>
         <div id="profile-fan-conversion-shell" class="profile-fan-conversion-shell">
         <div id="profile-hero-fan-plan" class="profile-hero-fan-plan" style="display:none;" aria-hidden="true">
           <div class="profile-owner-plan-wrap">
@@ -9565,13 +9316,7 @@ function syncProfileHeroStatsLayout() {
   }
 }
 
-var profileFanConversionIO = null;
-var profileFanConversionScrollHandler = null;
-var profileFanConversionLastScrollY = 0;
 var profileFanConversionMqlBound = false;
-var profileFanDockIoRaf = null;
-var profileFanDockScrollRaf = null;
-var profileFanDockFloatLast = null;
 
 function restoreProfileMetricsToShell() {
   var m = document.getElementById('profile-sidebar-metrics');
@@ -9606,27 +9351,9 @@ function isProfileOwnerSidebarVisible() {
 function teardownProfileFanConversionUX() {
   if (typeof restoreProfileHeroStatsBar === 'function') restoreProfileHeroStatsBar();
   restoreProfileMetricsToShell();
-  if (profileFanDockIoRaf != null) {
-    cancelAnimationFrame(profileFanDockIoRaf);
-    profileFanDockIoRaf = null;
-  }
-  if (profileFanDockScrollRaf != null) {
-    cancelAnimationFrame(profileFanDockScrollRaf);
-    profileFanDockScrollRaf = null;
-  }
-  profileFanDockFloatLast = null;
   var inner = document.getElementById('creator-profile-inner');
   var body = document.querySelector('#creator-profile-inner .profile-body');
   var shell = document.getElementById('profile-fan-conversion-shell');
-  var spacer = document.getElementById('profile-fan-conversion-spacer');
-  if (profileFanConversionIO) {
-    profileFanConversionIO.disconnect();
-    profileFanConversionIO = null;
-  }
-  if (profileFanConversionScrollHandler) {
-    window.removeEventListener('scroll', profileFanConversionScrollHandler);
-    profileFanConversionScrollHandler = null;
-  }
   if (inner) inner.classList.remove('profile-fan-conversion-ux');
   if (body) {
     body.classList.remove('profile-body--fan-mobile');
@@ -9636,73 +9363,6 @@ function teardownProfileFanConversionUX() {
     shell.classList.remove('profile-fan-conversion-shell--floated');
     shell.classList.remove('profile-fan-conversion-shell--scroll-dim');
     shell.classList.remove('profile-fan-conversion-shell--peek');
-  }
-  if (spacer) spacer.style.height = '';
-}
-
-function profileFanDockApplyIoFloat(isIntersecting) {
-  if (profileFanDockIoRaf != null) cancelAnimationFrame(profileFanDockIoRaf);
-  profileFanDockIoRaf = requestAnimationFrame(function () {
-    profileFanDockIoRaf = null;
-    var inner = document.getElementById('creator-profile-inner');
-    if (!inner || !inner.classList.contains('profile-fan-conversion-ux')) return;
-    var mini = document.getElementById('miniChatContainer');
-    if (mini && mini.classList.contains('mini-chat-wrap--open')) return;
-    var wantF = !isIntersecting;
-    if (profileFanDockFloatLast === wantF) return;
-    profileFanDockFloatLast = wantF;
-    setProfileFanConversionFloated(!!wantF);
-  });
-}
-
-function profileFanConversionOnScrollPeek() {
-  var shell = document.getElementById('profile-fan-conversion-shell');
-  if (!shell || !shell.classList.contains('profile-fan-conversion-shell--floated')) return;
-  var mini = document.getElementById('miniChatContainer');
-  if (mini && mini.classList.contains('mini-chat-wrap--open')) return;
-  if (profileFanDockScrollRaf != null) return;
-  profileFanDockScrollRaf = requestAnimationFrame(function () {
-    profileFanDockScrollRaf = null;
-    shell = document.getElementById('profile-fan-conversion-shell');
-    if (!shell || !shell.classList.contains('profile-fan-conversion-shell--floated')) return;
-    var y = window.scrollY || document.documentElement.scrollTop || 0;
-    var dy = y - profileFanConversionLastScrollY;
-    profileFanConversionLastScrollY = y;
-    if (dy < -4) {
-      shell.classList.add('profile-fan-conversion-shell--scroll-dim');
-    } else if (dy > 4) {
-      shell.classList.remove('profile-fan-conversion-shell--scroll-dim');
-    }
-  });
-}
-
-function setProfileFanConversionFloated(on) {
-  var shell = document.getElementById('profile-fan-conversion-shell');
-  var spacer = document.getElementById('profile-fan-conversion-spacer');
-  var body = document.querySelector('#creator-profile-inner .profile-body');
-  if (!shell || !spacer) return;
-  if (on) {
-    var rawH = shell.offsetHeight || 0;
-    var h = Math.min(Math.max(rawH, 56), 160);
-    spacer.style.height = h + 'px';
-    shell.classList.add('profile-fan-conversion-shell--floated');
-    shell.classList.remove('profile-fan-conversion-shell--scroll-dim');
-    profileFanConversionLastScrollY = window.scrollY || document.documentElement.scrollTop || 0;
-    if (!profileFanConversionScrollHandler) {
-      profileFanConversionScrollHandler = profileFanConversionOnScrollPeek;
-      window.addEventListener('scroll', profileFanConversionScrollHandler, { passive: true });
-    }
-    if (body) body.classList.add('profile-body--fan-dock');
-  } else {
-    shell.classList.remove('profile-fan-conversion-shell--floated');
-    shell.classList.remove('profile-fan-conversion-shell--scroll-dim');
-    shell.classList.remove('profile-fan-conversion-shell--peek');
-    spacer.style.height = '';
-    if (profileFanConversionScrollHandler) {
-      window.removeEventListener('scroll', profileFanConversionScrollHandler);
-      profileFanConversionScrollHandler = null;
-    }
-    if (body) body.classList.remove('profile-body--fan-dock');
   }
 }
 
@@ -9723,19 +9383,9 @@ function syncProfileFanConversionUX() {
     }
     var inner = document.getElementById('creator-profile-inner');
     var body = document.querySelector('#creator-profile-inner .profile-body');
-    var sentinel = document.getElementById('profile-fan-scroll-sentinel');
-    if (!inner || !body || !sentinel || typeof IntersectionObserver === 'undefined') return;
+    if (!inner || !body) return;
     inner.classList.add('profile-fan-conversion-ux');
     body.classList.add('profile-body--fan-mobile');
-    profileFanConversionIO = new IntersectionObserver(
-      function (entries) {
-        var e = entries[0];
-        if (!e) return;
-        profileFanDockApplyIoFloat(e.isIntersecting);
-      },
-      { root: null, threshold: [0, 0.02, 0.08, 0.15], rootMargin: '0px 0px -8% 0px' }
-    );
-    profileFanConversionIO.observe(sentinel);
   } finally {
     if (typeof syncProfileHeroStatsLayout === 'function') syncProfileHeroStatsLayout();
   }
@@ -10586,12 +10236,6 @@ function toggleMiniChat() {
     if (wrap.dataset.bpPrevOverflow !== undefined) {
       document.body.style.overflow = wrap.dataset.bpPrevOverflow || '';
       delete wrap.dataset.bpPrevOverflow;
-    }
-    if (typeof profileFanConversionIO !== 'undefined' && profileFanConversionIO && typeof profileFanDockApplyIoFloat === 'function') {
-      var rec = profileFanConversionIO.takeRecords();
-      if (rec && rec.length) {
-        profileFanDockApplyIoFloat(rec[rec.length - 1].isIntersecting);
-      }
     }
   }
 }
