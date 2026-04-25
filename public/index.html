@@ -4001,9 +4001,73 @@
   #creator-profile-inner .profile-act-svg {
     display: block;
   }
-  #creator-profile-inner #profile-btn-subscribe:disabled {
+  #creator-profile-inner #profile-btn-subscribe:disabled:not(.profile-btn-subscribe--vip) {
     opacity: 0.55;
     cursor: not-allowed;
+  }
+  #creator-profile-inner #profile-btn-subscribe.profile-btn-subscribe--vip:disabled {
+    opacity: 1;
+    cursor: default;
+    border: none !important;
+    color: #faf5ff !important;
+    background: linear-gradient(122deg, #4c1d95 0%, #5b21b6 26%, #4338ca 52%, #2563eb 100%) !important;
+    box-shadow:
+      0 0 0 1px rgba(255, 255, 255, 0.1) inset,
+      0 8px 32px rgba(37, 99, 235, 0.32),
+      0 0 40px rgba(124, 58, 237, 0.2);
+    filter: saturate(1.06);
+  }
+  #creator-profile-inner #profile-btn-subscribe.profile-btn-subscribe--vip:disabled .profile-subscribe-vip {
+    font-size: 0.94rem;
+    font-weight: 800;
+    letter-spacing: 0.02em;
+    text-shadow: 0 1px 20px rgba(129, 140, 248, 0.5);
+  }
+  #creator-profile-inner .profile-subscribe-default {
+    display: inline-flex;
+    align-items: center;
+    gap: 12px;
+    min-width: 0;
+  }
+  #creator-profile-inner .profile-btn-text-stack {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 3px;
+    min-width: 0;
+    text-align: left;
+  }
+  #creator-profile-inner .profile-action-buttons .btn#profile-btn-subscribe,
+  #creator-profile-inner .profile-action-buttons .btn#profile-btn-donate {
+    justify-content: center;
+    gap: 12px;
+  }
+  #creator-profile-inner .profile-act-sub {
+    font-size: 0.72rem;
+    font-weight: 600;
+    line-height: 1.28;
+    opacity: 0.84;
+    color: rgba(255, 255, 255, 0.9);
+  }
+  #creator-profile-inner #profile-btn-donate .profile-act-sub {
+    color: rgba(248, 250, 252, 0.88);
+  }
+  #creator-profile-inner .profile-promo-toggle {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+  }
+  #creator-profile-inner .profile-promo-toggle-ic {
+    display: inline-flex;
+    line-height: 0;
+    flex-shrink: 0;
+    opacity: 0.88;
+  }
+  #creator-profile-inner #profile-msg-subscriber {
+    display: none !important;
+  }
+  #creator-profile-inner #profile-message-wrap > h4 {
+    display: none !important;
   }
   #creator-profile-inner .profile-subscribed-cta {
     margin-top: 4px;
@@ -4320,7 +4384,6 @@
       position: relative;
       z-index: 0;
     }
-    #creator-profile-inner.profile-fan-conversion-ux .profile-fan-patron-h4,
     #creator-profile-inner.profile-fan-conversion-ux #profile-plans-intro {
       display: none !important;
     }
@@ -4491,6 +4554,17 @@
       max-width: 76px;
       overflow: hidden;
       text-overflow: ellipsis;
+    }
+    #creator-profile-inner.profile-fan-conversion-ux .profile-fan-conversion-shell--floated #profile-btn-subscribe .profile-act-sub,
+    #creator-profile-inner.profile-fan-conversion-ux .profile-fan-conversion-shell--floated #profile-btn-donate .profile-act-sub {
+      display: none !important;
+    }
+    #creator-profile-inner.profile-fan-conversion-ux .profile-fan-conversion-shell--floated #profile-btn-subscribe.profile-btn-subscribe--vip .profile-subscribe-vip {
+      font-size: 0.74rem;
+      max-width: 42vw;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
     }
     #creator-profile-inner.profile-fan-conversion-ux .profile-fan-conversion-shell--floated #profile-btn-fan-messages {
       width: auto;
@@ -7808,19 +7882,31 @@
           <div class="profile-metric-row profile-metric-row--stars" aria-label="Estrellas"><span class="profile-metric-ic profile-metric-ic--stars" aria-hidden="true"><svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12 2.2l2.35 5.95L20.8 9l-4.9 3.75 1.55 6.25L12 16.35 6.55 19l1.55-6.25L3.2 9l6.45-.85L12 2.2z" opacity="0.92"/></svg></span><span class="profile-metric-label">Estrellas</span><span class="profile-metric-num" id="metric-stars">0</span></div>
         </div>
         <div id="profile-sidebar-fan">
-          <div id="promo-access-banner" style="display:none;" class="promo-banner">
-            ✔ Ya estás suscrito
-          </div>
-          <h4 class="profile-fan-patron-h4"><span class="profile-fan-patron-h4-ic" aria-hidden="true"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 2L14.5 9.5L22 12l-7.5 2.5L12 22l-2.5-7.5L2 12l7.5-2.5L12 2z" stroke-linejoin="round"/></svg></span> Hazte patrocinador</h4>
-          <p id="profile-plans-intro" style="font-size:0.88rem;color:var(--gray-600);margin-bottom:18px;line-height:1.5;">Accede a contenido exclusivo y apoya al creador</p>
+          <div id="promo-access-banner" style="display:none;" class="promo-banner" aria-hidden="true"></div>
+          <p id="profile-plans-intro" class="profile-plans-intro" style="display:none;" aria-hidden="true"></p>
           <div id="profile-action-buttons" class="profile-action-buttons">
-            <button type="button" class="btn btn-primary btn-full profile-btn-subscribe" id="profile-btn-subscribe" onclick="subscribeFromProfile()"><span class="profile-act-ic" aria-hidden="true"><svg class="profile-act-svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.65" stroke-linejoin="round"><path d="M12 3.5l8.5 8.5L12 20.5l-8.5-8.5L12 3.5z"/></svg></span><span class="profile-act-label">Suscribirse</span></button>
-            <button type="button" class="btn btn-primary btn-full profile-btn-donate" id="profile-btn-donate" onclick="openDonateModal()"><span class="profile-act-ic" aria-hidden="true"><svg class="profile-act-svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.65" stroke-linecap="round" stroke-linejoin="round"><path d="M4 11h16v9a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2v-9z"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/><path d="M12 8v14"/></svg></span><span class="profile-act-label">Donar</span></button>
+            <button type="button" class="btn btn-primary btn-full profile-btn-subscribe" id="profile-btn-subscribe" onclick="subscribeFromProfile()">
+              <span class="profile-subscribe-default">
+                <span class="profile-act-ic" aria-hidden="true"><svg class="profile-act-svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.65" stroke-linejoin="round"><path d="M12 3.5l8.5 8.5L12 20.5l-8.5-8.5L12 3.5z"/></svg></span>
+                <span class="profile-btn-text-stack">
+                  <span class="profile-act-label">Suscribirse</span>
+                  <span class="profile-act-sub">Desbloquea contenido exclusivo</span>
+                </span>
+              </span>
+              <span class="profile-subscribe-vip" hidden role="status">💎 Ya eres patrocinador</span>
+            </button>
+            <button type="button" class="btn btn-primary btn-full profile-btn-donate" id="profile-btn-donate" onclick="openDonateModal()">
+              <span class="profile-act-ic" aria-hidden="true"><svg class="profile-act-svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.65" stroke-linecap="round" stroke-linejoin="round"><path d="M4 11h16v9a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2v-9z"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/><path d="M12 8v14"/></svg></span>
+              <span class="profile-btn-text-stack">
+                <span class="profile-act-label">Donar</span>
+                <span class="profile-act-sub" id="profile-btn-donate-sub">Apoya al creador</span>
+              </span>
+            </button>
           </div>
-          <div id="profile-subscribed-cta" class="profile-subscribed-cta" style="display:none;" role="status">✔ Ya estás suscrito</div>
+          <div id="profile-subscribed-cta" class="profile-subscribed-cta" style="display:none !important;" role="status" aria-hidden="true"></div>
           <div id="profile-single-plan-slot"></div>
           <div class="promo-box" style="margin-top:14px;padding-top:14px;border-top:1px solid rgba(255,255,255,0.12);">
-            <button type="button" class="btn btn-ghost" style="padding:6px 0;font-size:0.8rem;color:#38bdf8;" onclick="togglePromo('profile')">¿Tienes un código promocional?</button>
+            <button type="button" class="btn btn-ghost profile-promo-toggle" style="padding:6px 0;font-size:0.8rem;color:#38bdf8;" onclick="togglePromo('profile')"><span class="profile-promo-toggle-ic" aria-hidden="true"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><path d="M20 12v10H4V12"/><path d="M2 7h20v5H2z"/><path d="M12 22V7"/><path d="M12 7H7.5a2.5 2.5 0 0 1 0-5C11 2 12 7 12 7z"/><path d="M12 7h4.5a2.5 2.5 0 0 0 0-5C13 2 12 7 12 7z"/></svg></span> ¿Tienes un código promocional?</button>
             <div id="promo-input-box-profile" style="display:none;margin-top:10px;">
               <input type="text" id="promo-code-input" class="form-input" placeholder="Ingresa tu código" autocomplete="off" style="margin-bottom:8px;background:#2a2a2a;border-color:#444;color:#fff;" />
               <button type="button" class="btn btn-primary btn-full" onclick="redeemPromo('profile')">Aplicar código</button>
@@ -8954,6 +9040,12 @@ async function updateProfileSubscribeButtonState(creatorId) {
   if (!btn || !hint) return;
   if (!CURRENT_USER || CURRENT_USER.role !== 'fan' || !creatorId) {
     btn.disabled = false;
+    btn.classList.remove('profile-btn-subscribe--vip');
+    var d0 = btn.querySelector('.profile-subscribe-default');
+    var v0 = btn.querySelector('.profile-subscribe-vip');
+    if (d0) d0.hidden = false;
+    if (v0) v0.hidden = true;
+    btn.removeAttribute('aria-label');
     hint.style.display = 'none';
     return;
   }
@@ -8964,15 +9056,32 @@ async function updateProfileSubscribeButtonState(creatorId) {
       subs.some(function (s) {
         return s.creator_id === creatorId && s.status === 'active';
       });
+    hint.style.display = 'none';
     if (active) {
       btn.disabled = true;
-      hint.style.display = 'none';
+      btn.classList.add('profile-btn-subscribe--vip');
+      var d = btn.querySelector('.profile-subscribe-default');
+      var v = btn.querySelector('.profile-subscribe-vip');
+      if (d) d.hidden = true;
+      if (v) v.hidden = false;
+      btn.setAttribute('aria-label', 'Ya eres patrocinador de este creador');
     } else {
       btn.disabled = false;
-      hint.style.display = 'none';
+      btn.classList.remove('profile-btn-subscribe--vip');
+      var d1 = btn.querySelector('.profile-subscribe-default');
+      var v1 = btn.querySelector('.profile-subscribe-vip');
+      if (d1) d1.hidden = false;
+      if (v1) v1.hidden = true;
+      btn.removeAttribute('aria-label');
     }
   } catch (e) {
     btn.disabled = false;
+    btn.classList.remove('profile-btn-subscribe--vip');
+    var d2 = btn.querySelector('.profile-subscribe-default');
+    var v2 = btn.querySelector('.profile-subscribe-vip');
+    if (d2) d2.hidden = false;
+    if (v2) v2.hidden = true;
+    btn.removeAttribute('aria-label');
     hint.style.display = 'none';
   }
 }
@@ -9191,8 +9300,12 @@ function fillCreatorProfileSidebar(creator, plans) {
   fillProfileSidebarMetrics(creator, { isOwnerView: isOwn });
   const intro = document.getElementById('profile-plans-intro');
   if (intro) {
-    intro.textContent =
-      'Accede a contenido exclusivo y apoya a ' + (creator.name || 'este creador');
+    intro.textContent = '';
+    intro.style.display = 'none';
+  }
+  const donateSub = document.getElementById('profile-btn-donate-sub');
+  if (donateSub && !isOwn) {
+    donateSub.textContent = 'Apoya a ' + (creator.name || 'este creador');
   }
   const ab = document.getElementById('profile-action-buttons');
   if (ab) ab.style.display = isOwn ? 'none' : '';
@@ -11134,11 +11247,9 @@ async function updateProfileMessageSection(creatorId) {
   const ok =
     Array.isArray(subs) && subs.some((s) => s.creator_id === creatorId && s.status === 'active');
   if (ok) {
-    subForm.style.display = 'block';
+    subForm.style.display = 'none';
     if (btn) {
-      btn.onclick = function () {
-        goToFanMessages(creatorId, getProfileFanMessageHandle());
-      };
+      btn.onclick = null;
     }
     const miniBox = document.getElementById('miniChatContainer');
     const isOwnCreatorProfile =
@@ -11156,6 +11267,7 @@ async function updateProfileMessageSection(creatorId) {
         loadMiniChat(creatorId);
       }, 8000);
     }
+    wrap.style.display = 'none';
   } else {
     locked.style.display = 'block';
     locked.innerHTML =
@@ -12802,28 +12914,9 @@ async function openCreatorProfile(handle) {
 
 async function updatePromoAccessBanner() {
   const el = document.getElementById('promo-access-banner');
-  if (!el) return;
-  if (!CURRENT_USER || CURRENT_USER.role !== 'fan' || !CURRENT_CREATOR_ID) {
-    el.style.display = 'none';
-    return;
-  }
-  try {
-    const subs = await api.get('/subscriptions/my');
-    if (!subs || subs.error || !Array.isArray(subs)) {
-      el.style.display = 'none';
-      return;
-    }
-    const active = subs.some(function (s) {
-      return s.creator_id === CURRENT_CREATOR_ID && s.status === 'active';
-    });
-    el.style.display = active ? 'block' : 'none';
-    var subCta = document.getElementById('profile-subscribed-cta');
-    if (subCta && active) {
-      subCta.style.display = 'none';
-    }
-  } catch (e) {
-    el.style.display = 'none';
-  }
+  if (el) el.style.display = 'none';
+  var subCta = document.getElementById('profile-subscribed-cta');
+  if (subCta) subCta.style.display = 'none';
 }
 
 async function refreshCreatorProfileAccess() {
